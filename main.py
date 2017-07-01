@@ -72,18 +72,87 @@ class FrontendWebPage(QWebPage):
 		else:
 			LOGGER.info('%s line %d: %s' % (source, line, msg))
 
-class Frontend(QWebView):
+###
+# HTML5/JavaScript based application frontend
+###
+class Frontend(QMainWindow):
 	def __init__(self, yagala):
 		super(Frontend, self).__init__()
 		self.yagala = yagala
-		self.setPage(FrontendWebPage())
 		self.setWindowTitle('Yagala')
-		self.load(QUrl.fromLocalFile(uipath + 'index.html'))
-		
-		# get the main frame of the view so that we can load the api each time
-		# the window object is cleared
-		self.frame = self.page().mainFrame()
+
+		# Add web view
+		self.web = QWebView(self)
+		self.web.setPage(FrontendWebPage())
+		self.web.load(QUrl.fromLocalFile(uipath + 'index.html'))
+		self.frame = self.web.page().mainFrame()
 		self.frame.javaScriptWindowObjectCleared.connect(self.load_api)
+
+		# Add inspector
+		self.inspector = QWebInspector(self)
+		self.inspector.setPage(self.web.page())
+
+		# And put both into a splitter
+		self.splitter = QSplitter(self)
+		self.splitter.setOrientation(Qt.Vertical)
+		self.splitter.addWidget(self.web)
+		self.splitter.addWidget(self.inspector)
+		self.setCentralWidget(self.splitter)
+		
+		# Add toolbar (after QWebView has been initialized)
+		self.create_toolbar()
+
+		# Add global shortcuts
+		QtWidgets.QShortcut(QtGui.QKeySequence("Ctrl+Q"), self.web, self.close)
+		QtWidgets.QShortcut(QtGui.QKeySequence("Alt+F4"), self.web, self.close)
+		QtWidgets.QShortcut(QtGui.QKeySequence("Ctrl+R"), self.web, self.web.reload)
+		QtWidgets.QShortcut(QtGui.QKeySequence("F5"), self.web, self.web.reload)
+		QtWidgets.QShortcut(QtGui.QKeySequence("F12"), self.web, self.toggleWebInspector)
+		QtWidgets.QShortcut(QtGui.QKeySequence("F11"), self.web, self.toggleFullscreen)
+
+		#  Hide toolbar and web inspector per default
+		self.inspector.setVisible(False)
+		self.toolbar.setVisible(False)
+	
+	def toggleFullscreen(self):
+		if self.windowState() == Qt.WindowFullScreen:
+			if self._lastWindowState:
+				self.setWindowState(self._lastWindowState)
+			else:
+				self.setWindowState(Qt.WindowNoState)
+		else:
+			self._lastWindowState = self.windowState()
+			self.setWindowState(Qt.WindowFullScreen)
+
+	def create_toolbar(self):
+		self.toolbar = self.addToolBar('Toolbar')
+
+		# Add back handler
+		action = QAction('Back', self)
+		action.triggered.connect(self.web.back)
+		self.toolbar.addAction(action)
+
+		# Add reload handler
+		action = QAction('Reload', self)
+		action.setShortcut('F5')
+		action.triggered.connect(self.web.reload)
+		self.toolbar.addAction(action)
+
+		# Add forward handler
+		action = QAction('Forward', self)
+		action.triggered.connect(self.web.forward)
+		self.toolbar.addAction(action)
+
+		# Add spacer
+		spacer = QWidget()
+		spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding);
+		self.toolbar.addWidget(spacer)
+
+		# Add exit handler
+		action = QAction('Exit', self)
+		action.triggered.connect(self.close)
+		self.toolbar.addAction(action)
+
 
 	# event handler for javascript window object being cleared
 	def load_api(self):
@@ -92,6 +161,10 @@ class Frontend(QWebView):
 		#   1.  var obj = window.pyapi.json_decode(json);
 		#   2.  var obj = pyapi.json_decode(json)
 		self.frame.addToJavaScriptWindowObject('yagala', self.yagala)
+	
+	def toggleWebInspector(self):
+		self.inspector.setVisible(not self.inspector.isVisible())
+		self.toolbar.setVisible(self.inspector.isVisible())
 
 	###
 	# Print an 'Are you sure' message when the user closes the window
@@ -117,7 +190,6 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-v", "--verbose", help="be verbose", action="store_true")
 	parser.add_argument("-d", "--debug", help="be even verboser", action="store_true")
-	parser.add_argument("--console", help="Enable developer console", action="store_true")
 	args = parser.parse_args()
 
 	if args.verbose:
@@ -132,17 +204,10 @@ if __name__ == "__main__":
 	app = QApplication(sys.argv)
 	yagala = Yagala()
 
-	if args.console:
-		LOGGER.info('Development console enabled')
-		QWebSettings.globalSettings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True)
+	QWebSettings.globalSettings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True)
 
 	frontend = Frontend(yagala)
 	frontend.show()
-
-	if args.console:
-		inspect = QWebInspector()
-		inspect.setPage(frontend.page())
-		inspect.show()
 
 	sys.exit(app.exec_())
 
