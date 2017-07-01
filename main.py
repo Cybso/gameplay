@@ -76,15 +76,16 @@ class FrontendWebPage(QWebPage):
 # HTML5/JavaScript based application frontend
 ###
 class Frontend(QMainWindow):
-	def __init__(self, yagala):
+	def __init__(self, basepath, yagala):
 		super(Frontend, self).__init__()
+		self.basepath = basepath
 		self.yagala = yagala
 		self.setWindowTitle('Yagala')
 
 		# Add web view
 		self.web = QWebView(self)
 		self.web.setPage(FrontendWebPage())
-		self.web.load(QUrl.fromLocalFile(uipath + 'index.html'))
+		self.web.load(QUrl.fromLocalFile(basepath + 'index.html'))
 		self.frame = self.web.page().mainFrame()
 		self.frame.javaScriptWindowObjectCleared.connect(self.load_api)
 
@@ -154,13 +155,17 @@ class Frontend(QMainWindow):
 		self.toolbar.addAction(action)
 
 
-	# event handler for javascript window object being cleared
+	###
+	# Add 'yagala' controller to JavaScript context when the frame is loaded.
+	# Due to security reasons ensure that the URL is local and a child of
+	# our own base path.
+	###
 	def load_api(self):
-		# add pyapi to javascript window object
-		# slots can be accessed in either of the following ways -
-		#   1.  var obj = window.pyapi.json_decode(json);
-		#   2.  var obj = pyapi.json_decode(json)
-		self.frame.addToJavaScriptWindowObject('yagala', self.yagala)
+		url = self.frame.url()
+		if url.isLocalFile():
+			if os.path.abspath(url.path()).startswith(self.basepath):
+				LOGGER.info('Adding Yagala controller to %s' % url)
+				self.frame.addToJavaScriptWindowObject('yagala', self.yagala)
 	
 	def toggleWebInspector(self):
 		self.inspector.setVisible(not self.inspector.isVisible())
@@ -206,7 +211,7 @@ if __name__ == "__main__":
 
 	QWebSettings.globalSettings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True)
 
-	frontend = Frontend(yagala)
+	frontend = Frontend(uipath, yagala)
 	frontend.show()
 
 	sys.exit(app.exec_())
