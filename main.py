@@ -55,9 +55,22 @@ class Yagala(QObject):
 	def json_decode(self, jsstr):
 		return json.loads(jsstr)
 
+###
+# Override QWebPage to redirect JavaScript console output
+# to logger (level 'info'). If the output starts with 'debug',
+# 'warn', 'error' or 'exception' the appropirate level is
+# choosen instead.
+###
 class FrontendWebPage(QWebPage):
 	def javaScriptConsoleMessage(self, msg, line, source):
-		LOGGER.info('%s line %d: %s' % (source, line, msg))
+		if msg.startswith('debug'):
+			LOGGER.debug('%s line %d: %s' % (source, line, msg))
+		elif msg.startswith('warn'):
+			LOGGER.warn('%s line %d: %s' % (source, line, msg))
+		elif msg.startswith('error') or msg.startswith('exception'):
+			LOGGER.error('%s line %d: %s' % (source, line, msg))
+		else:
+			LOGGER.info('%s line %d: %s' % (source, line, msg))
 
 class Frontend(QWebView):
 	def __init__(self, yagala):
@@ -80,9 +93,22 @@ class Frontend(QWebView):
 		#   2.  var obj = pyapi.json_decode(json)
 		self.frame.addToJavaScriptWindowObject('yagala', self.yagala)
 
+	###
+	# Print an 'Are you sure' message when the user closes the window
+	# and quit the whole application on confirmation.
+	###
+	def closeEvent(self, event):
+		if QMessageBox.question(None, '', "Are you sure you want to quit?",
+				QMessageBox.Yes | QMessageBox.No,
+				QMessageBox.No) == QMessageBox.No:
+			event.ignore()
+			return
+		QApplication.quit()
+
 if __name__ == "__main__":
 	import sys
 	import argparse
+	import signal
 
 	logging.basicConfig(stream=sys.stdout, level=logging.WARN)
 	uipath=os.path.dirname(os.path.abspath(__file__)) + os.sep + 'ui' + os.sep
@@ -101,8 +127,8 @@ if __name__ == "__main__":
 		LOGGER.setLevel(logging.DEBUG)
 		LOGGER.debug('Debugging enabled')
 
-
-	# Start application
+	# Start application (and ensure it can be killed with CTRL-C)
+	signal.signal(signal.SIGINT, signal.SIG_DFL)
 	app = QApplication(sys.argv)
 	yagala = Yagala()
 
