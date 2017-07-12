@@ -2,16 +2,36 @@
 	<head>
 		<link type="text/css" href="css/main.css">
 		<title>Hallo Welt</title>
-		<script>
-			console.log('lala');
-		</script>
+		<script src="js/init.js"></script>
 	</head>
 	<body>
 		Hallo, Welt
+
+		<select size="1" data-bind="value: language, options: availableLanguages, optionsValue: 'id', optionsText: 'label'"></select>
 
 		<div style="display: flex; flex-direction: row; color: #ff0000">
 			<div>A</div>
 			<div>B</div>
 		</div>
+
+		<fieldset>
+			<legend data-bind="t: 'current_time'">Current Time</legend>
+			<span data-bind="text: currentTimeStr"></span>
+		</fieldset>
+
+		<ul data-bind="foreach: availableLanguages">
+			<li data-bind="text: label"></li>
+		</ul>
+
+		<dl>
+			<dt>loading</dt>
+			<dd data-bind="text: availableLanguages.loading"></dd>
+			<dt>ready</dt>
+			<dd data-bind="text: availableLanguages.ready"></dd>
+			<dt>failed</dt>
+			<dd data-bind="text: availableLanguages.failed"></dd>
+		</dl>
+
+		<span data-bind="text: language"></span>
 	</body>
 </html>

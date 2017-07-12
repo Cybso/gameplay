@@ -114,7 +114,13 @@ class Frontend(QMainWindow):
 		#  Hide toolbar and web inspector per default
 		self.inspector.setVisible(False)
 		self.toolbar.setVisible(False)
+
+		# Get initial window state
+		self._lastWindowState = self.windowState()
 	
+	###
+	# Toggles fullscreen mode (F11)
+	###
 	def toggleFullscreen(self):
 		if self.windowState() == Qt.WindowFullScreen:
 			if self._lastWindowState:
@@ -125,6 +131,9 @@ class Frontend(QMainWindow):
 			self._lastWindowState = self.windowState()
 			self.setWindowState(Qt.WindowFullScreen)
 
+	###
+	# Creates a toolbar that is visible in developer mode (F12)
+	###
 	def create_toolbar(self):
 		self.toolbar = self.addToolBar('Toolbar')
 
@@ -195,6 +204,7 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
 	parser.add_argument("-v", "--verbose", help="be verbose", action="store_true")
 	parser.add_argument("-d", "--debug", help="be even verboser", action="store_true")
+	parser.add_argument("-f", "--fullscreen", help="start in fullscreen mode", action="store_true")
 	args = parser.parse_args()
 
 	if args.verbose:
@@ -212,7 +222,10 @@ if __name__ == "__main__":
 	QWebSettings.globalSettings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True)
 
 	frontend = Frontend(uipath, yagala)
-	frontend.show()
+	if args.fullscreen:
+		frontend.showFullScreen()
+	else:
+		frontend.show()
 
 	sys.exit(app.exec_())
 

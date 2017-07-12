@@ -1,0 +1,10 @@
+3rd party libraries
+===================
+
+This programs contains code from the following third party libraries:
+
+  -	Knockout (http://knockoutjs.com/, MIT license)
+  - Knockout Mapper (https://github.com/lucaslorentz/knockout.mapper, MIT license)
+  - RequireJS (http://requirejs.org/, MIT license)
+  - Reqwest (https://github.com/ded/reqwest, MIT license)
+

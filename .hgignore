@@ -2,3 +2,4 @@
 \.orig$
 \.rej$
 core$
+^ui/test/
