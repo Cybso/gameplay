@@ -1,0 +1,60 @@
+#widgets {
+	position: absolute;
+	z-index: 10;
+	top: 10vh;
+	bottom: 0;
+	right: 0;
+	left: 0;
+	padding: 1em;
+	overflow: auto;
+}
+
+#widgets > ul {
+	list-style: none;
+	display: flex;
+	padding: 0;
+	margin: 0;
+	flex-wrap: wrap;
+	justify-content: space-around;
+	align-content: space-around;
+	align-items: stretch;
+}
+
+#widgets > ul > li {
+	display: block;
+	margin: 1ex;
+	height: 27vh;
+	width: calc(27vh * 1.77777);
+	overflow: hidden;
+	position: relative;
+}
+
+#widgets > ul > li > .icon,
+#widgets > ul > li > .icon-selected {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background-image: cover;
+	background-repeat: no-repeat;
+	background-position: 50% 50%;
+	background-size: cover;
+}
+
+#widgets > ul > li > .icon-selected {
+	display: none;
+}
+
+#widgets > ul > li:hover > .icon-selected {
+	display: block;
+}
+
+#widgets > ul > li > div.label {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+
+

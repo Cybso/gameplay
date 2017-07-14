@@ -1,37 +1,46 @@
 <html>
 	<head>
-		<link type="text/css" href="css/main.css">
-		<title>Hallo Welt</title>
+		<title>Yagala</title>
 		<script src="js/init.js"></script>
+		<link rel="stylesheet" type="text/css" href="css/main.css">
 	</head>
 	<body>
-		Hallo, Welt
+		<header>
+			<div class="logo"><img src="img/Yagala.svg" title="Yagala"></div>
+			<div class="locale">
+				<select size="1" data-bind="value: locale, options: locale.available, optionsValue: 'id', optionsText: 'label'"></select>
+			</div>
+			<div class="clock">
+				<span data-bind="text: currentTimeStr"></span>
+			</div>
+		</header>
 
-		<select size="1" data-bind="value: language, options: availableLanguages, optionsValue: 'id', optionsText: 'label'"></select>
-
-		<div style="display: flex; flex-direction: row; color: #ff0000">
-			<div>A</div>
-			<div>B</div>
+		<div id="widgets">
+			<ul data-bind="foreach: entries">
+				<li class="widget">
+					<!-- ko if: $data['icon'] -->
+						<div class="icon" data-bind="
+							style: {
+								'background-image': 'url(' + $data['icon'] + ')'
+							}
+						"></div>
+					<!-- /ko -->
+					<!-- ko if: $data['icon:selected'] -->
+						<div class="icon-selected" data-bind="
+							style: {
+								'background-image': 'url(' + $data['icon:selected'] + ')'
+							}
+						"></div>
+					<!-- /ko -->
+					<div class="label" data-bind="text: label"></div>
+				</li>
+			</ul>
 		</div>
-
-		<fieldset>
-			<legend data-bind="t: 'current_time'">Current Time</legend>
-			<span data-bind="text: currentTimeStr"></span>
-		</fieldset>
-
-		<ul data-bind="foreach: availableLanguages">
-			<li data-bind="text: label"></li>
-		</ul>
-
-		<dl>
-			<dt>loading</dt>
-			<dd data-bind="text: availableLanguages.loading"></dd>
-			<dt>ready</dt>
-			<dd data-bind="text: availableLanguages.ready"></dd>
-			<dt>failed</dt>
-			<dd data-bind="text: availableLanguages.failed"></dd>
-		</dl>
-
-		<span data-bind="text: language"></span>
+		<div id="copyright-notice">
+			<!-- Text filled by theme.css -->
+			<div class="copyright-notice-background"></div>
+			<div class="copyright-notice-icons"></div>
+			<div class="copyright-notice-other"></div>
+		</div>
 	</body>
 </html>

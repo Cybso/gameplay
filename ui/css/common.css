@@ -1,0 +1,33 @@
+* {
+	box-sizing: border-box;
+}
+
+html, body {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+/**
+ * Flexbox helper attributes
+ **/
+.fb-fill-left {
+	margin-left: auto;
+}
+
+.fb-fill-right {
+	margin-right: auto;
+}
+
+.fb-fill-top {
+	margin-top: auto;
+}
+
+.fb-fill-bottom {
+	margin-top: auto;
+}
+
+.fb-fill-all {
+	margin: auto;
+}

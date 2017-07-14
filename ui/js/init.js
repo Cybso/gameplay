@@ -16,7 +16,9 @@
 			paths: {
 				knockout: 'lib/knockout-3.4.2',
 				// https://github.com/ded/reqwest
-				req: 'lib/reqwest'
+				req: 'lib/reqwest',
+				// http://momentjs.com/
+				moment: 'lib/moment-with-locales.min'
 			},
 			shim: {
 				knockout: { exports: 'ko' },

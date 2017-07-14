@@ -1,0 +1,25 @@
+header {
+	display: flex;
+	height: 10vh;
+	align-items: center;
+}
+
+header > div {
+	margin: 0.5ex;
+}
+
+header > div.logo {
+	margin-right: auto;
+}
+
+header > div.logo > img {
+	height: 100%;
+}
+
+header > div.locale {
+	display: none;
+}
+
+header > div.clock {
+	font-size: 3em;
+}

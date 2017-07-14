@@ -7,4 +7,13 @@ This programs contains code from the following third party libraries:
   - Knockout Mapper (https://github.com/lucaslorentz/knockout.mapper, MIT license)
   - RequireJS (http://requirejs.org/, MIT license)
   - Reqwest (https://github.com/ded/reqwest, MIT license)
+  - Moment.js (http://momentjs.com/, MIT license)
 
+Artwork
+=======
+
+The following artwork is used for this program
+
+  - Gamepad-Icon from Wikimedia
+      URL: https://de.wikipedia.org/wiki/Datei:Gamepad.svg (LGPL)
+      Derived from: https://commons.wikimedia.org/wiki/File:Nuvola_apps_package_games.png (David Vignoni, LGPL)
