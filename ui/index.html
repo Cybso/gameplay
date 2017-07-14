@@ -17,7 +17,12 @@
 
 		<div id="widgets">
 			<ul data-bind="foreach: entries">
-				<li class="widget">
+				<li class="widget selectable" data-bind="
+					css: {
+						selected: $data == $root.selected()
+					},
+					click: $root.selected
+				">
 					<!-- ko if: $data['icon'] -->
 						<div class="icon" data-bind="
 							style: {

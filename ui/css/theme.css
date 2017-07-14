@@ -31,6 +31,9 @@ header {
 	font-size: 2em;
 }
 
+#widgets > ul > li.selected > div.label {
+	background-color: rgba(158, 202, 237, 0.8);
+}
 
 .copyright-notice-background:before {
 	content: 'Wallpaper: HOT Balloon Trip · Andrés Nieto Porras · CC Attribution-ShareAlike 2.0 Generic';
