@@ -18,6 +18,9 @@
 		<div id="widgets">
 			<ul data-bind="foreach: entries">
 				<li class="widget selectable" data-bind="
+					attr: {
+						'data-entry': id
+					},
 					css: {
 						selected: $data == $root.selected()
 					},
