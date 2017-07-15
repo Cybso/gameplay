@@ -18,6 +18,25 @@
 			} else {
 				return (rect.top < windowHeight && rect.bottom > 0 && rect.left < windowWidth && rect.right > 0);
 			}
+		},
+
+		scrollToIfNotInViewport: function(element) {
+			// Ensure that the element is visible...
+			// Prefers experimental Element.scrollIntoView method if available
+			// and falls back to location.hash to let the browser decide how
+			// to scroll this elelement into the viewport.
+			if (!this.isElementInViewport(element, true)) {
+				if (Element.prototype.scrollIntoView !== undefined) {
+					element.scrollIntoView({block: "end", behavior: "smooth"});
+				} else {
+					var id = element.getAttribute('id');
+					if (!id) {
+						id = this.guid();
+						element.setAttribute('id', id);
+					}
+					window.location.hash = id;
+				}
+			}
 		}
 	});
 })();

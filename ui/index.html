@@ -22,9 +22,9 @@
 						'data-entry': id
 					},
 					css: {
-						selected: $data == $root.selected()
+						selected: $data == $root.selectedEntry()
 					},
-					click: $root.selected
+					click: $root.selectedEntry
 				">
 					<!-- ko if: $data['icon'] -->
 						<div class="icon" data-bind="
