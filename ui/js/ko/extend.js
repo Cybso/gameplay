@@ -10,7 +10,6 @@
  *		<!-- /ko --> 
  */
 
-/* jshint esversion: 6 */
 (function() {
 	"use strict";
 	define(['knockout'], function(ko) {

@@ -23,8 +23,8 @@
 #widgets > ul > li {
 	display: block;
 	margin: 1ex;
-	height: 27vh;
-	width: calc(27vh * 1.77777);
+	height: 12rem;
+	width: 21.3rem;
 	overflow: hidden;
 	position: relative;
 }

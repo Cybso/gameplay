@@ -107,7 +107,7 @@ class Frontend(QMainWindow):
 		QtWidgets.QShortcut(QtGui.QKeySequence("Ctrl+Q"), self.web, self.close)
 		QtWidgets.QShortcut(QtGui.QKeySequence("Alt+F4"), self.web, self.close)
 		QtWidgets.QShortcut(QtGui.QKeySequence("Ctrl+R"), self.web, self.web.reload)
-		QtWidgets.QShortcut(QtGui.QKeySequence("F5"), self.web, self.web.reload)
+		QtWidgets.QShortcut(QtGui.QKeySequence("ALT+F5"), self.web, self.web.reload)
 		QtWidgets.QShortcut(QtGui.QKeySequence("F12"), self.web, self.toggleWebInspector)
 		QtWidgets.QShortcut(QtGui.QKeySequence("F11"), self.web, self.toggleFullscreen)
 

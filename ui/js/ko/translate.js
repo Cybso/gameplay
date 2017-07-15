@@ -39,7 +39,6 @@
  *
  *	Returns the translate function.
  **/
-/* jshint esversion: 6 */
 (function() {
 	"use strict";
 	define(['knockout'], function(ko) {
@@ -47,7 +46,9 @@
 		var translateCache = {};
 
 		// Helper method to create one-dimensional objects from multi-dimensional inputs
-		var flatten = function(obj, dest = {}, prefix = '') {
+		var flatten = function(obj, dest, prefix) {
+			if (dest === undefined) { dest = {}; }
+			if (prefix === undefined) { prefix = ''; }
 			for (var k in obj) {
 				if (obj.hasOwnProperty(k)) {
 					var v = obj[k];
@@ -62,7 +63,7 @@
 		};
 
 		// Translate method for programatical use
-		ko.translate = function(key, fallback = undefined) {
+		ko.translate = function(key, fallback) {
 			if (fallback === undefined) {
 				fallback = key;
 			}

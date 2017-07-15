@@ -5,7 +5,6 @@
  *
  *	Author: Roland Tapken <rt@tasmiro.de>
  */
-/* jshint esversion: 6 */
 
 (function() {
 	"use strict";
