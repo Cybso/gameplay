@@ -113,9 +113,11 @@
 					var newList = [];
 					for (i in elements) {
 						if (elements.hasOwnProperty(i)) {
-							rect = elements[i].getBoundingClientRect();
-							rect.element = elements[i];
-							newList.push(rect);
+							if (elements[i].getBoundingClientRect !== undefined) {
+								rect = elements[i].getBoundingClientRect();
+								rect.element = elements[i];
+								newList.push(rect);
+							}
 						}
 					}
 					elements = newList;
@@ -192,15 +194,24 @@
 					// Get own absolute dimensions
 				};
 
+				document.getElementsByTagName('body')[0].addEventListener('keyup', function(evt) {
+				});
+
 				document.getElementsByTagName('body')[0].addEventListener('keydown', function(evt) {
-					switch (evt.code) {
-					case 'ArrowLeft': moveLeft(); break;
-					case 'ArrowRight': moveRight(); break;
+					switch (evt.code || evt.keyIdentifier) {
+					case 'ArrowLeft':
+					case 'Left':
+						moveLeft();
+						break;
+					case 'ArrowRight':
+					case 'Right':
+						moveRight();
+						break;
 					}
 				});
 
 				function gameLoop() {
-					var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
+					var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads() : []);
 					if (!gamepads) {
 						return;
 					}

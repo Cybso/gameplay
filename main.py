@@ -106,8 +106,8 @@ class Frontend(QMainWindow):
 		# Add global shortcuts
 		QtWidgets.QShortcut(QtGui.QKeySequence("Ctrl+Q"), self.web, self.close)
 		QtWidgets.QShortcut(QtGui.QKeySequence("Alt+F4"), self.web, self.close)
-		QtWidgets.QShortcut(QtGui.QKeySequence("Ctrl+R"), self.web, self.web.reload)
-		QtWidgets.QShortcut(QtGui.QKeySequence("ALT+F5"), self.web, self.web.reload)
+		QtWidgets.QShortcut(QtGui.QKeySequence("Ctrl+R"), self.web, self.forceRefresh)
+		QtWidgets.QShortcut(QtGui.QKeySequence("ALT+F5"), self.web, self.forceRefresh)
 		QtWidgets.QShortcut(QtGui.QKeySequence("F12"), self.web, self.toggleWebInspector)
 		QtWidgets.QShortcut(QtGui.QKeySequence("F11"), self.web, self.toggleFullscreen)
 
@@ -117,6 +117,10 @@ class Frontend(QMainWindow):
 
 		# Get initial window state
 		self._lastWindowState = self.windowState()
+	
+	def forceRefresh(self):
+		self.web.page().settings().clearMemoryCaches()
+		self.web.reload()
 	
 	###
 	# Toggles fullscreen mode (F11)
@@ -217,6 +221,7 @@ if __name__ == "__main__":
 	# Start application (and ensure it can be killed with CTRL-C)
 	signal.signal(signal.SIGINT, signal.SIG_DFL)
 	app = QApplication(sys.argv)
+	app.setWindowIcon(QIcon('ui/img/Y.svg'))
 	yagala = Yagala()
 
 	QWebSettings.globalSettings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True)
