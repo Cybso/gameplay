@@ -46,6 +46,7 @@
 	display: none;
 }
 
+#widgets > ul > li.selected > .icon-selected,
 #widgets > ul > li:hover > .icon-selected {
 	display: block;
 }
