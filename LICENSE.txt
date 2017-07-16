@@ -1,5 +1,5 @@
 This license applies to the	entire code, except third party libraries
-(see NOTICE.txt) and where otherwised stated locally.
+(see NOTICE.txt / "ui/js/lib/*") and where otherwised stated locally.
 
 -----------------------------------------------------------------------
 
