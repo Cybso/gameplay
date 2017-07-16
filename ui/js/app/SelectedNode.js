@@ -217,7 +217,8 @@
 				selectorHeader: 'header',
 				easing: 'Linear',
 				speed: 100,
-				offset: 15
+				offset: 100,
+				block: 'auto'
 			});
 
 			return function(viewModel) {

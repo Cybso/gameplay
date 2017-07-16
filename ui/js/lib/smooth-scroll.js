@@ -1,10 +1,3 @@
-/*!
- * smooth-scroll v11.1.0: Animate scrolling to anchor links
- * (c) 2017 Chris Ferdinandi
- * GPL-3.0 License
- * http://github.com/cferdinandi/smooth-scroll
- */
-
 (function (root, factory) {
 	if ( typeof define === 'function' && define.amd ) {
 		define([], factory(root));
@@ -13,7 +6,7 @@
 	} else {
 		root.smoothScroll = factory(root);
 	}
-})(typeof global !== 'undefined' ? global : this.window || this.global, (function (root) {
+})(typeof global !== 'undefined' ? global : this.window || this.global, function (root) {
 
 	'use strict';
 
@@ -40,7 +33,12 @@
 
 		// Callback API
 		before: function () {},
-		after: function () {}
+		after: function () {},
+
+		// Scroll to the start or end of the element.
+		// Use 'auto' to let Smooth Scrolling decide on
+		// scroll direction.
+		block: 'start'
 	};
 
 
@@ -260,14 +258,32 @@
 	 */
 	var getEndLocation = function ( anchor, headerHeight, offset ) {
 		var location = 0;
+		var anchorHeight = anchor.clientHeight;
+		var viewportHeight = getViewportHeight();
+		var maxLocation = getDocumentHeight() - viewportHeight;
 		if (anchor.offsetParent) {
 			do {
 				location += anchor.offsetTop;
 				anchor = anchor.offsetParent;
 			} while (anchor);
 		}
-		location = Math.max(location - headerHeight - offset, 0);
-		return Math.min(location, getDocumentHeight() - getViewportHeight());
+
+		var startLocation = Math.min(Math.max(location - headerHeight - offset, 0), maxLocation);
+		var endLocation = Math.min(location + anchorHeight + offset - viewportHeight, maxLocation);
+		if (settings.block === 'end') {
+			return endLocation;
+		} else if (settings.block === 'auto') {
+			var scrollStartDistance = Math.abs(startLocation - root.pageYOffset);
+			var scrollEndDistance = Math.abs(endLocation - root.pageYOffset);
+			if (scrollStartDistance < scrollEndDistance) {
+				return startLocation;
+			} else {
+				return endLocation;
+			}
+		} else {
+			// Legacy behaviour
+			return startLocation;
+		}
 	};
 
 	/**
@@ -528,10 +544,10 @@
 	 */
 	var resizeThrottler = function (event) {
 		if ( !eventTimeout ) {
-			eventTimeout = setTimeout((function() {
+			eventTimeout = setTimeout(function() {
 				eventTimeout = null; // Reset timeout
 				headerHeight = getHeaderHeight( fixedHeader ); // Get the height of a fixed header if one exists
-			}), 66);
+			}, 66);
 		}
 	};
 
@@ -596,4 +612,4 @@
 
 	return smoothScroll;
 
-}));
+});
