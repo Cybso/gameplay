@@ -10,15 +10,19 @@ This programs contains code from the following third party libraries:
 * Moment.js (http://momentjs.com/, MIT license)
 * Smooth Scroll (https://cferdinandi.github.io/smooth-scroll/browsers.html, GPLv3)
 
+These liberaries are stored in 'ui/js/lib'. Required modifications are stored
+as separated patch in 'patches/ui/js/lib'.
+
 Artwork
 =======
 
 The following artwork is used for this program
 
-* Gamepad-Icon from Wikimedia
+* Gamepad-Icon from Wikimedia (as part of the application logo)
   - URL: https://de.wikipedia.org/wiki/Datei:Gamepad.svg (LGPL)
   - Derived from: https://commons.wikimedia.org/wiki/File:Nuvola_apps_package_games.png (David Vignoni, LGPL)
-* Wallpaper
+
+* Wallpaper (ui/img/wallpapers/HOT_Balloon_Trip.jpg)
   - URL: http://www.uhdwallpapers.org/2014/06/hot-balloon-trip.html
   - HOT Balloon Trip
   - License: CC Attribution-ShareAlike 2.0 Generic
