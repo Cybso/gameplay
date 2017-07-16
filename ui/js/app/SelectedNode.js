@@ -209,7 +209,7 @@
 		}
 	}
 
-	define(['knockout', 'utils', 'lib/smooth-scroll.min'],
+	define(['knockout', 'utils', 'lib/smooth-scroll'],
 		function(ko, utils, smoothScroll) {
 
 			// Add header to Smooth Scroll library
