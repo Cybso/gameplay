@@ -102,10 +102,6 @@
 				// Loop that pulls the gamepad state
 				var gamepadStates = {};
 				var gamepadLoop = function() {
-					if (document.hidden) {
-						return;
-					}
-
 					// Check for gamepad state
 					var gamepadList = gamepadAccessor();
 					if (!gamepadList) {
@@ -157,15 +153,23 @@
 						}, 1000);
 					}
 
-					// Start gamepad loop
-					window.setInterval(gamepadLoop, 100);
+					// Start gamepad loop as long as the window is active (or
+					// if the visibility API is not supported).
+					var gameLoopInterval;
+					if (document.hidden === undefined || !document.hidden) {
+						gameLoopInterval = window.setInterval(gamepadLoop, 100);
+					}
+					document.addEventListener('visibilitychange', function() {
+						if (document.hidden) {
+							if (gameLoopInterval !== undefined) {
+								clearInterval(gameLoopInterval);
+								gameLoopInterval = undefined;
+							}
+						} else if (gameLoopInterval === undefined) {
+							gameLoopInterval = window.setInterval(gamepadLoop, 100);
+						}
+					});
 				}
-
-				// Query gamepad state in short intervals and trigger a body event
-				// when the input of any gamepad changes. For this the gamepad object
-				// has a 'timestamp' property that contains the timestamp of the last state
-				// changes.
-				// See also https://gist.github.com/mzabriskie/8f06c9137211a689f3a8
 
 				return gamepads;
 			};
