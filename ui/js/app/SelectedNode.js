@@ -139,6 +139,76 @@
 		}
 	}
 
+	/**
+	 * Checks wether the  new candidate rect is a better candidate for
+	 * MOVE UP operation  than the old one. The candidates BOTTOM must
+	 * be over the current's TOP. If there are multiple candidates having
+	 * the same BOTTOM the one with the shortest distance to our left
+	 * or right side wins.
+	 */
+	function topElementComparator(current, newCandidate, oldCandidate) {
+		if (newCandidate.bottom > current.top) {
+			return false;
+		}
+		if (oldCandidate !== undefined) {
+			if (oldCandidate.bottom < newCandidate.bottom) {
+				return true;
+			}
+			var oldDistance = Math.min(
+				Math.abs(oldCandidate.left - current.left),
+				Math.abs(oldCandidate.right - current.right),
+				Math.abs(oldCandidate.left - current.right),
+				Math.abs(oldCandidate.right - current.left)
+			);
+
+			var newDistance = Math.min(
+				Math.abs(newCandidate.left - current.left),
+				Math.abs(newCandidate.right - current.right),
+				Math.abs(newCandidate.left - current.right),
+				Math.abs(newCandidate.right - current.left)
+			);
+
+			return newDistance < oldDistance;
+		} else {
+			return true;
+		}
+	}
+
+	/**
+	 * Checks wether the new candidate rect is a better candidate for
+	 * MOVE DOWN operation than the old one. The candidates TOP must
+	 * be under the current's BOTTOM. If there are multiple candidates having
+	 * the same TOP the one with the shortest distance to our left
+	 * or right side wins.
+	 */
+	function bottomElementComparator(current, newCandidate, oldCandidate) {
+		if (newCandidate.top < current.bottom) {
+			return false;
+		}
+		if (oldCandidate !== undefined) {
+			if (oldCandidate.top > newCandidate.top) {
+				return true;
+			}
+			var oldDistance = Math.min(
+				Math.abs(oldCandidate.left - current.left),
+				Math.abs(oldCandidate.right - current.right),
+				Math.abs(oldCandidate.left - current.right),
+				Math.abs(oldCandidate.right - current.left)
+			);
+
+			var newDistance = Math.min(
+				Math.abs(newCandidate.left - current.left),
+				Math.abs(newCandidate.right - current.right),
+				Math.abs(newCandidate.left - current.right),
+				Math.abs(newCandidate.right - current.left)
+			);
+
+			return newDistance < oldDistance;
+		} else {
+			return true;
+		}
+	}
+
 	define(['knockout', 'utils'],
 		function(ko, utils) {
 			return function(viewModel) {
@@ -207,9 +277,11 @@
 				};
 
 				selectedNode.moveUp = function() {
+					move(topElementComparator);
 				};
 
 				selectedNode.moveDown = function() {
+					move(bottomElementComparator);
 				};
 
 				return selectedNode;

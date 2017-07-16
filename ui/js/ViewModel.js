@@ -81,10 +81,12 @@
 					break;
 				case 'ArrowUp':
 				case 'Up':
+					evt.preventDefault();
 					exports.selectedNode.moveUp();
 					break;
 				case 'ArrowDown':
 				case 'Down':
+					evt.preventDefault();
 					exports.selectedNode.moveDown();
 					break;
 				}
