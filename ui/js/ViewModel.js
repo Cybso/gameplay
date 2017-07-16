@@ -9,8 +9,9 @@
 (function() {
 	"use strict";
 
-	define(['knockout', 'RemoteData', 'moment', 'utils', 'app/Locale', 'app/Entries', 'app/SelectedNode'], 
-		function(ko, RemoteData, moment, utils, Locale, Entries,  SelectedNode) {
+	define(['knockout', 'RemoteData', 'moment', 'utils', 
+		'app/Locale', 'app/Entries', 'app/SelectedNode', 'app/Gamepad'],
+		function(ko, RemoteData, moment, utils, Locale, Entries,  SelectedNode, Gamepad) {
 			var exports = { };
 
 			/**
