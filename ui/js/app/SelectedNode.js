@@ -215,7 +215,8 @@
 			// Add header to Smooth Scroll library
 			smoothScroll.init({
 				selectorHeader: 'header',
-				speed: 250,
+				easing: 'Linear',
+				speed: 100,
 				offset: 15
 			});
 
