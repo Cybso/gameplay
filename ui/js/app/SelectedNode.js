@@ -209,8 +209,16 @@
 		}
 	}
 
-	define(['knockout', 'utils'],
-		function(ko, utils) {
+	define(['knockout', 'utils', 'lib/smooth-scroll.min'],
+		function(ko, utils, smoothScroll) {
+
+			// Add header to Smooth Scroll library
+			smoothScroll.init({
+				selectorHeader: 'header',
+				speed: 250,
+				offset: 15
+			});
+
 			return function(viewModel) {
 				var realSelectedNode = ko.observable(document.getElementsByClassName('selected')[0]);
 
@@ -228,7 +236,7 @@
 						}
 						if (value !== undefined) {
 							value.classList.add('selected');
-							utils.scrollToIfNotInViewport(value);
+							smoothScroll.animateScroll(value);
 						}
 						realSelectedNode(value);
 					}
