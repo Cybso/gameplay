@@ -25,7 +25,12 @@
 			// Prefers experimental Element.scrollIntoView method if available
 			// and falls back to location.hash to let the browser decide how
 			// to scroll this elelement into the viewport.
-			if (!this.isElementInViewport(element, true)) {
+			if (element.scrollIntoViewIfNeeded !== undefined) {
+				// Experimental feature, but supported by Webkit/Chrome
+				element.scrollIntoViewIfNeeded();
+			} else if (!this.isElementInViewport(element, true)) {
+				// Not perfect, since an element still might be overlapped
+				// with an overlay.
 				if (Element.prototype.scrollIntoView !== undefined) {
 					element.scrollIntoView({block: "end", behavior: "smooth"});
 				} else {

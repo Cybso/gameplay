@@ -60,7 +60,7 @@
 						exports.selectedNode(undefined);
 					} else {
 						// Find entry widget
-						var node = document.querySelectorAll('[data-entry="' + entry.id + '"]')[0];
+						var node = document.querySelector('[data-entry="' + entry.id + '"]');
 						exports.selectedNode(node);
 					}
 				}

@@ -1,4 +1,9 @@
 header {
+	position: absolute;
+	z-index: 20;
+	top: 0;
+	left: 0;
+	right: 0;
 	display: flex;
 	height: 10vh;
 	align-items: center;
