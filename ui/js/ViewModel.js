@@ -92,36 +92,70 @@
 				}
 			});
 
-			// Monitor gamepads
-			// FIXME Add Code to check wether any gamepads are connected or not.
-			// The event loop can be disabled when there are no gamepads
-			function gameLoop() {
-				var gamepads;
-				if (navigator.getGamepads) {
-					gamepads = navigator.getGamepads();
-				} else if (navigator.webkitGetGamepads) {
-					gamepads = navigator.webkitGetGamepads();
-				}
-				if (!gamepads) {
+			// Watch gamepad buttons
+			exports.gamepad = new Gamepad();
+
+			// Repeats the action unless the button state has not changed
+			// in 300 milliseconds.
+			var gamepadLongpressSimulator = function(gamepad, action) {
+				action();
+				var timestamp = gamepad.timestamp;
+				var intervalTimeout = 100;
+				var waitIntervals = 7;
+				var timeoutHandle = function() {
+					if (gamepad.timestamp === timestamp) {
+						if (waitIntervals === 0) {
+							action();
+						}
+						waitIntervals = waitIntervals > 0 ? waitIntervals - 1 : 0;
+						window.setTimeout(timeoutHandle, intervalTimeout);
+					}
+				};
+				timeoutHandle();
+			};
+
+			// https://w3c.github.io/gamepad/#remapping
+			exports.gamepad.addListener(function(gamepad, button, state) {
+				if (state !== -1 && state !== 1) {
 					return;
 				}
 
-				for (var i = 0; i < gamepads.length; i+=1) {
-					var gp = gamepads[i];
-					if (gp) {
-						if (gp.axes[0] < 0) {
-							return exports.selectedNode.moveLeft();
-						} else if (gp.axes[0] > 0) {
-							return exports.selectedNode.moveRight();
-						} else if (gp.axes[1] < 0) {
-							return exports.selectedNode.moveUp();
-						} else if (gp.axes[1] > 0) {
-							return exports.selectedNode.moveDown();
-						}
+				switch (button) {
+				// X-Axes (-1..1)
+				case 'AXES_0':
+					if (state === -1) {
+						gamepadLongpressSimulator(gamepad, exports.selectedNode.moveLeft);
+					} else if (state === 1) {
+						gamepadLongpressSimulator(gamepad, exports.selectedNode.moveRight);
 					}
+					break;
+
+				// Y-Axes (-1..1)
+				case 'AXES_1':
+					if (state === -1) {
+						gamepadLongpressSimulator(gamepad, exports.selectedNode.moveUp);
+					} else if (state === 1) {
+						gamepadLongpressSimulator(gamepad, exports.selectedNode.moveDown);
+					}
+					break;
+
+				case 'BUTTON_12': // Up
+					gamepadLongpressSimulator(gamepad, exports.selectedNode.moveUp);
+					break;
+
+				case 'BUTTON_13': // Down
+					gamepadLongpressSimulator(gamepad, exports.selectedNode.moveDown);
+					break;
+
+				case 'BUTTON_14': // Left
+					gamepadLongpressSimulator(gamepad, exports.selectedNode.moveLeft);
+					break;
+
+				case 'BUTTON_15': // Right
+					gamepadLongpressSimulator(gamepad, exports.selectedNode.moveRight);
+					break;
 				}
-			}
-			window.setInterval(gameLoop, 150);
+			});
 
 			return exports;
 		}

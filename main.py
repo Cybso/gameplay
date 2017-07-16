@@ -89,6 +89,9 @@ class Frontend(QMainWindow):
 		self.frame = self.web.page().mainFrame()
 		self.frame.javaScriptWindowObjectCleared.connect(self.load_api)
 
+		self._currentVisibilityState = None
+		self.updateVisibilityState();
+
 		# Add inspector
 		self.inspector = QWebInspector(self)
 		self.inspector.setPage(self.web.page())
@@ -183,6 +186,29 @@ class Frontend(QMainWindow):
 	def toggleWebInspector(self):
 		self.inspector.setVisible(not self.inspector.isVisible())
 		self.toolbar.setVisible(self.inspector.isVisible())
+
+
+	def changeEvent(self, event):
+		eventType = event.type();
+		if eventType == QEvent.WindowStateChange:
+			self.updateVisibilityState()
+		if eventType == QEvent.ActivationChange:
+			self.updateVisibilityState()
+	
+	###
+	# Updates webkit visibility state when the window is either
+	# minimized or not the active window. This temporary disables
+	# the gamepadLoop.
+	###
+	def updateVisibilityState(self):
+		state = QWebPage.VisibilityStateVisible
+		if self.windowState() & Qt.WindowMinimized:
+			state = QWebPage.VisibilityStateHidden
+		if not self.isActiveWindow():
+			state = QWebPage.VisibilityStateHidden
+		if self._currentVisibilityState != state:
+			self._currentVisibilityState = state
+			self.web.page().setVisibilityState(state)
 
 	###
 	# Print an 'Are you sure' message when the user closes the window
