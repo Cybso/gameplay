@@ -157,6 +157,20 @@
 				}
 			});
 
+			// Disable animations when the window doesn't have the focus
+			var body = document.getElementsByTagName('body')[0];
+			var visibilityChangeListener = function() {
+				if (document.hidden) {
+					body.classList.add('window-inactive');
+					body.classList.remove('window-active');
+				} else {
+					body.classList.add('window-active');
+					body.classList.remove('window-inactive');
+				}
+			};
+			document.addEventListener('visibilitychange', visibilityChangeListener);
+			visibilityChangeListener();
+
 			return exports;
 		}
 	);
