@@ -26,6 +26,12 @@
 			return false;
 		}
 
+		if (newCandidate.left <= current.left &&
+			newCandidate.bottom > current.bottom && newCandidate.top > current.top) {
+			// Left of us, but only partly overlaps
+			return false;
+		}
+
 		if (oldCandidate !== undefined) {
 			// Check if the new candidate is better than the old one
 			if (newCandidate.bottom > current.top) {
@@ -86,6 +92,12 @@
 
 		if (newCandidate.left <= current.left && newCandidate.top <= current.bottom) {
 			// Left, but not below us
+			return false;
+		}
+
+		if (newCandidate.left >= current.left &&
+			newCandidate.top < current.top && newCandidate.bottom < current.bottom) {
+			// Right of us, but only partly overlaps
 			return false;
 		}
 

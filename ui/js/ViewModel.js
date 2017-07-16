@@ -71,10 +71,12 @@
 				switch (evt.code || evt.keyIdentifier) {
 				case 'ArrowLeft':
 				case 'Left':
+					evt.preventDefault();
 					exports.selectedNode.moveLeft();
 					break;
 				case 'ArrowRight':
 				case 'Right':
+					evt.preventDefault();
 					exports.selectedNode.moveRight();
 					break;
 				case 'ArrowUp':

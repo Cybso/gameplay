@@ -25,7 +25,7 @@
 			// Prefers experimental Element.scrollIntoView method if available
 			// and falls back to location.hash to let the browser decide how
 			// to scroll this elelement into the viewport.
-			if (element.scrollIntoViewIfNeeded !== undefined) {
+			if (element.scrollIntoViewIfNeeded !== undefined && false) {
 				// Experimental feature, but supported by Webkit/Chrome
 				element.scrollIntoViewIfNeeded();
 			} else if (!this.isElementInViewport(element, true)) {
@@ -42,6 +42,19 @@
 					window.location.hash = id;
 				}
 			}
+
+			window.setTimeout(function() {
+				// Check if element is overlapped by header after scrolling
+				var header = document.getElementsByTagName('header')[0];
+				if (header && header.getBoundingClientRect) {
+					var headerRect = header.getBoundingClientRect();
+					var elementRect = element.getBoundingClientRect();
+					var diff = elementRect.top - headerRect.bottom;
+					if (diff < 0) {
+						window.scrollBy(0, diff - element.clientTop);
+					}
+				}
+			}, 30);
 		}
 	});
 })();
