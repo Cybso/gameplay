@@ -237,7 +237,20 @@
 						}
 						if (value !== undefined) {
 							value.classList.add('selected');
-							smoothScroll.animateScroll(value);
+							
+							// Check if scrolling is needed
+							var rect = value.getBoundingClientRect();
+							var offsetTop = document.getElementsByTagName('header')[0].clientHeight || 0;
+							var windowHeight = (window.innerHeight || document.documentElement.clientHeight);
+							var windowWidth = (window.innerWidth || document.documentElement.clientWidth);
+
+							if (rect.top < offsetTop ||
+								rect.bottom > windowHeight ||
+								rect.left < 0 ||
+								rect.right > windowWidth) {
+								smoothScroll.animateScroll(value);
+							}
+
 						}
 						realSelectedNode(value);
 					}
