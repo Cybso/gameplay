@@ -1,9 +1,18 @@
 (function() {
 	"use strict";
 
-	define(['knockout'],
-		function(ko) {
-			return function(viewModel) {
+	/**
+	 * Returns a gamepad controller as singleton object.
+	 */
+	define([],
+		function() {
+			var gamepads;
+			return function() {
+				if (gamepads !== undefined) {
+					// This is a singleton
+					return gamepads;
+				}
+
 				// Gamepad interface returns an array of gamepads
 				var gamepadAccessor = function() {
 					var rawList;
@@ -26,14 +35,12 @@
 					return result;
 				};
 
-				// Gives access to all attached gamepads.
-				// Will be updated on gamepad events.
-				var _gamepadsUpdated = ko.observable(0);
-				var gamepads = ko.pureComputed(function() {
-					_gamepadsUpdated();
+				// Gives access to all attached gamepads. Returns an empty list
+				// if gamepad is not supported.
+				gamepads = function() {
 					var list = gamepadAccessor();
 					return list === undefined ? [] : list;
-				});
+				};
 
 				// Registered event listeners
 				var listeners = [];
@@ -48,9 +55,9 @@
 				};
 
 				// Indicator wether gamepad support is available
-				gamepads.supported = ko.pureComputed(function() {
+				gamepads.supported = function() {
 					return gamepadAccessor() !== undefined;
-				});
+				};
 
 				/**
 				 * Notifies all listeners about the gamepad event
@@ -138,21 +145,6 @@
 				};
 
 				if (gamepads.supported()) {
-					window.addEventListener("gamepadconnected", function(e) {
-						_gamepadsUpdated(_gamepadsUpdated() + 1);
-					});
-					window.addEventListener("gamepaddisconnected", function(e) {
-						_gamepadsUpdated(_gamepadsUpdated() + 1);
-					});
-
-					if (window.ongamepadconnection === undefined) {
-						// Seems that "gamepadconnected" isn't supported. Add a trigger
-						// to check every second for new (or disconnected) gamepads.
-						window.setInterval(function() {
-							_gamepadsUpdated(_gamepadsUpdated() + 1);
-						}, 1000);
-					}
-
 					// Start gamepad loop as long as the window is active (or
 					// if the visibility API is not supported).
 					var gameLoopInterval;
