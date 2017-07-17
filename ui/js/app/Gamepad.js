@@ -82,24 +82,24 @@
 					if (lastState.counter === 0) {
 						// Fire everything that's not zero
 						for (i = 0; i < gp.axes.length; i+=1) {
-							if (gp.axes[i] !== 0) {
+							if (Math.round(gp.axes[i]) !== 0) {
 								fireGamepadButtonEvent(gp, 'AXES_' + i, gp.axes[i]);
 							}
 						}
 						for (i = 0; i < gp.buttons.length; i+=1) {
-							if (gp.buttons[i] !== 0) {
+							if (Math.round(gp.buttons[i]) !== 0) {
 								fireGamepadButtonEvent(gp, 'BUTTON_' + i, gp.buttons[i]);
 							}
 						}
 					} else {
 						// Fire everything that has changed
 						for (i = 0; i < gp.axes.length; i+=1) {
-							if (gp.axes[i] !== lastState.axes[i]) {
+							if (Math.round(gp.axes[i]) !== Math.round(lastState.axes[i])) {
 								fireGamepadButtonEvent(gp, 'AXES_' + i, gp.axes[i]);
 							}
 						}
 						for (i = 0; i < gp.buttons.length; i+=1) {
-							if (gp.buttons[i] !== lastState.buttons[i]) {
+							if (Math.round(gp.buttons[i]) !== Math.round(lastState.buttons[i])) {
 								fireGamepadButtonEvent(gp, 'BUTTON_' + i, gp.buttons[i]);
 							}
 						}
