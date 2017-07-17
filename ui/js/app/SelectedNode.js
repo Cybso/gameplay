@@ -13,6 +13,13 @@
 	 * When there are no candidates on the same height than the current
 	 * one the best candidate is the one most right below of the current ones
 	 * bottom (greater or equal).
+	 *
+	 * Additionally, every selectable element can define 'data-select-order'.
+	 * On movements to left or up the element with the lower order always wins.
+	 * On movements to right or down the element with the higher order always wins.
+	 *
+	 * The initially selected element is the first one with the lowest 
+	 * 'data-select-order' value. The default value is '0'.
 	 **/
 	function leftElementComparator(current, newCandidate, oldCandidate) {
 		// Check if this is a POSSIBLE candidate which must be left and above us
@@ -40,6 +47,15 @@
 					// Old candidate was above of us
 					return true;
 				}
+
+				if (newCandidate.selectOrder < oldCandidate.selectOrder) {
+					// Always prefer newCandidate
+					return true;
+				} else if (newCandidate.selectOrder > oldCandidate.selectOrder) {
+					// Always prefer oldCandidate
+					return false;
+				}
+
 				if (newCandidate.left > oldCandidate.left) {
 					// new is nearer than old
 					return true;
@@ -50,6 +66,14 @@
 				}
 			} else if (oldCandidate.bottom <= current.top) {
 				// Both candidates are below of us
+				if (newCandidate.selectOrder < oldCandidate.selectOrder) {
+					// Always prefer newCandidate
+					return true;
+				} else if (newCandidate.selectOrder > oldCandidate.selectOrder) {
+					// Always prefer oldCandidate
+					return false;
+				}
+
 				if (newCandidate.bottom > oldCandidate.bottom) {
 					// new is below old
 					return true;
@@ -109,6 +133,15 @@
 					// Old candidate was below of us
 					return true;
 				}
+
+				if (newCandidate.selectOrder > oldCandidate.selectOrder) {
+					// Always prefer newCandidate
+					return true;
+				} else if (newCandidate.selectOrder < oldCandidate.selectOrder) {
+					// Always prefer oldCandidate
+					return false;
+				}
+
 				if (newCandidate.left < oldCandidate.left) {
 					// new is nearer than old
 					return true;
@@ -119,6 +152,14 @@
 				}
 			} else if (oldCandidate.top >= current.bottom) {
 				// Both candidates are below of us
+				if (newCandidate.selectOrder > oldCandidate.selectOrder) {
+					// Always prefer newCandidate
+					return true;
+				} else if (newCandidate.selectOrder < oldCandidate.selectOrder) {
+					// Always prefer oldCandidate
+					return false;
+				}
+
 				if (newCandidate.top < oldCandidate.top) {
 					// new is above old
 					return true;
@@ -151,6 +192,14 @@
 			return false;
 		}
 		if (oldCandidate !== undefined) {
+			if (newCandidate.selectOrder < oldCandidate.selectOrder) {
+				// Always prefer newCandidate
+				return true;
+			} else if (newCandidate.selectOrder > oldCandidate.selectOrder) {
+				// Always prefer oldCandidate
+				return false;
+			}
+
 			if (oldCandidate.bottom < newCandidate.bottom) {
 				return true;
 			}
@@ -186,6 +235,14 @@
 			return false;
 		}
 		if (oldCandidate !== undefined) {
+			if (newCandidate.selectOrder > oldCandidate.selectOrder) {
+				// Always prefer newCandidate
+				return true;
+			} else if (newCandidate.selectOrder < oldCandidate.selectOrder) {
+				// Always prefer oldCandidate
+				return false;
+			}
+
 			if (oldCandidate.top > newCandidate.top) {
 				return true;
 			}
@@ -265,19 +322,37 @@
 						return;
 					}
 
+					var i;
 					var current = selectedNode();
 					if (current === undefined || current.getBoundingClientRect === undefined) {
-						// Select the very first element
-						selectedNode(elements[0]);
+						// Select the first element with the lowest 'data-select-order' value
+						var currentSelectOrder = Number.POSITIVE_INFINITY;
+						for (i = 0; i < elements.length; i+=1) {
+							if (elements[i] !== undefined && elements[i].getAttribute !== undefined) {
+								var selectOrder = parseInt(elements[i].getAttribute('data-select-order'));
+								if (isNaN(selectOrder)) {
+									selectOrder = 0;
+								}
+								if (selectOrder < currentSelectOrder) {
+									currentSelectOrder = selectOrder;
+									current = elements[i];
+								}
+							}
+						}
+						selectedNode(current);
 						return;
 					}
 
 					var rect = current.getBoundingClientRect();
-					var candidate, candidateRect, newCandidateRect, i;
+					var candidate, candidateRect, newCandidateRect;
 					for (i in elements) {
 						if (elements.hasOwnProperty(i) && elements[i] !== current && elements[i] !== undefined) {
 							if (elements[i].getBoundingClientRect !== undefined) {
 								newCandidateRect = elements[i].getBoundingClientRect();
+								newCandidateRect.selectOrder = parseInt(elements[i].getAttribute('data-select-order'));
+								if (isNaN(newCandidateRect.selectOrder)) {
+									newCandidateRect.selectOrder = 0;
+								}
 								if (preferredElementComparator(rect, newCandidateRect, candidateRect)) {
 									candidate = elements[i];
 									candidateRect = newCandidateRect;
