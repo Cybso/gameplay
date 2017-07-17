@@ -10,8 +10,8 @@
 	"use strict";
 
 	define(['knockout', 'RemoteData', 'moment', 'utils', 
-		'app/Locale', 'app/Entries', 'app/SelectedNode', 'app/Gamepad'],
-		function(ko, RemoteData, moment, utils, Locale, Entries,  SelectedNode, Gamepad) {
+		'app/Locale', 'app/Entries', 'app/SelectedNode', 'app/Gamepad', 'app/Snake'],
+		function(ko, RemoteData, moment, utils, Locale, Entries,  SelectedNode, Gamepad, Snake) {
 			var exports = { };
 
 			/**
@@ -67,7 +67,16 @@
 			});
 
 			// Bind to key event in body
+			var snake;
 			document.getElementsByTagName('body')[0].addEventListener('keydown', function(evt) {
+				if (evt.keyCode === 69 && evt.ctrlKey) {
+					// CTRL+E
+					if (snake === undefined) {
+						snake = new Snake();
+					}
+					return;
+				}
+
 				switch (evt.code || evt.keyIdentifier) {
 				case 'ArrowLeft':
 				case 'Left':
@@ -89,6 +98,14 @@
 					evt.preventDefault();
 					exports.selectedNode.moveDown();
 					break;
+				case 'Esc':
+					if (snake) {
+						snake.exit();
+						snake = undefined;
+					}
+					break;
+				default:
+					console.log("unhandled keydown", evt.code || evt.keyIdentifier, evt);
 				}
 			});
 
@@ -116,43 +133,46 @@
 
 			// https://w3c.github.io/gamepad/#remapping
 			exports.gamepad.addListener(function(gamepad, button, state) {
-				if (state !== -1 && state !== 1) {
+				if (state >= -0.5 && state <= 0.5) {
+					return;
+				}
+
+				if (snake) {
+					// Only watch for BUTTON_8 and BUTTON_1 (exit)
+					if (button === 'BUTTON_1' || button === 'BUTTON_8') {
+						snake.exit();
+						snake = undefined;
+					}
 					return;
 				}
 
 				switch (button) {
 				// X-Axes (-1..1)
 				case 'AXES_0':
-					if (state === -1) {
+					if (state < 0) {
 						gamepadLongpressSimulator(gamepad, exports.selectedNode.moveLeft);
-					} else if (state === 1) {
+					} else if (state > 0) {
 						gamepadLongpressSimulator(gamepad, exports.selectedNode.moveRight);
 					}
 					break;
 
 				// Y-Axes (-1..1)
 				case 'AXES_1':
-					if (state === -1) {
+					if (state < 0) {
 						gamepadLongpressSimulator(gamepad, exports.selectedNode.moveUp);
-					} else if (state === 1) {
+					} else if (state > 0) {
 						gamepadLongpressSimulator(gamepad, exports.selectedNode.moveDown);
 					}
 					break;
 
-				case 'BUTTON_12': // Up
-					gamepadLongpressSimulator(gamepad, exports.selectedNode.moveUp);
-					break;
-
-				case 'BUTTON_13': // Down
-					gamepadLongpressSimulator(gamepad, exports.selectedNode.moveDown);
-					break;
-
-				case 'BUTTON_14': // Left
-					gamepadLongpressSimulator(gamepad, exports.selectedNode.moveLeft);
-					break;
-
-				case 'BUTTON_15': // Right
-					gamepadLongpressSimulator(gamepad, exports.selectedNode.moveRight);
+				case 'BUTTON_6': // Select on XBox360
+				case 'BUTTON_7': // Start on XBox360
+				case 'BUTTON_8': // Select
+				case 'BUTTON_9': // Start
+					// At least two of these buttons must be pressed at the same time
+					if (gamepad.buttons[6] + gamepad.buttons[7] + gamepad.buttons[8] + gamepad.buttons[9] > 1) {
+						snake = new Snake();
+					}
 					break;
 				}
 			});
