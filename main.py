@@ -29,6 +29,22 @@ from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow
 
 LOGGER = logging.getLogger('main.py')
 
+
+CONFIG_PATH = QStandardPaths.locate(QStandardPaths.AppConfigLocation, "", QStandardPaths.LocateDirectory) + QDir.toNativeSeparators('yagala.ini')
+APPDATA_PATHS = [QDir.toNativeSeparators(x + 'yagala/') for x in QStandardPaths.locateAll(QStandardPaths.AppDataLocation, "", QStandardPaths.LocateDirectory)]
+APPLICATION_PATHS = QStandardPaths.locateAll(QStandardPaths.ApplicationsLocation, "", QStandardPaths.LocateDirectory)
+
+# Force usage of IniFile since this application should be portable 
+settings = QtCore.QSettings(CONFIG_PATH, QSettings.IniFormat)
+print(settings.value('yagala/foo'))
+settings.setValue('yagala/foo', 'bar')
+settings.sync()
+
+
+print(CONFIG_PATH)
+print(APPLICATION_PATHS)
+print(APPDATA_PATHS)
+
 class Yagala(QObject):
 
 	@pyqtSlot(int, result=str)
