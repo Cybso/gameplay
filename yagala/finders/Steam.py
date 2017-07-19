@@ -7,9 +7,9 @@ import logging
 import json
 import functools
 from PyQt5.QtCore import *
+from yagala.AppFinder import AppFinder
 
-LOGGER = logging.getLogger('Steam.py')
-LOGGER.setLevel(logging.INFO)
+LOGGER = logging.getLogger(__name__)
 
 ###
 # Converts a string that starts with a number to positive int.
@@ -151,7 +151,7 @@ class SteamPlatformOSX(SteamPlatformGeneric):
 		return None
 
 
-class Steam:
+class Steam(AppFinder):
 	def __init__(self):
 		# Find platform dependent implementation
 		system = platform.system()
