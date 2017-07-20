@@ -320,13 +320,4 @@ class SteamProvider(AppProvider):
 					installed.append(app)
 		return installed
 
-if __name__ == "__main__":
-	steam = Steam()
-	print(steam.find_steam_exe())
-	apps = steam.list_installed_app_manifests()
-	if apps:
-		print(steam.find_icon(apps[0]))
-	else:
-		print('No apps found')
-
-#  vim: set fenc=utf-8 ts=4 sw=4 noet :print('foo')
+#  vim: set fenc=utf-8 ts=4 sw=4 noet :

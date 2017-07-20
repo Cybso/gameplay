@@ -70,13 +70,7 @@ class Yagala(QObject):
 
 	@pyqtSlot(result='QVariantList')
 	def getApps(self):
-		apps = []
-		for app in self.apps:
-			d = app.__dict__
-#			if not d.get('icon', 'http').startswith('http'):
-#				d['icon'] = 'file://' + urlencode(d['icon'])
-			apps.append(d)
-		return apps
+		return [app.__dict__ for app in self.apps]
 	
 	@pyqtSlot(str, result='QVariantList')
 	def runApp(self, appid):
