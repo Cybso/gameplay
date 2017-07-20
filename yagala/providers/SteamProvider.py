@@ -7,7 +7,6 @@ import logging
 import json
 import functools
 import urllib3
-from subprocess import Popen
 from PyQt5.QtCore import *
 from yagala.AppProvider import AppProvider, AppItem
 
@@ -163,15 +162,13 @@ class SteamAppItem(AppItem):
 		AppItem.__init__(self, 'steam_' + manifest['appid'], manifest['name'], provider.find_icon(manifest), icon_selected, suspended)
 		self._appid = manifest['appid']
 		self._provider = provider
-	
-	def execute(self):
-		cmd = self._provider.find_steam_exe()
-		if not cmd:
-			return False
-		cmd.append('steam://rungameid/%s' % (self._appid))
-		return Popen(cmd)
 
-class Steam(AppProvider):
+		cmd = self._provider.find_steam_exe()
+		if cmd:
+			cmd.append('steam://rungameid/%s' % (self._appid))
+			self.cmd = cmd
+	
+class SteamProvider(AppProvider):
 	def __init__(self, settings):
 		AppProvider.__init__(self, settings)
 		# Find platform dependent implementation

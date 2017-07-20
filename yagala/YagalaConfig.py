@@ -73,11 +73,11 @@ class YagalaConfig:
 		value = None
 		if self.localConfig.has_section(section):
 			if self.localConfig.has_option(section, option):
-				value = self.localConfig.get(section, option)
+				value = self.localConfig.get(section, option, raw=True)
 		if value is None:
 			if self.globalConfig.has_section(section):
 				if self.globalConfig.has_option(section, option):
-					value = self.globalConfig.get(section, option)
+					value = self.globalConfig.get(section, option, raw=True)
 		if value is None:
 			value = fallback
 		return value
@@ -86,11 +86,11 @@ class YagalaConfig:
 		value = None
 		if self.localConfig.has_section(section):
 			if self.localConfig.has_option(section, option):
-				value = self.localConfig.getint(section, option)
+				value = self.localConfig.getint(section, option, raw=True)
 		if value is None:
 			if self.globalConfig.has_section(section):
 				if self.globalConfig.has_option(section, option):
-					value = self.globalConfig.getint(section, option)
+					value = self.globalConfig.getint(section, option, raw=True)
 		if value is None:
 			value = fallback
 		return value
@@ -100,11 +100,11 @@ class YagalaConfig:
 		value = None
 		if self.localConfig.has_section(section):
 			if self.localConfig.has_option(section, option):
-				value = self.localConfig.getfloat(section, option)
+				value = self.localConfig.getfloat(section, option, raw=True)
 		if value is None:
 			if self.globalConfig.has_section(section):
 				if self.globalConfig.has_option(section, option):
-					value = self.globalConfig.getfloat(section, option)
+					value = self.globalConfig.getfloat(section, option, raw=True)
 		if value is None:
 			value = fallback
 		return value
@@ -113,11 +113,11 @@ class YagalaConfig:
 		value = None
 		if self.localConfig.has_section(section):
 			if self.localConfig.has_option(section, option):
-				value = self.localConfig.getboolean(section, option)
+				value = self.localConfig.getboolean(section, option, raw=True)
 		if value is None:
 			if self.globalConfig.has_section(section):
 				if self.globalConfig.has_option(section, option):
-					value = self.globalConfig.getboolean(section, option)
+					value = self.globalConfig.getboolean(section, option, raw=True)
 		if value is None:
 			value = fallback
 		return value

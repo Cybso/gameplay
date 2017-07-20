@@ -4,7 +4,8 @@
 	define(['knockout', 'ko/translate', 'RemoteData', 'locales'], 
 		function(ko, t, RemoteData, locales) {
 			return function(viewModel) {
-				var entries = ko.observableArray(window.yagala.getApps())
+				var entries = ko.observableArray(window.yagala.getApps());
+				console.log(entries());
 
 				// Resolves an entry by its id
 				entries.byId = function(id) {

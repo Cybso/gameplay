@@ -8,13 +8,18 @@
 # AppItem.
 ###
 
+from subprocess import Popen
+import logging
+LOGGER = logging.getLogger(__name__)
+
 class AppItem:
-    def __init__(self, id, label, icon = None, icon_selected = None, suspended = False):
+    def __init__(self, id, label, icon = None, icon_selected = None, suspended = False, cmd=None):
         self.id = id
         self.label = label
         self.icon = icon
         self.icon_selected = icon_selected
         self.suspended = suspended
+        self.cmd = cmd
 
     ###
     # Executes the application and returns a Popen object,
@@ -22,6 +27,9 @@ class AppItem:
     # AppItem is not executable.
     ###
     def execute(self):
+        if self.cmd is not None:
+            LOGGER.info('Executing command "%s"' % ' '.join(self.cmd))
+            return Popen(self.cmd)
         return None
 
 class AppProvider:

@@ -25,7 +25,11 @@ from PyQt5.QtCore import QObject, pyqtSlot, QDir, QStandardPaths
 #from .providers import common
 from .AppProvider import AppProvider, AppItem
 from .YagalaConfig import YagalaConfig
-from .providers.Steam import Steam
+
+from .providers.SteamProvider import SteamProvider
+from .providers.EmulatorProvider import EmulatorProvider
+from .providers.DesktopEntryProvider import DesktopEntryProvider
+from .providers.SystemAppProvider import SystemAppProvider
 
 LOGGER = logging.getLogger(__name__)
 
@@ -36,7 +40,10 @@ class Yagala(QObject):
 		super(Yagala, self).__init__()
 		self.settings = YagalaConfig('yagala.ini')
 		self.providers = [
-			Steam(self.settings)
+			SteamProvider(self.settings),
+			EmulatorProvider(self.settings),
+			DesktopEntryProvider(self.settings),
+			SystemAppProvider(self.settings)
 		]
 		self.apps = []
 		for provider in self.providers:
@@ -44,7 +51,7 @@ class Yagala(QObject):
 				for app in provider.get_apps():
 					self.apps.append(app)
 			except:
-				LOGGER.exception("Failed to invoke application provider %s" % app.__class__.name)
+				LOGGER.exception("Failed to invoke application provider %s" % provider.__class__.__name__)
 
 	###
 	# Set a UI storage value (compatible to JavaScript's storage)
@@ -63,7 +70,13 @@ class Yagala(QObject):
 
 	@pyqtSlot(result='QVariantList')
 	def getApps(self):
-		return [app.__dict__ for app in self.apps]
+		apps = []
+		for app in self.apps:
+			d = app.__dict__
+#			if not d.get('icon', 'http').startswith('http'):
+#				d['icon'] = 'file://' + urlencode(d['icon'])
+			apps.append(d)
+		return apps
 	
 	@pyqtSlot(str, result='QVariantList')
 	def runApp(self, appid):
