@@ -1,6 +1,12 @@
 <html>
 	<head>
 		<title>Yagala</title>
+		<script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+		<script>
+			new QWebChannel(qt.webChannelTransport, function (channel) {
+				window.yagala = channel.objects.yagala;
+			});
+		</script>
 		<script src="js/init.js"></script>
 		<link rel="stylesheet" type="text/css" href="css/main.css">
 	</head>

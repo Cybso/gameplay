@@ -28,9 +28,9 @@ if importlib.util.find_spec("PyQt5") is None:
 	sys.stderr.write("Module PyQt5 not found. Maybe you need to install 'python3-pyqt5'.%s" % os.linesep)
 	sys.exit(1)
 
-if importlib.util.find_spec("PyQt5.QtQml") is None:
-	sys.stderr.write("Module PyQt5.QtQml not found. Maybe you need to install 'python3-pyqt5.qtquick'.%s" % os.linesep)
-	sys.exit(1)
+#if importlib.util.find_spec("PyQt5.QtQml") is None:
+#	sys.stderr.write("Module PyQt5.QtQml not found. Maybe you need to install 'python3-pyqt5.qtquick'.%s" % os.linesep)
+#	sys.exit(1)
 
 
 
@@ -41,7 +41,6 @@ import logging
 from PyQt5.QtCore import QDir, QStandardPaths
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWebKit import QWebSettings
 
 # Automatically convert between python strings and QString
 import sip
@@ -87,7 +86,8 @@ def main():
 	yagala = Yagala()
 
 	# Enable developer console
-	QWebSettings.globalSettings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True)
+	# (FIXME Seems to be not yet available in Qt?!)
+	#QWebSettings.globalSettings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True)
 
 	# Initialize frontend
 	frontend = Frontend(uipath, yagala)

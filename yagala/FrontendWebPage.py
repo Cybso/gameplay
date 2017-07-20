@@ -14,7 +14,7 @@
 import os
 import logging
 
-from PyQt5.QtWebKitWidgets import QWebPage
+from PyQt5.QtWebEngineWidgets import QWebEnginePage as QWebPage
 
 from . import Yagala
 

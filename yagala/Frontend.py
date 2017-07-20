@@ -17,7 +17,10 @@ import logging
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtCore import Qt, QEvent, QUrl
 from PyQt5.QtWidgets import QSplitter, QAction, QSizePolicy, QShortcut, QMessageBox, QApplication, QWidget, QMainWindow
-from PyQt5.QtWebKitWidgets import QWebView, QWebPage, QWebInspector
+from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage
+# Not yet available for QWebEngine
+#from PyQt5.QtWebEngineWidgets import QWebEngineInspector
+from PyQt5.QtWebChannel import QWebChannel
 
 from .FrontendWebPage import FrontendWebPage
 
@@ -34,24 +37,29 @@ class Frontend(QMainWindow):
 		self.setWindowTitle('Yagala')
 
 		# Add web view
-		self.web = QWebView(self)
+		self.web = QWebEngineView(self)
 		self.web.setPage(FrontendWebPage())
 		self.web.load(QUrl.fromLocalFile(basepath + 'index.html'))
-		self.frame = self.web.page().mainFrame()
-		self.frame.javaScriptWindowObjectCleared.connect(self.load_api)
+		self.page = self.web.page()
+		#self.page.javaScriptWindowObjectCleared.connect(self.load_api)
+		
+		channel = QWebChannel(self.page);
+		self.page.setWebChannel(channel);
+		channel.registerObject("yagala", yagala);
 
 		self._currentVisibilityState = None
 		self.updateVisibilityState();
 
 		# Add inspector
-		self.inspector = QWebInspector(self)
-		self.inspector.setPage(self.web.page())
+		# FIXME Not yet supported in QWebEngine
+		#self.inspector = QWebEngineInspector(self)
+		#self.inspector.setPage(self.web.page())
 
 		# And put both into a splitter
 		self.splitter = QSplitter(self)
 		self.splitter.setOrientation(Qt.Vertical)
 		self.splitter.addWidget(self.web)
-		self.splitter.addWidget(self.inspector)
+		#self.splitter.addWidget(self.inspector)
 		self.setCentralWidget(self.splitter)
 		
 		# Add toolbar (after QWebView has been initialized)
@@ -66,7 +74,7 @@ class Frontend(QMainWindow):
 		QShortcut(QKeySequence("F11"), self.web, self.toggleFullscreen)
 
 		#  Hide toolbar and web inspector per default
-		self.inspector.setVisible(False)
+		#self.inspector.setVisible(False)
 		self.toolbar.setVisible(False)
 
 		# Get initial window state
@@ -128,15 +136,15 @@ class Frontend(QMainWindow):
 	# our own base path.
 	###
 	def load_api(self):
-		url = self.frame.url()
+		url = self.page.url()
 		if url.isLocalFile():
 			if os.path.abspath(url.path()).startswith(self.basepath):
 				LOGGER.info('Adding Yagala controller to %s' % url)
-				self.frame.addToJavaScriptWindowObject('yagala', self.yagala)
+				self.page.addToJavaScriptWindowObject('yagala', self.yagala)
 	
 	def toggleWebInspector(self):
-		self.inspector.setVisible(not self.inspector.isVisible())
-		self.toolbar.setVisible(self.inspector.isVisible())
+		#self.inspector.setVisible(not self.inspector.isVisible())
+		self.toolbar.setVisible(self.toolbar.isVisible())
 
 
 	def changeEvent(self, event):
@@ -152,14 +160,15 @@ class Frontend(QMainWindow):
 	# the gamepadLoop.
 	###
 	def updateVisibilityState(self):
-		state = QWebPage.VisibilityStateVisible
-		if self.windowState() & Qt.WindowMinimized:
-			state = QWebPage.VisibilityStateHidden
-		if not self.isActiveWindow():
-			state = QWebPage.VisibilityStateHidden
-		if self._currentVisibilityState != state:
-			self._currentVisibilityState = state
-			self.web.page().setVisibilityState(state)
+		#state = QWebEnginePage.VisibilityStateVisible
+		#if self.windowState() & Qt.WindowMinimized:
+		#	state = QWebEnginePage.VisibilityStateHidden
+		#if not self.isActiveWindow():
+		#	state = QWebEnginePage.VisibilityStateHidden
+		#if self._currentVisibilityState != state:
+		#	self._currentVisibilityState = state
+		#	self.web.page().setVisibilityState(state)
+		pass
 
 	###
 	# Print an 'Are you sure' message when the user closes the window

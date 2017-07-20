@@ -42,7 +42,7 @@ class Yagala(QObject):
 		for provider in self.providers:
 			for app in provider.get_apps():
 				self.apps.append(app)
-
+	
 	###
 	# Set a UI storage value (compatible to JavaScript's storage)
 	###

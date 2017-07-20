@@ -37,6 +37,7 @@
 			// Load initial set of entries...
 			// TODO This should be filled by the python backend
 			exports.entries = new Entries(exports);
+			window.yagala.getApps(exports.entries);
 
 			// Contains the node that is marked with CSS class 'selected'
 			// and provides navigation methods moveLeft, moveRight, moveTop
