@@ -3,3 +3,4 @@
 \.rej$
 core$
 ^ui/test/
+/__pycache__/

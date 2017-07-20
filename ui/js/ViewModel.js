@@ -66,6 +66,11 @@
 				}
 			});
 
+			exports.selectedEntry.subscribe(function(item) {
+				// Start application
+				window.yagala.runApp(item.id);
+			});
+
 			// Bind to key event in body
 			var snake;
 			document.getElementsByTagName('body')[0].addEventListener('keydown', function(evt) {
