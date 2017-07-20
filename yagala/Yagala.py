@@ -40,8 +40,11 @@ class Yagala(QObject):
 		]
 		self.apps = []
 		for provider in self.providers:
-			for app in provider.get_apps():
-				self.apps.append(app)
+			try:
+				for app in provider.get_apps():
+					self.apps.append(app)
+			except:
+				LOGGER.exception("Failed to invoke application provider %s" % app.__class__.name)
 
 	###
 	# Set a UI storage value (compatible to JavaScript's storage)
@@ -62,12 +65,15 @@ class Yagala(QObject):
 	def getApps(self):
 		return [app.__dict__ for app in self.apps]
 	
-	@pyqtSlot(str)
+	@pyqtSlot(str, result='QVariantList')
 	def runApp(self, appid):
 		for app in self.apps:
 			if app.id == appid:
-				app.execute()
-				break;
+				try:
+					app.execute()
+				except:
+					LOGGER.exception("Failed to run application '%s'" % appid)
+				break
 		return None
 
 	@pyqtSlot(str, result='QVariantMap')
