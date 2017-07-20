@@ -38,16 +38,17 @@ class YagalaConfig:
 			filePath = path + os.sep + filename
 			if os.path.exists(filePath):
 				try:
+					LOGGER.info('Reading global config from "%s"' % filePath)
 					self.globalConfig.read(open(filePath))
 				except:
-					LOGGER.error('Failed to parse config from "%s"' % filePath)
+					LOGGER.exception('Failed to parse config from "%s"' % filePath)
 		if os.path.exists(self._localFile):
 			try:
+				LOGGER.info('Reading local config from "%s"' % self._localFile)
 				self.globalConfig.read_file(open(self._localFile))
 				self.localConfig.read_file(open(self._localFile))
-				print('read local coonfig from ', self._localFile)
 			except:
-				LOGGER.error('Failed to parse config from "%s"' % self._localFile)
+				LOGGER.exception('Failed to parse config from "%s"' % self._localFile)
 	
 	def sections(self):
 		first_list = self.globalConfig.sections()
