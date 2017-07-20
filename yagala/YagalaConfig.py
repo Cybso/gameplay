@@ -53,39 +53,43 @@ class YagalaConfig:
 		first_list = self.globalConfig.sections()
 		second_list = self.localConfig.sections()
 		return first_list + list(set(second_list) - set(first_list))
-	
+
 	def has_section(self, section):
 		return self.localConfig.has_section(section) or self.globalConfig.has_section(section)
 
 	def add_section(self, section):
 		return self.localConfig.add_section(section)
-	
+
 	def options(self, section):
 		first_list = self.globalConfig.options(section)
 		second_list = self.localConfig.options(section)
 		return list(set(second_list) - set(first_list))
-	
+
 	def has_option(self, section, option):
 		return self.localConfig.has_option(section, option) or self.globalConfig.has_option(section, option)
-	
+
 	def get(self, section, option, fallback=None):
 		value = None
 		if self.localConfig.has_section(section):
-			value = self.localConfig.get(section, option)
+			if self.localConfig.has_option(section, option):
+				value = self.localConfig.get(section, option)
 		if value is None:
 			if self.globalConfig.has_section(section):
-				value = self.globalConfig.get(section, option)
+				if self.globalConfig.has_option(section, option):
+					value = self.globalConfig.get(section, option)
 		if value is None:
 			value = fallback
 		return value
-	
+
 	def getint(self, section, option, fallback=None):
 		value = None
 		if self.localConfig.has_section(section):
-			value = self.localConfig.getint(section, option)
+			if self.localConfig.has_option(section, option):
+				value = self.localConfig.getint(section, option)
 		if value is None:
 			if self.globalConfig.has_section(section):
-				value = self.globalConfig.getint(section, option)
+				if self.globalConfig.has_option(section, option):
+					value = self.globalConfig.getint(section, option)
 		if value is None:
 			value = fallback
 		return value
@@ -94,21 +98,25 @@ class YagalaConfig:
 	def getfloat(self, section, option, fallback=None):
 		value = None
 		if self.localConfig.has_section(section):
-			value = self.localConfig.getfloat(section, option)
+			if self.localConfig.has_option(section, option):
+				value = self.localConfig.getfloat(section, option)
 		if value is None:
 			if self.globalConfig.has_section(section):
-				value = self.globalConfig.getfloat(section, option)
+				if self.globalConfig.has_option(section, option):
+					value = self.globalConfig.getfloat(section, option)
 		if value is None:
 			value = fallback
 		return value
-	
+
 	def getboolean(self, section, option, fallback=None):
 		value = None
 		if self.localConfig.has_section(section):
-			value = self.localConfig.getboolean(section, option)
+			if self.localConfig.has_option(section, option):
+				value = self.localConfig.getboolean(section, option)
 		if value is None:
 			if self.globalConfig.has_section(section):
-				value = self.globalConfig.getboolean(section, option)
+				if self.globalConfig.has_option(section, option):
+					value = self.globalConfig.getboolean(section, option)
 		if value is None:
 			value = fallback
 		return value
