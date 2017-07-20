@@ -12,6 +12,10 @@ from PyQt5.QtCore import *
 from yagala.AppProvider import AppProvider, AppItem
 
 LOGGER = logging.getLogger(__name__)
+CONF_STEAM_SECTION='providers/steam'
+CONF_STEAM_ENABLED='enabled'
+CONF_STEAM_EXECUTABLE='executable'
+CONF_STEAM_STEAMAPPS='steamapps'
 
 ###
 # Converts a string that starts with a number to positive int.
@@ -88,7 +92,7 @@ class SteamPlatformLinux(SteamPlatformGeneric):
 					return appIconPath
 
 	def find_steam_exe(self):
-		return QStandardPaths.findExecutable('steam')
+		return [QStandardPaths.findExecutable('steam')]
 
 class SteamPlatformWindows(SteamPlatformGeneric):
 	###
@@ -111,15 +115,15 @@ class SteamPlatformWindows(SteamPlatformGeneric):
 	def find_steam_exe(self):
 		path = QStandardPaths.findExecutable('steam.exe')
 		if path:
-			return path
+			return [path]
 
 		path = "C:\\Programme\\Steam (x86)\\steam.exe"
 		if QFile(path).exists():
-			return path
+			return [path]
 
 		path = "C:\\Program Files (x86)\\Steam\\steam.exe"
 		if QFile(path).exists():
-			return path
+			return [path]
 
 		return None
 
@@ -139,26 +143,33 @@ class SteamPlatformOSX(SteamPlatformGeneric):
 	# What should work is 'open -a Steam', but that's not
 	# a single command and is don't know how to check
 	# if this WOULD work.
+	#
+	# The result should be a list object
 	###
 	def find_steam_exe(self):
 		path = QStandardPaths.findExecutable('Steam')
 		if path:
-			return path
+			return [path]
 
 		# Just a guess...
 		path = '/Applications/Steam.app/Contents/MacOS/Steam'
 		if QFile(path).exists():
-			return path
+			return [path]
 
 		return None
 
 class SteamAppItem(AppItem):
-	def __init__(self, manifest, icon = None, icon_selected = None, suspended = False):
-		AppItem.__init__(self, 'steam_' + manifest['appid'], manifest['name'], icon, icon_selected, suspended)
+	def __init__(self, provider, manifest, icon = None, icon_selected = None, suspended = False):
+		AppItem.__init__(self, 'steam_' + manifest['appid'], manifest['name'], provider.find_icon(manifest), icon_selected, suspended)
 		self._appid = manifest['appid']
+		self._provider = provider
 	
 	def execute(self):
-		return Popen(['steam', 'steam://rungameid/' + self._appid])
+		cmd = self._provider.find_steam_exe()
+		if not cmd:
+			return False
+		cmd.append('steam://rungameid/%s' % (self._appid))
+		return Popen(cmd)
 
 class Steam(AppProvider):
 	def __init__(self, settings):
@@ -176,16 +187,20 @@ class Steam(AppProvider):
 			self.platform = SteamPlatformGeneric()
 
 		# Find plattform dependent "steamapps" path
-		self.path  = self.platform.steamapps_path()
-	
+		self.path = self.settings.get(CONF_STEAM_SECTION, CONF_STEAM_STEAMAPPS)
+		if not self.path:
+			self.path = self.platform.steamapps_path()
+
+	###
+	# Returns a SteamAppItem instance for each installed app
+	###
 	def get_apps(self):
 		apps = []
-		for manifest in self.list_installed_app_manifests():
-			apps.append(SteamAppItem(manifest, self.find_icon(manifest)))
+		if self.settings.getboolean(CONF_STEAM_SECTION, CONF_STEAM_ENABLED, True):
+			for manifest in self.list_installed_app_manifests():
+				apps.append(SteamAppItem(self, manifest))
 		return apps
-	
 
-	
 	###
 	# Tries to locate the application icon (in maximal resolution)
 	# for a given app id. This is platform dependent.
@@ -203,14 +218,17 @@ class Steam(AppProvider):
 			return icon
 
 		return None
-	
+
 	###
 	# Tries to locate the steam executable.
 	# This depends on the platform.
 	###
 	def find_steam_exe(self):
-		return self.platform.find_steam_exe()
-	
+		path = self.settings.getlist(CONF_STEAM_SECTION, CONF_STEAM_EXECUTABLE)
+		if path is None:
+			path = self.platform.find_steam_exe()
+		return path
+
 	###
 	# Retuns a URL where an icon may be available at
 	###
@@ -249,6 +267,14 @@ class Steam(AppProvider):
 	###
 	def list_all_app_manifests(self):
 		path = QDir(self.path)
+		if path is None:
+			LOGGER.warn('No "steamapps" directory configured')
+			return []
+
+		if not path.exists():
+			LOGGER.warn('Directory not found: steamapps="%s"', path.absolutePath())
+			return []
+
 		manifests = []
 		for fname in path.entryList(['*.acf']):
 			fname = QDir.toNativeSeparators(self.path + "/" + fname)
