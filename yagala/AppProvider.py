@@ -4,7 +4,7 @@
 # informations about runnable apps. This could be Steam, 
 # Emulators, local .desktop entries or the application menu.
 #
-# Each implementation must implement at least AppFinder and
+# Each implementation must implement at least AppProvider and
 # AppItem.
 ###
 
@@ -24,7 +24,7 @@ class AppItem:
     def execute(self):
         return None
 
-class AppFinder:
+class AppProvider:
     def __init__(self, settings):
         self.settings = settings
 

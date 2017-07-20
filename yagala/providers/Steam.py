@@ -9,7 +9,7 @@ import functools
 import urllib3
 from subprocess import Popen
 from PyQt5.QtCore import *
-from yagala.AppFinder import AppFinder, AppItem
+from yagala.AppProvider import AppProvider, AppItem
 
 LOGGER = logging.getLogger(__name__)
 
@@ -160,9 +160,9 @@ class SteamAppItem(AppItem):
 	def execute(self):
 		return Popen(['steam', 'steam://rungameid/' + self._appid])
 
-class Steam(AppFinder):
+class Steam(AppProvider):
 	def __init__(self, settings):
-		AppFinder.__init__(self, settings)
+		AppProvider.__init__(self, settings)
 		# Find platform dependent implementation
 		system = platform.system()
 		if system == 'Linux':

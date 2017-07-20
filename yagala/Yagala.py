@@ -20,12 +20,12 @@ import pkgutil
 from PyQt5.QtCore import QObject, pyqtSlot, QDir, QStandardPaths
 
 ###
-# Import finder modules
+# Import provider modules
 ###
-#from .finders import common
-from .AppFinder import AppFinder, AppItem
+#from .providers import common
+from .AppProvider import AppProvider, AppItem
 from .YagalaConfig import YagalaConfig
-from .finders.Steam import Steam
+from .providers.Steam import Steam
 
 LOGGER = logging.getLogger(__name__)
 
@@ -35,11 +35,11 @@ class Yagala(QObject):
 		# Find resource directories
 		super(Yagala, self).__init__()
 		self.settings = YagalaConfig('yagala.ini')
-		self.finders = [
+		self.providers = [
 			Steam(self.settings)
 		]
 		self.apps = []
-		for provider in self.finders:
+		for provider in self.providers:
 			for app in provider.get_apps():
 				self.apps.append(app)
 
