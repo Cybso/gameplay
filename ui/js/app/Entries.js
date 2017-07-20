@@ -4,17 +4,7 @@
 	define(['knockout', 'ko/translate', 'RemoteData', 'locales'], 
 		function(ko, t, RemoteData, locales) {
 			return function(viewModel) {
-				// FIXME Query entries from Yagala API
-				var entries = new RemoteData('test/data.json').done(function(data) {
-					var result = [];
-					for (var id in data) {
-						if (data.hasOwnProperty(id)) {
-							data[id].id = id;
-							result.push(data[id]);
-						}
-					}
-					return result;
-				});
+				var entries = ko.observableArray(window.yagala.getApps())
 
 				// Resolves an entry by its id
 				entries.byId = function(id) {

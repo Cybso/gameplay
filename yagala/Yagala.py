@@ -17,43 +17,63 @@ import json
 import inspect
 import pkgutil
 
-from PyQt5.QtCore import QObject, pyqtSlot
+from PyQt5.QtCore import QObject, pyqtSlot, QDir, QStandardPaths
 
 ###
 # Import finder modules
 ###
 #from .finders import common
-#import yagala.finders.Steam
 from .AppFinder import AppFinder, AppItem
+from .YagalaConfig import YagalaConfig
+from .finders.Steam import Steam
 
 LOGGER = logging.getLogger(__name__)
 
-
 class Yagala(QObject):
 
-	@pyqtSlot(int, result=str)
-	def foo(self, value):
-		return '=' + str(value) + '='
+	def __init__(self):
+		# Find resource directories
+		super(Yagala, self).__init__()
+		self.settings = YagalaConfig('yagala.ini')
+		self.finders = [
+			Steam(self.settings)
+		]
+		self.apps = []
+		for provider in self.finders:
+			for app in provider.get_apps():
+				self.apps.append(app)
 
-	# take a list of strings and return a string
-	# because of setapi line above, we get a list of python strings as input
-	@pyqtSlot('QStringList', result=str)
-	def concat(self, strlist):
-		return ''.join(strlist)
+	###
+	# Set a UI storage value (compatible to JavaScript's storage)
+	###
+	@pyqtSlot(str, str)
+	def setItem(self, key, value):
+		self.settings.set('ui', key, value)
+		self.settings.write()
 
-	# take a javascript object and return string
-	# javascript objects come into python as dictionaries
-	# functions are represented by an empty dictionary
-	@pyqtSlot('QVariantMap', result=str)
-	def json_encode(self, jsobj):
-		# import is here to keep it separate from 'required' import
-		return json.dumps(jsobj)
+	###
+	# Retrieves a UI storage value (compatible to JavaScript's storage)
+	###
+	@pyqtSlot(str, result=str)
+	def getItem(self, key):
+		return self.settings.get('ui', key)
 
-	# take a string and return an object (which is represented in python
-	# by a dictionary
+	@pyqtSlot(result='QVariantList')
+	def getApps(self):
+		return [app.__dict__ for app in self.apps]
+	
+	@pyqtSlot(str)
+	def runApp(self, appid):
+		for app in self.apps:
+			if app.id == appid:
+				app.execute()
+				break;
+		return None
+
 	@pyqtSlot(str, result='QVariantMap')
-	def json_decode(self, jsstr):
-		return json.loads(jsstr)
+	def getAppStatus(self, appid):
+		# FIXME
+		pass
 	
 
 

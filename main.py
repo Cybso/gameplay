@@ -23,16 +23,22 @@ if sys.version_info < (3,4):
 	sys.exit(1)
 
 # Check for PyQt5 before loading it to create a nice error message if this is missing
-spam_spec = importlib.util.find_spec("PyQt5")
-if spam_spec is None:
-	sys.stderr.write("Module PyQt5 not found.%s" % os.linesep)
+spec = importlib.util.find_spec("PyQt5")
+if importlib.util.find_spec("PyQt5") is None:
+	sys.stderr.write("Module PyQt5 not found. Maybe you need to install 'python3-pyqt5'.%s" % os.linesep)
 	sys.exit(1)
+
+if importlib.util.find_spec("PyQt5.QtQml") is None:
+	sys.stderr.write("Module PyQt5.QtQml not found. Maybe you need to install 'python3-pyqt5.qtquick'.%s" % os.linesep)
+	sys.exit(1)
+
+
 
 import argparse
 import signal
 import logging
 
-from PyQt5.QtCore import QDir
+from PyQt5.QtCore import QDir, QStandardPaths
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWebKit import QWebSettings
@@ -41,7 +47,6 @@ from PyQt5.QtWebKit import QWebSettings
 import sip
 sip.setapi('QString', 2)
 
-#CONFIG_PATH = QStandardPaths.locate(QStandardPaths.AppConfigLocation, "", QStandardPaths.LocateDirectory) + QDir.toNativeSeparators('yagala.ini')
 #APPDATA_PATHS = [QDir.toNativeSeparators(x + 'yagala/') for x in QStandardPaths.locateAll(QStandardPaths.AppDataLocation, "", QStandardPaths.LocateDirectory)]
 #APPLICATION_PATHS = QStandardPaths.locateAll(QStandardPaths.ApplicationsLocation, "", QStandardPaths.LocateDirectory)
 
@@ -77,6 +82,7 @@ def main():
 	# Start application (and ensure it can be killed with CTRL-C)
 	signal.signal(signal.SIGINT, signal.SIG_DFL)
 	app = QApplication(sys.argv)
+	app.setApplicationName('yagala')
 	app.setWindowIcon(QIcon(uipath + 'img/Y.svg'))
 	yagala = Yagala()
 

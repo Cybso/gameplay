@@ -6,8 +6,10 @@ import platform
 import logging
 import json
 import functools
+import urllib3
+from subprocess import Popen
 from PyQt5.QtCore import *
-from yagala.AppFinder import AppFinder
+from yagala.AppFinder import AppFinder, AppItem
 
 LOGGER = logging.getLogger(__name__)
 
@@ -150,9 +152,17 @@ class SteamPlatformOSX(SteamPlatformGeneric):
 
 		return None
 
+class SteamAppItem(AppItem):
+	def __init__(self, manifest, icon = None, icon_selected = None, suspended = False):
+		AppItem.__init__(self, 'steam_' + manifest['appid'], manifest['name'], icon, icon_selected, suspended)
+		self._appid = manifest['appid']
+	
+	def execute(self):
+		return Popen(['steam', 'steam://rungameid/' + self._appid])
 
 class Steam(AppFinder):
-	def __init__(self):
+	def __init__(self, settings):
+		AppFinder.__init__(self, settings)
 		# Find platform dependent implementation
 		system = platform.system()
 		if system == 'Linux':
@@ -167,7 +177,14 @@ class Steam(AppFinder):
 
 		# Find plattform dependent "steamapps" path
 		self.path  = self.platform.steamapps_path()
-		pass
+	
+	def get_apps(self):
+		apps = []
+		for manifest in self.list_installed_app_manifests():
+			apps.append(SteamAppItem(manifest, self.find_icon(manifest)))
+		return apps
+	
+
 	
 	###
 	# Tries to locate the application icon (in maximal resolution)
@@ -179,7 +196,12 @@ class Steam(AppFinder):
 		if appid:
 			# Better safe than sorry...
 			appid = str(int(appid))
-			return self.platform.find_app_icon(appid)
+			icon = self.platform.find_app_icon(appid)
+			if not icon:
+				# Download from steam network
+				icon = self.find_icon_url(appid)
+			return icon
+
 		return None
 	
 	###
@@ -198,7 +220,7 @@ class Steam(AppFinder):
 		# From https://steamdb.info/app/APPID/info/
 		appid = str(int(appid))
 		return 'https://steamdb.info/static/camo/apps/' + appid + '/header.jpg'
-	
+
 	###
 	# Parses all .acf-Files in steamapps directory. ACF files
 	# are similar to JSON files, to I'm just change the syntax
