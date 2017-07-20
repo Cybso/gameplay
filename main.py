@@ -11,9 +11,23 @@
 # License: GPLv3
 ###
 
-
 import os
 import sys
+import importlib
+
+# Requires at least Python 3.4
+if sys.version_info < (3,4):
+	sys.stderr.write("This program requires at least Python 3.4, found version %d.%d.%d%s" % (
+		sys.version_info[0], sys.version_info[1], sys.version_info[2], os.linesep
+	))
+	sys.exit(1)
+
+# Check for PyQt5 before loading it to create a nice error message if this is missing
+spam_spec = importlib.util.find_spec("PyQt5")
+if spam_spec is None:
+	sys.stderr.write("Module PyQt5 not found.%s" % os.linesep)
+	sys.exit(1)
+
 import argparse
 import signal
 import logging
@@ -26,9 +40,6 @@ from PyQt5.QtWebKit import QWebSettings
 # Automatically convert between python strings and QString
 import sip
 sip.setapi('QString', 2)
-
-# Requires at least Python 3.2
-assert sys.version_info >= (3,2)
 
 #CONFIG_PATH = QStandardPaths.locate(QStandardPaths.AppConfigLocation, "", QStandardPaths.LocateDirectory) + QDir.toNativeSeparators('yagala.ini')
 #APPDATA_PATHS = [QDir.toNativeSeparators(x + 'yagala/') for x in QStandardPaths.locateAll(QStandardPaths.AppDataLocation, "", QStandardPaths.LocateDirectory)]

@@ -16,9 +16,8 @@ import logging
 
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtCore import Qt, QEvent, QUrl
-from PyQt5.QtWidgets import QSplitter, QAction, QSizePolicy, QShortcut
+from PyQt5.QtWidgets import QSplitter, QAction, QSizePolicy, QShortcut, QMessageBox, QApplication, QWidget, QMainWindow
 from PyQt5.QtWebKitWidgets import QWebView, QWebPage, QWebInspector
-from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow
 
 from .FrontendWebPage import FrontendWebPage
 
