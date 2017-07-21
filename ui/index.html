@@ -16,15 +16,15 @@
 		</header>
 
 		<div id="widgets">
-			<ul data-bind="foreach: entries">
+			<ul data-bind="foreach: yagala.apps">
 				<li class="widget selectable" data-bind="
 					attr: {
-						'data-entry': id
+						'data-app': id
 					},
 					css: {
-						selected: $data == $root.selectedEntry()
+						selected: $data == $root.selectedApp()
 					},
-					click: $root.selectedEntry
+					click: $root.selectedApp
 				">
 					<!-- ko if: $data['icon'] -->
 						<div class="icon" data-bind="

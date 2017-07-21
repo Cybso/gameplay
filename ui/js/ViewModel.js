@@ -10,8 +10,8 @@
 	"use strict";
 
 	define(['knockout', 'RemoteData', 'moment', 'utils', 
-		'app/Locale', 'app/Entries', 'app/SelectedNode', 'app/Gamepad', 'app/Snake'],
-		function(ko, RemoteData, moment, utils, Locale, Entries,  SelectedNode, Gamepad, Snake) {
+		'app/Locale', 'app/Yagala', 'app/SelectedNode', 'app/Gamepad', 'app/Snake'],
+		function(ko, RemoteData, moment, utils, Locale, Yagala,  SelectedNode, Gamepad, Snake) {
 			var exports = { };
 
 			/**
@@ -34,41 +34,40 @@
 				return currentTimeStr;
 			})();
 
-			// Load initial set of entries...
-			// TODO This should be filled by the python backend
-			exports.entries = new Entries(exports);
+			// Load initial set of apps...
+			exports.yagala = new Yagala(exports);
 
 			// Contains the node that is marked with CSS class 'selected'
 			// and provides navigation methods moveLeft, moveRight, moveTop
 			// and moveBottom
 			exports.selectedNode = new SelectedNode(exports);
 
-			// Updates selectedNode based on a selected entry ID
-			exports.selectedEntry = ko.computed({
+			// Updates selectedNode based on a selected app ID
+			exports.selectedApp = ko.computed({
 				read: function() {
 					var node = exports.selectedNode();
 					if (node) {
-						var id = node.getAttribute('data-entry');
+						var id = node.getAttribute('data-app');
 						if (id) {
-							return exports.entries.byId(id);
+							return exports.yagala.apps.byId(id);
 						}
 					}
 					return undefined;
 				},
-				write: function(entry) {
-					if (entry === undefined) {
+				write: function(app) {
+					if (app === undefined) {
 						exports.selectedNode(undefined);
 					} else {
-						// Find entry widget
-						var node = document.querySelector('[data-entry="' + entry.id + '"]');
+						// Find app widget
+						var node = document.querySelector('[data-app="' + app.id + '"]');
 						exports.selectedNode(node);
 					}
 				}
 			});
 
-			exports.selectedEntry.subscribe(function(item) {
+			exports.selectedApp.subscribe(function(item) {
 				// Start application
-				window.yagala.runApp(item.id);
+				exports.yagala.runApp(item);
 			});
 
 			// Bind to key event in body
