@@ -8,7 +8,9 @@ import json
 import functools
 import urllib3
 from PyQt5.QtCore import *
+from PyQt5.QtGui import QIcon
 from yagala.AppProvider import AppProvider, AppItem
+
 
 LOGGER = logging.getLogger(__name__)
 CONF_STEAM_SECTION='providers/steam'
@@ -81,14 +83,10 @@ class SteamPlatformLinux(SteamPlatformGeneric):
 		return None
 
 	def find_app_icon(self, appid):
-		# Icons are stored in .local/share/icons/hicolor/WIDTHxHEIGHT/apps/steam_icon_APPID.png
-		iconPath = QDir(QDir.fromNativeSeparators(QDir.homePath()) + '/.local/share/icons/hicolor')
-		if iconPath.exists():
-			resolutions = sorted(iconPath.entryList(["*x*"]), key=functools.cmp_to_key(_sort_names_as_numbers), reverse=True)
-			for resolution in resolutions:
-				appIconPath = iconPath.absolutePath() + '/' + resolution + '/apps/steam_icon_' + appid + '.png'
-				if QFile(appIconPath).exists():
-					return appIconPath
+		iconName = 'steam_icon_' + appid
+		if not QIcon.fromTheme(iconName).isNull():
+			return 'icon://' + iconName
+		return None
 
 	def find_steam_exe(self):
 		return [QStandardPaths.findExecutable('steam')]

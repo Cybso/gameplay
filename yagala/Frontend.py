@@ -35,6 +35,7 @@ class Frontend(QMainWindow):
 
 		# Add web view
 		self.web = QWebView(self)
+		# Intercept local protocols
 		self.web.setPage(FrontendWebPage())
 		self.web.load(QUrl.fromLocalFile(basepath + 'index.html'))
 		self.frame = self.web.page().mainFrame()

@@ -108,6 +108,7 @@ class Emulator:
 	def __init__(self, config, section):
 		self.label = config.get(section, 'label', section)
 		self.command = config.getlist(section, 'command', None)
+		self.icon = config.get(section, 'icon', None)
 		self.image_path = config.getlist(section, 'image-path', [])
 		self.image_pattern = config.getlist(section, 'image-pattern', [])
 		image_info_handler = config.get(section, 'image-info-handler', None)
@@ -144,6 +145,9 @@ class Emulator:
 				cmd.append(part)
 			if not has_placeholder:
 				cmd.append(f)
+
+			if not icon:
+				icon = self.icon
 
 			apps.append(AppItem(id, label, icon, cmd=cmd))
 
