@@ -17,9 +17,9 @@ import logging
 import json
 import inspect
 import pkgutil
-import psutil
 
 from PyQt5.QtCore import QObject, pyqtSlot, QDir, QStandardPaths
+from PyQt5.Qt import Qt
 
 ###
 # Import provider modules
@@ -35,29 +35,13 @@ from .providers.SystemAppProvider import SystemAppProvider
 
 LOGGER = logging.getLogger(__name__)
 
-# Load platform dependen utils
-import platform
-system = platform.system()
-if system == 'Linux':
-	LOGGER.info('Detected Linux system')
-	from .platform import linux as yagala_sys
-elif system == 'Darwin':
-	LOGGER.info('Detected Darwin system')
-	from .platform import darwin as yagala_sys
-elif system == 'Windows':
-	LOGGER.info('Detected Windows system')
-	from .platform import windows as yagala_sys
-else:
-	# Try with linux as fallback...
-	LOGGER.info('Detected unknown system, using Linux API')
-	from .platform import linux as yagala_sys
-
 class Yagala(QObject):
 
 	def __init__(self):
 		# Find resource directories
 		super(Yagala, self).__init__()
 		self.window = None
+		self.on_top = False
 		self.settings = YagalaConfig('yagala.ini')
 		self.ui_settings = YagalaConfig('ui.ini')
 		self.providers = [
@@ -74,12 +58,8 @@ class Yagala(QObject):
 			except:
 				LOGGER.exception("Failed to invoke application provider %s" % provider.__class__.__name__)
 
-		# Currently active Popen processes,
-		# mapped from appid to Popen object
+		# Currently active AppProcess object per appid.
 		self.running = {}
-
-		# Suspended window names by appid
-		self.suspended = {}
 
 	###
 	# Set a UI storage value (compatible to JavaScript's storage)
@@ -105,19 +85,21 @@ class Yagala(QObject):
 		p = self.running.get(appid)
 		if p:
 			if p.is_running():
+				if p.is_suspended():
+					p.resume(raiseCallback=self.lowerWindow)
 				return self.getAppStatus(appid)
 
 		for app in self.apps:
 			if app.id == appid:
 				try:
+					self.suspendStayOnTop()
 					p = app.execute()
-					if not p is psutil.Process:
-						p = psutil.Process(p.pid)
 					if p:
 						self.running[appid] = p
 						return self.getAppStatus(appid)
 				except:
 					LOGGER.exception("Failed to run application '%s'" % appid)
+					self.raiseWindow()
 				break
 		return None
 
@@ -125,17 +107,16 @@ class Yagala(QObject):
 	def getAppStatus(self, appid):
 		p = self.running.get(appid)
 		if p:
-			try:
-				return {
-					'active': p.is_running(),
-					'status': p.status()
-				}
-			except psutil.NoSuchProcess:
-				pass
+			return {
+				'active': p.is_running(),
+				'suspended': p.is_suspended(),
+				'status': p.status()
+			}
 
 		return {
 			'active': False,
-			'status': 0
+			'suspended': False,
+			'status': 'DEAD'
 		}
 
 	
@@ -145,23 +126,9 @@ class Yagala(QObject):
 	@pyqtSlot(str, result='QVariantMap')
 	def suspendApp(self, appid):
 		p = self.running.get(appid)
-		if p and self.suspended.get(appid) is None:
-			try:
-				if p.is_running():
-					pWindow = yagala_sys.get_foreground_window()
-					procs = p.children(recursive=True)
-					procs.append(p)
-					for p2 in procs:
-						LOGGER.info('Suspending child process %d' % p2.pid)
-						p2.suspend()
-
-					# Remember last active window and raise current one
-					self.suspended[appid] = { 'process': p, 'window': pWindow }
-					self.raiseWindow()
-				else:
-					LOGGER.info('Process ' + p.pid + ' is not active anymore.')
-			except:
-				LOGGER.exception('Failed to suspend process %d' % p.pid)
+		if p:
+			p.suspend()
+			self.raiseWindow()
 		return self.getAppStatus(appid)
 
 	###
@@ -169,26 +136,10 @@ class Yagala(QObject):
 	###
 	@pyqtSlot(str, result='QVariantMap')
 	def resumeApp(self, appid):
-		suspended = self.suspended.get(appid)
-		if suspended:
-			p = suspended['process']
-			try:
-				if p.is_running():
-					procs = p.children(recursive=True)
-					procs.append(p)
-					for p2 in reversed(procs):
-						LOGGER.info('Resume child process %d' % p2.pid)
-						p2.resume()
-					if suspended['window']:
-						yagala_sys.set_foreground_window(suspended['window'])
-					else:
-						# Bad workaround
-						self.lowerWindow()
-				else:
-					LOGGER.info('Process ' + p.pid + ' is not active anymore.')
-			except:
-				LOGGER.exception('Failed to resume process %d' % p.pid)
-			del self.suspended[appid]
+		p = self.running.get(appid)
+		if p and p.is_suspended():
+			self.suspendStayOnTop()
+			p.resume(raiseCallback=self.lowerWindow)
 		return self.getAppStatus(appid)
 
 	###
@@ -199,43 +150,51 @@ class Yagala(QObject):
 	def stopApp(self, appid):
 		p = self.running.get(appid)
 		if p:
-			try:
-				if p.is_running():
-					procs = p.children(recursive=True)
-					procs.append(p)
-					for p2 in procs:
-						LOGGER.info('Terminating child process %d' % p2.pid)
-						p2.terminate()
-					gone, still_alive = psutil.wait_procs(procs, timeout=3, callback=self._on_terminate)
-					for p2 in still_alive:
-						LOGGER.info('Killing child process %d' % p2.pid)
-						p2.kill()
-				else:
-					LOGGER.info('Process ' + p.pid + ' is not active anymore.')
-			except:
-				LOGGER.exception('Failed to kill process %d' % p.pid)
+			p.terminate()
+			self.raiseWindow()
 		return self.getAppStatus(appid)
 
 	@pyqtSlot()
 	def lowerWindow(self):
 		if self.window:
+			LOGGER.info('Lowering window')
+			self.suspendStayOnTop()
 			self.window.lower()
 
 	@pyqtSlot()
 	def raiseWindow(self):
 		if self.window:
+			LOGGER.info('Raising window')
 			self.window.activateWindow()
 			self.window.raise_()
-
-	###
-	# Tries to get the current window into foreground.
-	###
-	@pyqtSlot()
-	def focusYagala(self):
-		pass
+			self.resumeStayOnTop()
 	
-	def _on_terminate(self, proc):
-		LOGGER.info("Child process process {} terminated with exit code {}".format(proc.pid, proc.returncode))
+	def suspendStayOnTop(self):
+		if self.window is None:
+			return
 
+		if not self.on_top:
+			if int(self.window.windowFlags()) & Qt.WindowStaysOnTopHint != 0:
+				LOGGER.info('Disable WindowStayOnTop')
+				self.on_top = True
+				self.window.setWindowFlags(self.window.windowFlags() & ~Qt.WindowStaysOnTopHint)
+				if int(self.window.windowState()) & Qt.WindowFullScreen != 0:
+					self.window.showFullScreen()
+				else:
+					self.window.show()
+
+	def resumeStayOnTop(self):
+		if self.window is None:
+			return
+
+		if self.on_top:
+			self.on_top = False
+			self.window.setWindowFlags(self.window.windowFlags() | Qt.WindowStaysOnTopHint)
+			if int(self.window.windowState()) & Qt.WindowFullScreen != 0:
+				LOGGER.info('Enable WindowStayOnTop (fullscreen)')
+				self.window.showFullScreen()
+			else:
+				LOGGER.info('Enable WindowStayOnTop')
+				self.window.show()
 
 #  vim: set fenc=utf-8 ts=4 sw=4 noet :

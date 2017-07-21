@@ -38,6 +38,7 @@ import argparse
 import signal
 import logging
 
+from PyQt5.Qt import Qt
 from PyQt5.QtCore import QDir, QStandardPaths
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtGui import QIcon
@@ -65,6 +66,7 @@ def main():
 	parser.add_argument("-v", "--verbose", help="be verbose", action="store_true")
 	parser.add_argument("-d", "--debug", help="be even verboser", action="store_true")
 	parser.add_argument("-f", "--fullscreen", help="start in fullscreen mode", action="store_true")
+	parser.add_argument("-s", "--stayontop", help="stay on top (while not running any apps)", action="store_true")
 	args = parser.parse_args()
 
 	# This must be configured before any logger is initialized
@@ -74,6 +76,8 @@ def main():
 		logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 	else:
 		logging.basicConfig(stream=sys.stdout, level=logging.WARN)
+	
+	LOGGER = logging.getLogger(__name__)
 
 	# This must be imported AFTER logging has been configured!
 	from yagala import Yagala
@@ -91,7 +95,13 @@ def main():
 
 	# Initialize frontend
 	frontend = Frontend(uipath, yagala)
+
+	if args.stayontop:
+		LOGGER.info('Enable WindowStayOnTop')
+		frontend.setWindowFlags(int(frontend.windowFlags()) | Qt.WindowStaysOnTopHint)
+
 	if args.fullscreen:
+		LOGGER.info('Fullscreen mode')
 		frontend.showFullScreen()
 	else:
 		frontend.show()
