@@ -31,6 +31,7 @@ class Frontend(QMainWindow):
 		super(Frontend, self).__init__()
 		self.basepath = basepath
 		self.yagala = yagala
+		self.yagala.window = self
 		self.setWindowTitle('Yagala')
 
 		# Add web view

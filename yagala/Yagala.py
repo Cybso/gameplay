@@ -35,11 +35,29 @@ from .providers.SystemAppProvider import SystemAppProvider
 
 LOGGER = logging.getLogger(__name__)
 
+# Load platform dependen utils
+import platform
+system = platform.system()
+if system == 'Linux':
+	LOGGER.info('Detected Linux system')
+	from .platform import linux as yagala_sys
+elif system == 'Darwin':
+	LOGGER.info('Detected Darwin system')
+	from .platform import darwin as yagala_sys
+elif system == 'Windows':
+	LOGGER.info('Detected Windows system')
+	from .platform import windows as yagala_sys
+else:
+	# Try with linux as fallback...
+	LOGGER.info('Detected unknown system, using Linux API')
+	from .platform import linux as yagala_sys
+
 class Yagala(QObject):
 
 	def __init__(self):
 		# Find resource directories
 		super(Yagala, self).__init__()
+		self.window = None
 		self.settings = YagalaConfig('yagala.ini')
 		self.ui_settings = YagalaConfig('ui.ini')
 		self.providers = [
@@ -59,6 +77,9 @@ class Yagala(QObject):
 		# Currently active Popen processes,
 		# mapped from appid to Popen object
 		self.running = {}
+
+		# Suspended window names by appid
+		self.suspended = {}
 
 	###
 	# Set a UI storage value (compatible to JavaScript's storage)
@@ -92,10 +113,7 @@ class Yagala(QObject):
 					p = app.execute()
 					if not p is psutil.Process:
 						p = psutil.Process(p.pid)
-					print("execute", p)
 					if p:
-						print('foo', appid)
-						print('children', p.children(recursive=True))
 						self.running[appid] = p
 						return self.getAppStatus(appid)
 				except:
@@ -122,6 +140,58 @@ class Yagala(QObject):
 
 	
 	###
+	# Tries to suspend an app and all of its children
+	###
+	@pyqtSlot(str, result='QVariantMap')
+	def suspendApp(self, appid):
+		p = self.running.get(appid)
+		if p and self.suspended.get(appid) is None:
+			try:
+				if p.is_running():
+					pWindow = yagala_sys.get_foreground_window()
+					procs = p.children(recursive=True)
+					procs.append(p)
+					for p2 in procs:
+						LOGGER.info('Suspending child process %d' % p2.pid)
+						p2.suspend()
+
+					# Remember last active window and raise current one
+					self.suspended[appid] = { 'process': p, 'window': pWindow }
+					self.raiseWindow()
+				else:
+					LOGGER.info('Process ' + p.pid + ' is not active anymore.')
+			except:
+				LOGGER.exception('Failed to suspend process %d' % p.pid)
+		return self.getAppStatus(appid)
+
+	###
+	# Tries to resume an app and all of its children
+	###
+	@pyqtSlot(str, result='QVariantMap')
+	def resumeApp(self, appid):
+		suspended = self.suspended.get(appid)
+		if suspended:
+			p = suspended['process']
+			try:
+				if p.is_running():
+					procs = p.children(recursive=True)
+					procs.append(p)
+					for p2 in reversed(procs):
+						LOGGER.info('Resume child process %d' % p2.pid)
+						p2.resume()
+					if suspended['window']:
+						yagala_sys.set_foreground_window(suspended['window'])
+					else:
+						# Bad workaround
+						self.lowerWindow()
+				else:
+					LOGGER.info('Process ' + p.pid + ' is not active anymore.')
+			except:
+				LOGGER.exception('Failed to resume process %d' % p.pid)
+			del self.suspended[appid]
+		return self.getAppStatus(appid)
+
+	###
 	# Tries to stop the app. If the app doesn't terminate within 10
 	# seconds this kills the application. Returns the new status.
 	###
@@ -145,6 +215,17 @@ class Yagala(QObject):
 			except:
 				LOGGER.exception('Failed to kill process %d' % p.pid)
 		return self.getAppStatus(appid)
+
+	@pyqtSlot()
+	def lowerWindow(self):
+		if self.window:
+			self.window.lower()
+
+	@pyqtSlot()
+	def raiseWindow(self):
+		if self.window:
+			self.window.activateWindow()
+			self.window.raise_()
 
 	###
 	# Tries to get the current window into foreground.
