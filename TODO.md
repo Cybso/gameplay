@@ -16,6 +16,7 @@ Gamepad.js
   for some Hotkeys (e.g. START+SELECT for more than 3 seconds).
   If found, trigger an event that interrups the current game and focuses
   Yagala.
+- Add a gamepad configurator for new gamepads
 
 Yagala
 ======
@@ -29,3 +30,4 @@ Frontend
 - Select explicity with button press
 - Don't start game directly but open a dialog on select
 - Add support for categories
+- Add support for sorting and hiding apps

@@ -39,6 +39,7 @@ class Yagala(QObject):
 		# Find resource directories
 		super(Yagala, self).__init__()
 		self.settings = YagalaConfig('yagala.ini')
+		self.ui_settings = YagalaConfig('ui.ini')
 		self.providers = [
 			SteamProvider(self.settings),
 			EmulatorProvider(self.settings),
@@ -62,15 +63,15 @@ class Yagala(QObject):
 	###
 	@pyqtSlot(str, str)
 	def setItem(self, key, value):
-		self.settings.set('ui', key, value)
-		self.settings.write()
+		self.ui_settings.set('ui', key, value)
+		self.ui_settings.write()
 
 	###
 	# Retrieves a UI storage value (compatible to JavaScript's storage)
 	###
 	@pyqtSlot(str, result=str)
 	def getItem(self, key):
-		return self.settings.get('ui', key)
+		return self.ui_settings.get('ui', key)
 
 	@pyqtSlot(result='QVariantList')
 	def getApps(self):
