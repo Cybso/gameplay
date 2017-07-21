@@ -53,6 +53,10 @@ class Yagala(QObject):
 			except:
 				LOGGER.exception("Failed to invoke application provider %s" % provider.__class__.__name__)
 
+		# Currently active Popen processes,
+		# mapped from appid to Popen object
+		self.running = {}
+
 	###
 	# Set a UI storage value (compatible to JavaScript's storage)
 	###
@@ -72,12 +76,22 @@ class Yagala(QObject):
 	def getApps(self):
 		return [app.__dict__ for app in self.apps]
 	
-	@pyqtSlot(str, result='QVariantList')
+	@pyqtSlot(str, result='QVariantMap')
 	def runApp(self, appid):
+		p = self.running.get(appid)
+		if p:
+			p.poll()
+			if p.returncode is not None:
+				# Still running
+				return self.getAppStatus(appid)
+
 		for app in self.apps:
 			if app.id == appid:
 				try:
-					app.execute()
+					p = app.execute()
+					if p:
+						self.running[appid] = p
+						return self.getAppStatus(appid)
 				except:
 					LOGGER.exception("Failed to run application '%s'" % appid)
 				break
@@ -85,9 +99,42 @@ class Yagala(QObject):
 
 	@pyqtSlot(str, result='QVariantMap')
 	def getAppStatus(self, appid):
-		# FIXME
-		pass
+		p = self.running.get('appid')
+		if not p:
+			return {
+				active: False,
+				returncode: 0
+			}
+
+		p.poll()
+		return {
+			active: p.returncode is None,
+			returncode: p.returncode
+		}
 	
+	###
+	# Tries to stop the app. If the app doesn't terminate within 10
+	# seconds this kills the application. Returns the new status.
+	###
+	@pyqtSlot(str, result='QVariantMap')
+	def stopApp(self, appid):
+		p = self.running.get('appid')
+		if p and p.returncode is None:
+			p.poll()
+			if p.returncode is None:
+				p.terminate()
+				p.wait(10)
+				if p.returncode is None:
+					p.kill()
+					p.wait(2)
+		return self.getAppStatus(appid)
+
+	###
+	# Tries to get the current window into foreground.
+	###
+	@pyqtSlot()
+	def focusYagala(self):
+		pass
 
 
 #  vim: set fenc=utf-8 ts=4 sw=4 noet :
