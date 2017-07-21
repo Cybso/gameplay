@@ -12,10 +12,12 @@
 ###
 
 import os
+import signal
 import logging
 import json
 import inspect
 import pkgutil
+import psutil
 
 from PyQt5.QtCore import QObject, pyqtSlot, QDir, QStandardPaths
 
@@ -81,16 +83,19 @@ class Yagala(QObject):
 	def runApp(self, appid):
 		p = self.running.get(appid)
 		if p:
-			p.poll()
-			if p.returncode is not None:
-				# Still running
+			if p.is_running():
 				return self.getAppStatus(appid)
 
 		for app in self.apps:
 			if app.id == appid:
 				try:
 					p = app.execute()
+					if not p is psutil.Process:
+						p = psutil.Process(p.pid)
+					print("execute", p)
 					if p:
+						print('foo', appid)
+						print('children', p.children(recursive=True))
 						self.running[appid] = p
 						return self.getAppStatus(appid)
 				except:
@@ -100,18 +105,21 @@ class Yagala(QObject):
 
 	@pyqtSlot(str, result='QVariantMap')
 	def getAppStatus(self, appid):
-		p = self.running.get('appid')
-		if not p:
-			return {
-				active: False,
-				returncode: 0
-			}
+		p = self.running.get(appid)
+		if p:
+			try:
+				return {
+					'active': p.is_running(),
+					'status': p.status()
+				}
+			except psutil.NoSuchProcess:
+				pass
 
-		p.poll()
 		return {
-			active: p.returncode is None,
-			returncode: p.returncode
+			'active': False,
+			'status': 0
 		}
+
 	
 	###
 	# Tries to stop the app. If the app doesn't terminate within 10
@@ -119,15 +127,23 @@ class Yagala(QObject):
 	###
 	@pyqtSlot(str, result='QVariantMap')
 	def stopApp(self, appid):
-		p = self.running.get('appid')
-		if p and p.returncode is None:
-			p.poll()
-			if p.returncode is None:
-				p.terminate()
-				p.wait(10)
-				if p.returncode is None:
-					p.kill()
-					p.wait(2)
+		p = self.running.get(appid)
+		if p:
+			try:
+				if p.is_running():
+					procs = p.children(recursive=True)
+					procs.append(p)
+					for p2 in procs:
+						LOGGER.info('Terminating child process %d' % p2.pid)
+						p2.terminate()
+					gone, still_alive = psutil.wait_procs(procs, timeout=3, callback=self._on_terminate)
+					for p2 in still_alive:
+						LOGGER.info('Killing child process %d' % p2.pid)
+						p2.kill()
+				else:
+					LOGGER.info('Process ' + p.pid + ' is not active anymore.')
+			except:
+				LOGGER.exception('Failed to kill process %d' % p.pid)
 		return self.getAppStatus(appid)
 
 	###
@@ -136,6 +152,9 @@ class Yagala(QObject):
 	@pyqtSlot()
 	def focusYagala(self):
 		pass
+	
+	def _on_terminate(self, proc):
+		LOGGER.info("Child process process {} terminated with exit code {}".format(proc.pid, proc.returncode))
 
 
 #  vim: set fenc=utf-8 ts=4 sw=4 noet :
