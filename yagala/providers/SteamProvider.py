@@ -7,6 +7,7 @@ import logging
 import json
 import functools
 import urllib3
+import psutil
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QIcon
 from yagala.AppProvider import AppProvider, AppItem
@@ -165,6 +166,23 @@ class SteamAppItem(AppItem):
 		if cmd:
 			cmd.append('steam://rungameid/%s' % (self._appid))
 			self.cmd = cmd
+
+	###
+	# Kills any existing steam instance. Otherwise we would not be
+	# able to do process control on the current application.
+	###
+	def execute(self):
+		procs = []
+		for proc in psutil.process_iter():
+			if proc.name().lower().find('steam') == 0:
+				LOGGER.info('Terminating Steam process %s (%d)' % (proc.name(), proc.pid))
+				killed_steam=True
+				proc.terminate()
+				procs.append(proc)
+		if len(procs) > 0:
+			# Wait a few seconds...
+			psutil.wait_procs(procs, timeout=5)
+		return AppItem.execute(self)
 	
 class SteamProvider(AppProvider):
 	def __init__(self, settings):
