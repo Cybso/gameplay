@@ -43,31 +43,20 @@
 			exports.selectedNode = new SelectedNode(exports);
 
 			// Updates selectedNode based on a selected app ID
-			exports.selectedApp = ko.computed({
-				read: function() {
-					var node = exports.selectedNode();
-					if (node) {
-						var id = node.getAttribute('data-app');
-						if (id) {
-							return exports.yagala.apps.byId(id);
-						}
-					}
-					return undefined;
-				},
+			var _currentApp = ko.observable();
+			var _currentAppNode;
+			exports.currentApp = ko.computed({
+				read: _currentApp,
 				write: function(app) {
-					if (app === undefined) {
-						exports.selectedNode(undefined);
-					} else {
+					if (app !== undefined) {
 						// Find app widget
-						var node = document.querySelector('[data-app="' + app.id + '"]');
-						exports.selectedNode(node);
+						_currentAppNode = document.querySelector('[data-app="' + app.id + '"]');
 					}
+					_currentApp(app);
+					// Return to the selected node, especially when this is called
+					// with argument 'undefined' to close the dialog.
+					exports.selectedNode(_currentAppNode);
 				}
-			});
-
-			exports.selectedApp.subscribe(function(item) {
-				// Start application
-				exports.yagala.runApp(item);
 			});
 
 			// Bind to key event in body
@@ -103,9 +92,19 @@
 					exports.selectedNode.moveDown();
 					break;
 				case 'Esc':
+					evt.preventDefault();
 					if (snake) {
 						snake.exit();
 						snake = undefined;
+					} else{
+						exports.currentApp(undefined);
+					}
+					break;
+				case 'Enter':
+					var node = exports.selectedNode();
+					if (node && node.click !== undefined) {
+						evt.preventDefault();
+						node.click();
 					}
 					break;
 				default:
@@ -166,6 +165,15 @@
 						gamepadLongpressSimulator(gamepad, exports.selectedNode.moveUp);
 					} else if (state > 0) {
 						gamepadLongpressSimulator(gamepad, exports.selectedNode.moveDown);
+					}
+					break;
+
+				case 'BUTTON_0':
+					if (state > 0) {
+						var node = exports.selectedNode();
+						if (node && node.click !== undefined) {
+							node.click();
+						}
 					}
 					break;
 

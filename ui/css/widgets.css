@@ -42,12 +42,9 @@
 	display: none;
 }
 
-#widgets > ul > li:hover > .icon-selected {
-	display: block;
-}
-
 /* This may be an animated icon, only should when the window is active */
-body.window-active #widgets > ul > li.selected > .icon-selected {
+body.window-active #widgets > ul > li:hover > .icon-selected,
+body.window-active #widgets > ul > li.current-app > .icon-selected {
 	display: block;
 }
 

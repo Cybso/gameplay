@@ -4,7 +4,11 @@
 		<script src="js/init.js"></script>
 		<link rel="stylesheet" type="text/css" href="css/main.css">
 	</head>
-	<body>
+	<body data-bind="
+		attr: {
+			'data-select-scope': currentApp() ? '#current-app-dialog .selectable' : undefined
+		}
+	">
 		<header>
 			<div class="logo"><img src="img/Yagala.svg" title="Yagala"></div>
 			<div class="locale">
@@ -22,9 +26,9 @@
 						'data-app': id
 					},
 					css: {
-						selected: $data == $root.selectedApp()
+						'current-app': $data == $root.currentApp()
 					},
-					click: $root.selectedApp
+					click: $root.currentApp
 				">
 					<!-- ko if: $data['icon'] -->
 						<div class="icon" data-bind="
@@ -50,5 +54,27 @@
 			<div class="copyright-notice-icons"></div>
 			<div class="copyright-notice-other"></div>
 		</div>
+
+		<!-- ko if: currentApp -->
+			<div id="current-app-dialog" class="dialog">
+				<!-- ko with: currentApp -->
+					<div class="dialog-label" data-bind="text: label"></div>
+					<div class="dialog-content" data-bind="
+						style: {
+							'background-image': $data['icon'] ? 'url(\'' + $data['icon'] + '\')' : undefined
+						}
+					">
+					</div>
+					<div class="dialog-buttons">
+						<button class="selectable button-stop" data-bind="click: $root.yagala.stopApp">Stop</button>
+						<button class="selectable button-resume" data-bind="click: $root.yagala.resumeApp">Resume</button>
+						<button class="selectable button-suspend" data-bind="click: $root.yagala.suspendApp">Suspend</button>
+						<button class="selectable button-run" data-bind="click: $root.yagala.runApp">Run</button>
+						<button class="selectable button-close" data-bind="click: function() { $root.currentApp(undefined); }">Close</button>
+					</div>
+				<!-- /ko -->
+			</div>
+		<!-- /ko -->
+
 	</body>
 </html>

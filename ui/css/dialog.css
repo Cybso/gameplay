@@ -1,0 +1,42 @@
+.dialog {
+	position: fixed;
+	width: 50vw;
+	height: 50vh;
+	top: 50%;
+	left: 50%;
+	background-color: rgba(255, 255, 255, 0.9);
+	transform: translate(-50%, -50%);
+	-webkit-transform: translate(-50%, -50%);
+	z-index: 20;
+
+	display: flex;
+	flex-direction: column;
+}
+
+.dialog > * {
+}
+
+.dialog > .dialog-label {
+	padding: 1ex;
+}
+
+.dialog > .dialog-content {
+	flex-grow: 1;
+	background-repeat: no-repeat;
+	background-position: 50% 50%;
+	background-size: contain;
+	margin: 1ex;
+}
+
+.dialog > .dialog-buttons {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	justify-content: space-evenly;
+}
+
+.dialog > .dialog-buttons > * {
+	display: block;
+	margin-left: 1em;
+	margin-right: 1em;
+}

@@ -20,6 +20,7 @@ header {
 	background-color: #ffffff;
 }
 
+#widgets > ul > li.current-app,
 #widgets > ul > li:hover,
 #widgets > ul > li:active {
 	border-color: #9ecaed;
@@ -39,3 +40,100 @@ header {
 .copyright-notice-background:before {
 	content: 'Wallpaper: HOT Balloon Trip · Andrés Nieto Porras · CC BY-SA 2.0';
 }
+
+.dialog {
+	border: 0.5ex solid #9ecaed;
+	outline: none;
+	border-radius: 7px;
+	box-shadow: 0 0 10px #9ecaed;
+}
+
+.dialog > .dialog-label {
+	font-size: 1.2em;
+	font-weight: bold;
+	background-color: #9ecaed;
+}
+
+.dialog > .dialog-buttons {
+	border-top: 0.25ex solid #9ecaed;
+}
+
+.button-run,
+.button-suspend,
+.button-resume,
+.button-stop,
+.button-close {
+	border: 0;
+	background-color: transparent;
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: 50% 50%;
+	font-size: 0;
+	width: 5rem;
+	height: 5rem;
+	padding: 0.25rem;
+	margin: 0.5rem;
+	margin-left: 2rem;
+	margin-right: 2rem;
+	background-origin: content-box;
+}
+
+.button-run.selected,
+.button-suspend.selected,
+.button-resume.selected,
+.button-stop.selected,
+.button-close.selected,
+.button-run:hover,
+.button-suspend:hover,
+.button-resume:hover,
+.button-stop:hover,
+.button-close:hover {
+	-webkit-filter: drop-shadow(0.2rem 0.2rem 0.4rem grey);
+}
+
+.button-run {
+	background-image: url('../img/icons/media-playback-start.svg');
+}
+
+.button-run.selected,
+.button-run:hover {
+	background-image: url('../img/icons/media-playback-start_selected.svg');
+}
+
+.button-suspend {
+	background-image: url('../img/icons/media-playback-pause.svg');
+}
+
+.button-suspend.selected,
+.button-suspend:hover {
+	background-image: url('../img/icons/media-playback-pause_selected.svg');
+}
+
+.button-resume {
+	background-image: url('../img/icons/media-playback-pause.svg');
+}
+
+.button-resume.selected,
+.button-resume:hover {
+	background-image: url('../img/icons/media-playback-start_selected.svg');
+}
+
+.button-stop {
+	background-image: url('../img/icons/media-playback-stop.svg');
+}
+
+.button-stop.selected,
+.button-stop:hover {
+	background-image: url('../img/icons/media-playback-stop_selected.svg');
+}
+
+.button-close {
+	background-image: url('../img/icons/media-eject.svg');
+}
+
+.button-close.selected,
+.button-close:hover {
+	background-image: url('../img/icons/media-eject_selected.svg');
+}
+
+

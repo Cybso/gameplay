@@ -316,8 +316,9 @@
 
 				// Common implementation of the move* functions.
 				var move = function(preferredElementComparator) {
-					// Get all .selectable elements
-					var elements = document.getElementsByClassName('selectable');
+					// Get all .selectable elements. The selector is stored in the body element.
+					var selector = document.body.getAttribute('data-select-scope') || '.selectable';
+					var elements = document.querySelectorAll(selector);
 					if (!elements.length) {
 						return;
 					}
