@@ -56,9 +56,18 @@ class AppProcess:
 	###
 	# Terminates the current process and all of the subprocesses.
 	# If termination fails this method call falls back to kill().
+	#
+	# A suspended process will be waked before termination.
 	###
 	def terminate(self):
 		try:
+			if self.is_suspended():
+				procs = self.process.children(recursive=True)
+				procs.append(self.process)
+				for p in procs:
+					LOGGER.info('Resuming child process %d before termination' % p.pid)
+					p.resume()
+				
 			if self.is_running():
 				procs = self.process.children(recursive=True)
 				procs.append(self.process)
