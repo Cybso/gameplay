@@ -27,3 +27,6 @@ The following artwork is used for this program
   - HOT Balloon Trip
   - License: CC Attribution-ShareAlike 2.0 Generic
   - By courtesy of the photographer: Andrés Nieto Porras [http://www.anieto2k.com/]
+
+* Icons from the Oxygen Icon Theme (LGPLv3)
+  - See ui/img/icons/OXYGEN-LICENSE.txt

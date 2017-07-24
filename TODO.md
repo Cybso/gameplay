@@ -1,3 +1,8 @@
+Logo
+====
+
+- Update Logo to Game:Play (with Gamepad-Buttons instead of dots)
+
 Paths
 =====
 
@@ -17,9 +22,10 @@ Gamepad.js
   If found, trigger an event that interrups the current game and focuses
   GamePlay.
 - Add a gamepad configurator for new gamepads
+- Add an icon for each recognized gamepad at the bottom right edge
 
 GamePlay
-======
+========
 
 - Add ability to stop / interrupt / re-focus game
 
