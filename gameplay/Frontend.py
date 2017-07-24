@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 ###
-# YAGALA - Yet Another Gamepad Launcher
+# Game:Play - Yet Another Gamepad Launcher
 #
 # A Python and PyQt5 based application launcher that uses
 # HTML5's gamepad API to implement a platform independent
@@ -27,12 +27,12 @@ LOGGER = logging.getLogger(__name__)
 # HTML5/JavaScript based application frontend
 ###
 class Frontend(QMainWindow):
-	def __init__(self, basepath, yagala):
+	def __init__(self, basepath, gameplay):
 		super(Frontend, self).__init__()
 		self.basepath = basepath
-		self.yagala = yagala
-		self.yagala.window = self
-		self.setWindowTitle('Yagala')
+		self.gameplay = gameplay
+		self.gameplay.window = self
+		self.setWindowTitle('GamePlay')
 
 		# Add web view
 		self.web = QWebView(self)
@@ -125,7 +125,7 @@ class Frontend(QMainWindow):
 
 
 	###
-	# Add 'yagala' controller to JavaScript context when the frame is loaded.
+	# Add 'gameplay' controller to JavaScript context when the frame is loaded.
 	# Due to security reasons ensure that the URL is local and a child of
 	# our own base path.
 	###
@@ -133,8 +133,8 @@ class Frontend(QMainWindow):
 		url = self.frame.url()
 		if url.isLocalFile():
 			if os.path.abspath(url.path()).startswith(self.basepath):
-				LOGGER.info('Adding Yagala controller to %s' % url)
-				self.frame.addToJavaScriptWindowObject('yagala', self.yagala)
+				LOGGER.info('Adding GamePlay controller to %s' % url)
+				self.frame.addToJavaScriptWindowObject('gameplay', self.gameplay)
 	
 	def toggleWebInspector(self):
 		self.inspector.setVisible(not self.inspector.isVisible())

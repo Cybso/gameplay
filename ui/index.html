@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>Yagala</title>
+		<title>Game:Play Application Launcher</title>
 		<script src="js/init.js"></script>
 		<link rel="stylesheet" type="text/css" href="css/main.css">
 	</head>
@@ -10,7 +10,7 @@
 		}
 	">
 		<header>
-			<div class="logo"><img src="img/Yagala.svg" title="Yagala"></div>
+			<div class="logo"><img src="img/GamePlay.svg" title="Game:Play Application Launcher"></div>
 			<div class="locale">
 				<select size="1" data-bind="value: locale, options: locale.available, optionsValue: 'id', optionsText: 'label'"></select>
 			</div>
@@ -20,7 +20,7 @@
 		</header>
 
 		<div id="widgets">
-			<ul data-bind="foreach: yagala.apps">
+			<ul data-bind="foreach: gameplay.apps">
 				<li class="widget selectable" data-bind="
 					attr: {
 						'data-app': id
@@ -66,10 +66,10 @@
 					">
 					</div>
 					<div class="dialog-buttons">
-						<button class="selectable button-stop" data-bind="click: $root.yagala.stopApp">Stop</button>
-						<button class="selectable button-resume" data-bind="click: $root.yagala.resumeApp">Resume</button>
-						<button class="selectable button-suspend" data-bind="click: $root.yagala.suspendApp">Suspend</button>
-						<button class="selectable button-run" data-bind="click: $root.yagala.runApp">Run</button>
+						<button class="selectable button-stop" data-bind="click: $root.gameplay.stopApp">Stop</button>
+						<button class="selectable button-resume" data-bind="click: $root.gameplay.resumeApp">Resume</button>
+						<button class="selectable button-suspend" data-bind="click: $root.gameplay.suspendApp">Suspend</button>
+						<button class="selectable button-run" data-bind="click: $root.gameplay.runApp">Run</button>
 						<button class="selectable button-close" data-bind="click: function() { $root.currentApp(undefined); }">Close</button>
 					</div>
 				<!-- /ko -->

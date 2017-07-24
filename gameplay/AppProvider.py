@@ -18,17 +18,17 @@ import platform
 system = platform.system()
 if system == 'Linux':
 	LOGGER.info('Detected Linux system')
-	from .platform import linux as yagala_sys
+	from .platform import linux as gameplay_sys
 elif system == 'Darwin':
 	LOGGER.info('Detected Darwin system')
-	from .platform import darwin as yagala_sys
+	from .platform import darwin as gameplay_sys
 elif system == 'Windows':
 	LOGGER.info('Detected Windows system')
-	from .platform import windows as yagala_sys
+	from .platform import windows as gameplay_sys
 else:
 	# Try with linux as fallback...
 	LOGGER.info('Detected unknown system, using Linux API')
-	from .platform import linux as yagala_sys
+	from .platform import linux as gameplay_sys
 
 class AppProcess:
 	def __init__(self, process):
@@ -91,7 +91,7 @@ class AppProcess:
 		try:
 			if self.is_running():
 				if not self._suspended:
-					self._window = yagala_sys.get_foreground_window()
+					self._window = gameplay_sys.get_foreground_window()
 					procs = self.process.children(recursive=True)
 					procs.append(self.process)
 					for p in procs:
@@ -120,7 +120,7 @@ class AppProcess:
 					p.resume()
 				if self._window is not None:
 					try:
-						yagala_sys.set_foreground_window(self._window)
+						gameplay_sys.set_foreground_window(self._window)
 					except:
 						LOGGER.exception('Failed to activate process window')
 						if raiseCallback is not None:

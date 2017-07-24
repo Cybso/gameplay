@@ -1,4 +1,4 @@
-from .Yagala import Yagala
+from .GamePlay import GamePlay
 from .Frontend import Frontend
 from .FrontendWebPage import FrontendWebPage
 from .AppProvider import AppProvider, AppItem

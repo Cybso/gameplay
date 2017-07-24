@@ -29,7 +29,7 @@ from PyQt5.QtCore import QStandardPaths, QDir
 
 LOGGER = logging.getLogger(__name__)
 
-class YagalaConfig:
+class GamePlayConfig:
 	def __init__(self, filename):
 		self.globalConfig = configparser.ConfigParser()
 		self.localConfig = configparser.ConfigParser()

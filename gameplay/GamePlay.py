@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 ###
-# YAGALA - Yet Another Gamepad Launcher
+# Game:Play - Yet Another Gamepad Launcher
 #
 # A Python and PyQt5 based application launcher that uses
 # HTML5's gamepad API to implement a platform independent
@@ -26,7 +26,7 @@ from PyQt5.Qt import Qt
 ###
 #from .providers import common
 from .AppProvider import AppProvider, AppItem
-from .YagalaConfig import YagalaConfig
+from .GamePlayConfig import GamePlayConfig
 
 from .providers.SteamProvider import SteamProvider
 from .providers.EmulatorProvider import EmulatorProvider
@@ -35,15 +35,15 @@ from .providers.SystemAppProvider import SystemAppProvider
 
 LOGGER = logging.getLogger(__name__)
 
-class Yagala(QObject):
+class GamePlay(QObject):
 
 	def __init__(self):
 		# Find resource directories
-		super(Yagala, self).__init__()
+		super(GamePlay, self).__init__()
 		self.window = None
 		self.on_top = False
-		self.settings = YagalaConfig('yagala.ini')
-		self.ui_settings = YagalaConfig('ui.ini')
+		self.settings = GamePlayConfig('gameplay.ini')
+		self.ui_settings = GamePlayConfig('ui.ini')
 		self.providers = [
 			SteamProvider(self.settings),
 			EmulatorProvider(self.settings),

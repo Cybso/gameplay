@@ -1,2 +1,2 @@
-YaGaLa - Yet another Game Launcher
-==================================
+Game:Play Application Launcher
+==============================

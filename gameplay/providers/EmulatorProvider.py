@@ -20,8 +20,8 @@ import fnmatch
 import hashlib
 from PyQt5.QtCore import *
 
-from yagala.AppProvider import AppProvider, AppItem
-from yagala.YagalaConfig import YagalaConfig
+from gameplay.AppProvider import AppProvider, AppItem
+from gameplay.GamePlayConfig import GamePlayConfig
 
 LOGGER = logging.getLogger(__name__)
 CONF_EMULATOR_SECTION='providers/emulator'
@@ -159,7 +159,7 @@ class EmulatorProvider(AppProvider):
 
 		# Load 'emulators.ini'
 		self.emulators = []
-		emulatorIni = YagalaConfig('emulators.ini')
+		emulatorIni = GamePlayConfig('emulators.ini')
 		for section in emulatorIni.sections():
 			try:
 				LOGGER.info('Loading emulator configuration for "%s"' % section)

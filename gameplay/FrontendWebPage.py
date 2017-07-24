@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 ###
-# YAGALA - Yet Another Gamepad Launcher
+# Game:Play - Yet Another Gamepad Launcher
 #
 # A Python and PyQt5 based application launcher that uses
 # HTML5's gamepad API to implement a platform independent
@@ -20,7 +20,7 @@ from PyQt5.QtCore import QVariant, QTimer, QByteArray, QBuffer, QIODevice
 from PyQt5.QtNetwork import QNetworkReply, QNetworkAccessManager, QNetworkRequest
 
 
-from . import Yagala
+from . import GamePlay
 
 LOGGER = logging.getLogger(__name__)
 

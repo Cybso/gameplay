@@ -4,7 +4,7 @@
 	define(['knockout', 'ko/translate', 'RemoteData', 'locales'], 
 		function(ko, t, RemoteData, locales) {
 			return function(viewModel) {
-				var apps = ko.observableArray(window.yagala.getApps());
+				var apps = ko.observableArray(window.gameplay.getApps());
 
 				// Resolves an entry by its id
 				apps.byId = function(id) {
@@ -21,35 +21,35 @@
 				 * Launch an application
 				 **/
 				var runApp = function(app) {
-					return window.yagala.runApp(app.id === undefined ? app : app.id);
+					return window.gameplay.runApp(app.id === undefined ? app : app.id);
 				};
 
 				/**
 				 * Suspend an application
 				 **/
 				var suspendApp = function(app) {
-					return window.yagala.suspendApp(app.id === undefined ? app : app.id);
+					return window.gameplay.suspendApp(app.id === undefined ? app : app.id);
 				};
 
 				/**
 				 * Resume an application
 				 **/
 				var resumeApp = function(app) {
-					return window.yagala.resumeApp(app.id === undefined ? app : app.id);
+					return window.gameplay.resumeApp(app.id === undefined ? app : app.id);
 				};
 
 				/**
 				 * Stop an application
 				 **/
 				var stopApp = function(app) {
-					return window.yagala.stopApp(app.id === undefined ? app : app.id);
+					return window.gameplay.stopApp(app.id === undefined ? app : app.id);
 				};
 
 				/**
 				 * Raise current window
 				 **/
 				var raiseWindow = function(app) {
-					return window.yagala.raiseWindow();
+					return window.gameplay.raiseWindow();
 				};
 
 				/**

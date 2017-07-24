@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 ###
-# YAGALA - Yet Another Gamepad Launcher
+# Game:Play - Yet Another Gamepad Launcher
 #
 # A Python and PyQt5 based application launcher that uses
 # HTML5's gamepad API to implement a platform independent
@@ -48,13 +48,13 @@ from PyQt5.QtWebKit import QWebSettings
 import sip
 sip.setapi('QString', 2)
 
-#APPDATA_PATHS = [QDir.toNativeSeparators(x + 'yagala/') for x in QStandardPaths.locateAll(QStandardPaths.AppDataLocation, "", QStandardPaths.LocateDirectory)]
+#APPDATA_PATHS = [QDir.toNativeSeparators(x + 'gameplay/') for x in QStandardPaths.locateAll(QStandardPaths.AppDataLocation, "", QStandardPaths.LocateDirectory)]
 #APPLICATION_PATHS = QStandardPaths.locateAll(QStandardPaths.ApplicationsLocation, "", QStandardPaths.LocateDirectory)
 
 # Force usage of IniFile since this application should be portable 
 #settings = QtCore.QSettings(CONFIG_PATH, QSettings.IniFormat)
-#print(settings.value('yagala/foo'))
-#settings.setValue('yagala/foo', 'bar')
+#print(settings.value('gameplay/foo'))
+#settings.setValue('gameplay/foo', 'bar')
 #settings.sync()
 
 
@@ -80,21 +80,21 @@ def main():
 	LOGGER = logging.getLogger(__name__)
 
 	# This must be imported AFTER logging has been configured!
-	from yagala import Yagala
-	from yagala import Frontend
+	from gameplay import GamePlay
+	from gameplay import Frontend
 
 	# Start application (and ensure it can be killed with CTRL-C)
 	signal.signal(signal.SIGINT, signal.SIG_DFL)
 	app = QApplication(sys.argv)
-	app.setApplicationName('yagala')
+	app.setApplicationName('gameplay')
 	app.setWindowIcon(QIcon(uipath + 'img/Y.svg'))
-	yagala = Yagala()
+	gameplay = GamePlay()
 
 	# Enable developer console
 	QWebSettings.globalSettings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True)
 
 	# Initialize frontend
-	frontend = Frontend(uipath, yagala)
+	frontend = Frontend(uipath, gameplay)
 
 	if args.stayontop:
 		LOGGER.info('Enable WindowStayOnTop')

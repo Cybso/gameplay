@@ -10,7 +10,7 @@ import urllib3
 import psutil
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QIcon
-from yagala.AppProvider import AppProvider, AppItem
+from gameplay.AppProvider import AppProvider, AppItem
 
 
 LOGGER = logging.getLogger(__name__)

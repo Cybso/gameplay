@@ -1,9 +1,9 @@
 
 # Stub
 
-from yagala.AppProvider import AppProvider, AppItem
+from gameplay.AppProvider import AppProvider, AppItem
 
-class SystemAppProvider(AppProvider):
+class DesktopEntryProvider(AppProvider):
 	def __init__(self, settings):
 		AppProvider.__init__(self, settings)
 

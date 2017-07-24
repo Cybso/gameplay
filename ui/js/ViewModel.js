@@ -1,5 +1,5 @@
 /**
- * ViewModel for Yagala
+ * ViewModel for GamePlay
  *
  *	License: GPL 2.1
  *
@@ -10,8 +10,8 @@
 	"use strict";
 
 	define(['knockout', 'RemoteData', 'moment', 'utils', 
-		'app/Locale', 'app/Yagala', 'app/SelectedNode', 'app/Gamepad', 'app/Snake'],
-		function(ko, RemoteData, moment, utils, Locale, Yagala,  SelectedNode, Gamepad, Snake) {
+		'app/Locale', 'app/GamePlay', 'app/SelectedNode', 'app/Gamepad', 'app/Snake'],
+		function(ko, RemoteData, moment, utils, Locale, GamePlay,  SelectedNode, Gamepad, Snake) {
 			var exports = { };
 
 			/**
@@ -35,7 +35,7 @@
 			})();
 
 			// Load initial set of apps...
-			exports.yagala = new Yagala(exports);
+			exports.gameplay = new GamePlay(exports);
 
 			// Contains the node that is marked with CSS class 'selected'
 			// and provides navigation methods moveLeft, moveRight, moveTop
