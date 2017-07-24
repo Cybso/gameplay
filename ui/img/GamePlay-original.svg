@@ -12,7 +12,7 @@
    height="103.45637"
    width="383.73825"
    id="svg2226"
-   sodipodi:docname="GamePlay.svg"
+   sodipodi:docname="GamePlay-original.svg"
    inkscape:version="0.92.1 r15371">
   <sodipodi:namedview
      pagecolor="#ffffff"
@@ -865,27 +865,17 @@
   <g
      id="g28246"
      transform="translate(354.69342,71.344851)">
-    <g
-       aria-label="Game"
+    <text
+       id="text19863"
+       y="8.1915169"
+       x="-348.53342"
        style="font-style:normal;font-weight:normal;font-size:40px;line-height:25px;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.99999994px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       id="text19863">
-      <path
-         d="m -336.05342,8.1915169 q -3.552,0 -6.144,-2.688 -2.496,-2.688 -2.496,-6.43200002 V -49.408483 q 0,-3.84 2.496,-6.432 2.592,-2.688 6.144,-2.688 h 12 q 3.552,0 6.048,2.688 2.592,2.592 2.592,6.432 v 7.392 l -10.56,5.568 v -12 h -8.16 v 46.5599999 h 8.16 V -18.496483 l -4.32,2.208 v -11.808 l 14.88,-7.68 V 8.1915169 q 0,0 -20.64,0 z"
+       xml:space="preserve"><tspan
          style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:condensed;font-size:96px;font-family:Horta;-inkscape-font-specification:'Horta, Semi-Bold Condensed';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#5c61a6;fill-opacity:1;stroke-width:0.99999994px"
-         id="path28267" />
-      <path
-         d="m -299.11592,8.1915169 q -3.552,0 -6.144,-2.592 -2.496,-2.688 -2.496,-6.52800002 V -18.688483 l 18.24,-9.12 v -7.2 h -7.68 v 4.8 l -10.56,5.28 v -11.04 q 0,-3.744 2.496,-6.432 2.592,-2.688 6.144,-2.688 h 11.52 q 3.552,0 6.048,2.688 2.592,2.592 2.592,6.432 V 8.1915169 h -10.56 v -4.896 q -0.576,1.248 -1.536,2.208 -2.592,2.688 -6.144,2.688 z m 1.92,-22.5599999 v 12.4799999 h 7.68 V -18.208483 Z"
-         style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:condensed;font-size:96px;font-family:Horta;-inkscape-font-specification:'Horta, Semi-Bold Condensed';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#5c61a6;fill-opacity:1;stroke-width:0.99999994px"
-         id="path28269" />
-      <path
-         d="m -260.63342,8.1915169 h -10.56 V -45.088483 h 10.56 v 4.896 q 0.576,-1.248 1.536,-2.304 2.592,-2.592 6.144,-2.592 h 1.92 q 3.552,0 6.144,2.592 1.344,1.536 2.016,3.456 0.672,-1.92 2.016,-3.456 2.592,-2.592 6.144,-2.592 h 1.92 q 3.552,0 6.048,2.688 2.592,2.592 2.592,6.432 V 8.1915169 h -10.56 V -35.008483 h -7.68 V 8.1915169 h -10.56 V -35.008483 h -7.68 z"
-         style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:condensed;font-size:96px;font-family:Horta;-inkscape-font-specification:'Horta, Semi-Bold Condensed';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#5c61a6;fill-opacity:1;stroke-width:0.99999994px"
-         id="path28271" />
-      <path
-         d="m -216.44342,-35.968483 q 0,-3.936 2.496,-6.528 2.592,-2.592 6.144,-2.592 h 11.52 q 3.552,0 6.048,2.688 2.592,2.592 2.592,6.432 v 12.96 l -18.24,9.12 v 11.9999999 h 7.68 v -9.5999999 l 10.56,-5.28 v 15.83999988 q 0,3.74400002 -2.592,6.43200002 -2.496,2.688 -6.048,2.688 h -11.52 q -3.552,0 -6.144,-2.592 -2.496,-2.688 -2.496,-6.52800002 z m 18.24,8.64 v -7.68 h -7.68 v 11.52 z"
-         style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:condensed;font-size:96px;font-family:Horta;-inkscape-font-specification:'Horta, Semi-Bold Condensed';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#5c61a6;fill-opacity:1;stroke-width:0.99999994px"
-         id="path28273" />
-    </g>
+         y="8.1915169"
+         x="-348.53342"
+         id="tspan19861"
+         sodipodi:role="line">Game</tspan></text>
     <g
        id="g12097"
        transform="matrix(3.8725017,0,0,3.8725017,-319.30779,-402.36931)">
@@ -905,26 +895,16 @@
          style="opacity:0.32075471;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.74536169px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          inkscape:connector-curvature="0" />
     </g>
-    <g
-       aria-label="Play"
+    <text
+       id="text19863-1"
+       y="8.6715126"
+       x="-104.34516"
        style="font-style:normal;font-weight:normal;font-size:40px;line-height:25px;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.99999994px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       id="text19863-1">
-      <path
-         d="m -81.785161,-30.208487 v -17.76 h -8.16 v 22.08 z m -8.16,38.8799996 H -100.50516 V -58.048487 h 20.639999 q 3.552,0 6.048,2.688 2.592,2.592 2.592,6.432 v 25.248 l -18.72,9.6 z"
+       xml:space="preserve"><tspan
          style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:condensed;font-size:96px;font-family:Horta;-inkscape-font-specification:'Horta, Semi-Bold Condensed';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#5c61a6;fill-opacity:1;stroke-width:0.99999994px"
-         id="path28276" />
-      <path
-         d="M -64.505161,8.6715126 V -53.248487 l 10.56,-5.28 V 8.6715126 Z"
-         style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:condensed;font-size:96px;font-family:Horta;-inkscape-font-specification:'Horta, Semi-Bold Condensed';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#5c61a6;fill-opacity:1;stroke-width:0.99999994px"
-         id="path28278" />
-      <path
-         d="m -37.677661,8.6715126 q -3.552,0 -6.144,-2.592 -2.496,-2.688 -2.496,-6.528 V -18.208487 l 18.24,-9.12 v -7.2 h -7.68 v 4.8 l -10.56,5.28 v -11.04 q 0,-3.744 2.496,-6.432 2.592,-2.688 6.144,-2.688 h 11.52 q 3.552,0 6.048,2.688 2.592,2.592 2.592,6.432 V 8.6715126 h -10.56 v -4.896 q -0.576,1.248 -1.536,2.208 -2.592,2.688 -6.144,2.688 z m 1.92,-22.5599996 v 12.4799996 h 7.68 V -17.728487 Z"
-         style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:condensed;font-size:96px;font-family:Horta;-inkscape-font-specification:'Horta, Semi-Bold Condensed';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#5c61a6;fill-opacity:1;stroke-width:0.99999994px"
-         id="path28280" />
-      <path
-         d="M 8.4848386,-44.608487 H 19.044839 v 57.6 q 0,3.84 -2.592,6.432 -2.496,2.688 -6.048,2.688 H -1.1151614 q -3.552,0 -6.144,-2.688 -2.496,-2.688 -2.496,-6.432 V 9.6315126 l 10.55999996,-5.28 V 12.031513 H 8.4848386 V -5.7284874 l -18.24,9.12 V -44.608487 H 0.80483856 v 32.16 l 7.68000004,-3.84 z"
-         style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:condensed;font-size:96px;font-family:Horta;-inkscape-font-specification:'Horta, Semi-Bold Condensed';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#5c61a6;fill-opacity:1;stroke-width:0.99999994px"
-         id="path28282" />
-    </g>
+         y="8.6715126"
+         x="-104.34516"
+         id="tspan19861-3"
+         sodipodi:role="line">Play</tspan></text>
   </g>
 </svg>

@@ -1,3 +1,12 @@
+/**
+ * Color Schema: http://paletton.com/#uid=54q0u0kgDu36ROlbPCwkWptoPlb
+ * Font: https://fontlibrary.org/en/font/horta
+ **/
+@font-face {
+	font-family: 'Horta';
+	src: url('fonts/horta.ttf') format('truetype'); 
+}
+
 body {
 	background-image: url('../img/wallpapers/HOT_Balloon_Trip.jpg');
 	background-repeat: no-repeat;
@@ -10,7 +19,8 @@ body {
 
 header {
 	background-color: rgba(255, 255, 255, 0.6);
-	color: #000080;
+	font-family: 'Horta';
+	color: #5C61A6;
 }
 
 #widgets > ul > li {
