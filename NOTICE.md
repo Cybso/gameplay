@@ -30,3 +30,7 @@ The following artwork is used for this program
 
 * Icons from the Oxygen Icon Theme (LGPLv3)
   - See ui/img/icons/OXYGEN-LICENSE.txt
+
+* Font "Horta"
+  - URL: https://fontlibrary.org/th/font/horta
+  - License: SIL OPEN FONT LICENSE
