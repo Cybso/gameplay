@@ -78,7 +78,7 @@ class GamePlay(QObject):
 
 	@pyqtSlot(result='QVariantList')
 	def getApps(self):
-		return [app.__dict__ for app in self.apps]
+		return sorted([app.__dict__ for app in self.apps], key=lambda app: app['label'].lower())
 	
 	@pyqtSlot(str, result='QVariantMap')
 	def runApp(self, appid):
