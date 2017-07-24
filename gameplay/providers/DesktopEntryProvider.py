@@ -55,16 +55,31 @@ class DesktopEntryProvider(AppProvider):
 				cmd = cfg.get('Desktop Entry', 'Exec', fallback=None, raw=True)
 				if cmd and name:
 					icon = cfg.get('Desktop Entry', 'Icon', fallback=None, raw=True)
-					categories = cfg.get('Desktop Entry', 'Categories', fallback='', raw=True).split(';')
+					categories = [x for x in cfg.get('Desktop Entry', 'Categories', fallback='', raw=True).split(';') if x]
 
 				if cfg.has_section('Desktop Action Fullscreen'):
 					cmd = cfg.get('Desktop Action Fullscreen', 'Exec', fallback=cmd, raw=True)
+
+				tryExec = cfg.get('Desktop Entry', 'TryExec', fallback=None, raw=True)
+				noDisplay = cfg.getboolean('Desktop Entry', 'NoDisplay', fallback=False, raw=True)
+				onlyShowIn = [x for x in cfg.get('Desktop Entry', 'OnlyShowIn', fallback='', raw=True).split(';') if x]
+				notShowIn = [x for x in cfg.get('Desktop Entry', 'NotShowIn', fallback='', raw=True).split(';') if x]
+				if noDisplay:
+					return None
+				if len(onlyShowIn) > 0 and 'GamePlay' not in onlyShowIn:
+					return None
+				if len(notShowIn) > 0 and 'GamePlay' in notShowIn:
+					return None
+				if tryExec and not QStandardPaths.findExecutable(tryExec) and not os.path.exists(tryExec):
+					return None
 
 				# Remove field codes from command, we do not have them
 				# https://standards.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html#exec-variables
 				if cmd.find('%') >= 0:
 					cmd = re.sub(r'%%', '%', re.sub(r'%[^%]', '', cmd))
 				cmd = shlex.split(cmd)
+				if len(cmd) == 0 or (not QStandardPaths.findExecutable(cmd[0]) and not os.path.exists(cmd[0])):
+					return None;
 
 				if icon:
 					icon = 'icon://' + icon
