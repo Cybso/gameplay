@@ -47,6 +47,11 @@
 					<div class="label" data-bind="text: label"></div>
 				</li>
 			</ul>
+			<!-- ko if: gameplay.apps().length == 0 -->
+				<div class="no-apps-found" data-bind="t: 'no-apps-found'">
+					No applications found. See README.md to learn how to configure application providers.
+				</div>
+			<!-- /ko -->
 		</div>
 		<div id="copyright-notice">
 			<!-- Text filled by theme.css -->

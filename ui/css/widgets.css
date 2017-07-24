@@ -4,6 +4,20 @@
 	padding: 1em;
 }
 
+#widgets > div.no-apps-found {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	padding: 1em;
+	-webkit-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+	background-color: #fff;
+	border: 1px solid red;
+	border-radius: 0.5ex;
+	font-size: 1.2em;
+	text-align: center;
+}
+
 #widgets > ul {
 	list-style: none;
 	display: flex;

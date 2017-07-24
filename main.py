@@ -13,7 +13,7 @@
 
 import os
 import sys
-import importlib
+from importlib import util
 
 # Requires at least Python 3.4
 if sys.version_info < (3,4):
@@ -23,16 +23,17 @@ if sys.version_info < (3,4):
 	sys.exit(1)
 
 # Check for PyQt5 before loading it to create a nice error message if this is missing
-spec = importlib.util.find_spec("PyQt5")
-if importlib.util.find_spec("PyQt5") is None:
+if util.find_spec("PyQt5") is None:
 	sys.stderr.write("Module PyQt5 not found. Maybe you need to install 'python3-pyqt5'.%s" % os.linesep)
 	sys.exit(1)
 
-if importlib.util.find_spec("PyQt5.QtQml") is None:
-	sys.stderr.write("Module PyQt5.QtQml not found. Maybe you need to install 'python3-pyqt5.qtquick'.%s" % os.linesep)
+if util.find_spec("PyQt5.QtWebKit") is None:
+	sys.stderr.write("Module 'PyQt5.QtWebKit' not found. Maybe you need to install 'python3-pyqt5.qtwebkit'.%s" % os.linesep)
 	sys.exit(1)
 
-
+if util.find_spec("psutil") is None:
+	sys.stderr.write("Module 'psutil' not found. Maybe you need to install 'python3-psutil'.%s" % os.linesep)
+	sys.exit(1)
 
 import argparse
 import signal
