@@ -149,7 +149,7 @@ class Emulator:
 			if not icon:
 				icon = self.icon
 
-			apps.append(AppItem(id, label, icon, cmd=cmd))
+			apps.append(AppItem(id, label, icon, cmd=cmd, categories=[self.label]))
 
 		return apps
 

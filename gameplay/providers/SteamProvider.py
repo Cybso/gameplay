@@ -161,6 +161,7 @@ class SteamAppItem(AppItem):
 		AppItem.__init__(self, 'steam_' + manifest['appid'], manifest['name'], provider.find_icon(manifest), icon_selected, suspended)
 		self._appid = manifest['appid']
 		self._provider = provider
+		self.categories = ['Steam App']
 
 		cmd = self._provider.find_steam_exe()
 		if cmd:
