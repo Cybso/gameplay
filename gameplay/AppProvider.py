@@ -138,13 +138,14 @@ class AppProcess:
 		LOGGER.info("Child process process {} terminated with exit code {}".format(proc.pid, proc.returncode))
 
 class AppItem:
-	def __init__(self, id, label, icon = None, icon_selected = None, suspended = False, cmd=None):
+	def __init__(self, id, label, icon = None, icon_selected = None, suspended = False, cmd=None, categories=[]):
 		self.id = id
 		self.label = label
 		self.icon = icon
 		self.icon_selected = icon_selected
 		self.suspended = suspended
 		self.cmd = cmd
+		self.categories = categories
 
 	###
 	# Executes the application and returns a AppProcess object,
