@@ -33,8 +33,8 @@ header {
 #widgets > ul > li.current-app,
 #widgets > ul > li:hover,
 #widgets > ul > li:active {
-	border-color: #9ecaed;
-	box-shadow: 0 0 10px #9ecaed;
+	border-color: #5C61A6;
+	box-shadow: 0 0 10px #5C61A6;
 }
 
 #widgets > ul > li > div.label {
@@ -44,7 +44,8 @@ header {
 }
 
 #widgets > ul > li.selected > div.label {
-	background-color: rgba(158, 202, 237, 0.8);
+	background-color: rgba(92, 97, 166, 0.8);
+	color: #ffffff;
 }
 
 .copyright-notice-background:before {
@@ -52,20 +53,21 @@ header {
 }
 
 .dialog {
-	border: 0.5ex solid #9ecaed;
+	border: 0.5ex solid #5C61A6;
 	outline: none;
 	border-radius: 7px;
-	box-shadow: 0 0 10px #9ecaed;
+	box-shadow: 0 0 10px #5C61A6;
 }
 
 .dialog > .dialog-label {
 	font-size: 1.2em;
 	font-weight: bold;
-	background-color: #9ecaed;
+	background-color: #5C61A6;
+	color: #ffffff;
 }
 
 .dialog > .dialog-buttons {
-	border-top: 0.25ex solid #9ecaed;
+	border-top: 0.25ex solid #5C61A6;
 }
 
 .button-run,
