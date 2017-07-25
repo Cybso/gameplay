@@ -20,7 +20,7 @@
 		</header>
 
 		<div id="widgets">
-			<ul data-bind="foreach: gameplay.apps">
+			<ul data-bind="foreach: gameplay.apps.extend({ delay: { timeout: 30, items: 25 } })">
 				<li class="widget selectable" data-bind="
 					attr: {
 						'data-app': id
