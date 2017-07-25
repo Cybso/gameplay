@@ -1,8 +1,8 @@
 (function() {
 	"use strict";
 
-	define(['knockout', 'ko/translate', 'RemoteData', 'locales'], 
-		function(ko, t, RemoteData, locales) {
+	define(['knockout', 'ko/translate', 'RemoteData', 'locales', 'ko/mapper'], 
+		function(ko, t, RemoteData, locales, kom) {
 			return function(viewModel) {
 				var apps = ko.observableArray(window.gameplay.getApps());
 
@@ -61,13 +61,30 @@
 				status.byId = function(appid) {
 					appid = appid.id !== undefined ? appid.id : appid;
 					var s = status();
-					for (var i = 0; i < s.length; i+=1) {
-						if (s[i].id === appid) {
-							return s[i];
+					if (s !== undefined) {
+						for (var i = 0; i < s.length; i+=1) {
+							if (ko.unwrap(s[i].id) === appid) {
+								return s[i];
+							}
 						}
 					}
-					return undefined;
+					return {};
 				};
+
+				/**
+				 * Updates the process status.
+				 */
+				var pullAppStatus = function() {
+					var result = window.gameplay.getAllAppStatus();
+					kom.fromJS(result, { '$key': 'id' }, status);
+					if (document.hidden) {
+						window.setTimeout(pullAppStatus, 1000);
+					} else {
+						window.setTimeout(pullAppStatus, 250);
+					}
+				};
+				pullAppStatus();
+
 
 				return {
 					apps: apps,
@@ -76,7 +93,8 @@
 					resumeApp: resumeApp,
 					stopApp: stopApp,
 					raiseWindow: raiseWindow,
-					status: ko.pureComputed(status)
+					status: ko.pureComputed(status),
+					statusById: status.byId
 				};
 			};
 		}

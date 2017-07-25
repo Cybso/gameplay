@@ -108,18 +108,31 @@ class GamePlay(QObject):
 		p = self.running.get(appid)
 		if p:
 			return {
+				'id': appid,
 				'active': p.is_running(),
 				'suspended': p.is_suspended(),
 				'status': p.status()
 			}
 
 		return {
+			'id': appid,
 			'active': False,
 			'suspended': False,
-			'status': 'DEAD'
+			'status': 'inactive'
 		}
 
-	
+	@pyqtSlot(result='QVariantList')
+	def getAllAppStatus(self):
+		result = []
+		for appid, p in self.running.items():
+			result.append({
+				'id': appid,
+				'active': p.is_running(),
+				'suspended': p.is_suspended(),
+				'status': p.status()
+			})
+		return result
+
 	###
 	# Tries to suspend an app and all of its children
 	###

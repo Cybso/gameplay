@@ -37,6 +37,11 @@ header {
 	box-shadow: 0 0 10px #5C61A6;
 }
 
+#widgets > ul > li.running-app {
+	border-color: #EFCE73;
+	box-shadow: 0 0 10px #EFCE73;
+}
+
 #widgets > ul > li > div.label {
 	background-color: rgba(255, 255, 255, 0.8);
 	text-align: center;
