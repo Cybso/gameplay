@@ -76,7 +76,7 @@
 				 */
 				var pullAppStatus = function() {
 					var result = window.gameplay.getAllAppStatus();
-					kom.fromJS(result, { '$key': 'id' }, status);
+					kom.fromJS(result, { '$key': 'id', '$merge': true }, status);
 					if (document.hidden) {
 						window.setTimeout(pullAppStatus, 1000);
 					} else {
