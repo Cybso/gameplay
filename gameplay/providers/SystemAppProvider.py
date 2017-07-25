@@ -61,7 +61,6 @@ if system == 'Linux':
 			for c in  categories[:]:
 				if not c in keep_categories:
 					categories.remove(c)
-					print(categories)
 			return len(categories) > 0
 
 #elif system == 'Darwin':
