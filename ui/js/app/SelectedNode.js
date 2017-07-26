@@ -325,6 +325,10 @@
 
 					var i;
 					var current = selectedNode();
+					if ([].indexOf.call(elements, current) < 0) {
+						current = undefined;
+					}
+
 					if (current === undefined || current.getBoundingClientRect === undefined) {
 						// Select the first element with the lowest 'data-select-order' value
 						var currentSelectOrder = Number.POSITIVE_INFINITY;
