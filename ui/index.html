@@ -22,7 +22,7 @@
 		<div id="widgets" style="display: none" data-bind="style: { display: undefined }">
 			<div id="widget-filter" class="hidden" data-bind="css: { 'hidden': !filter() }">
 				<input type="text" data-bind="textInput: filter">
-				<button class="selectable" data-bind="t: 'clear', click: function() { filter(''); }">Clear</button>
+				<button data-bind="t: 'clear', click: function() { filter(''); }, css: { 'selectable': filter }">Clear</button>
 			</div>
 
 			<ul data-bind="foreach: filteredApps.extend({ delay: { timeout: 30, items: 25 } })">
