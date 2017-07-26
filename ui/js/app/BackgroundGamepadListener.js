@@ -23,6 +23,9 @@
 					} else {
 						backgroundGamepadMonitor -= 1;
 					}
+					if (backgroundGamepadMonitor < 0) {
+						backgroundGamepadMonitor = 0;
+					}
 				};
 				loop();
 			};
@@ -60,6 +63,7 @@
 			return {
 				'enable': function() {
 					if (backgroundGamepadInterval === undefined) {
+						backgroundGamepadMonitor = 0;
 						backgroundGamepadInterval = window.setInterval(backgroundGamepadLoop, 1000);
 					}
 				},
