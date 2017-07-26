@@ -85,6 +85,30 @@
 				};
 				pullAppStatus();
 
+				/**
+				 * Suspends all running apps
+				 */
+				var suspendAllApps = function() {
+					var result = window.gameplay.getAllAppStatus();
+					for (var i = 0; i < result.length; i+=1) {
+						if (result[i].active) {
+							window.gameplay.suspendApp(result[i].id);
+						}
+					}
+				};
+				
+				/**
+				 * Kills all running apps
+				 **/
+				var stopAllApps = function() {
+					var result = window.gameplay.getAllAppStatus();
+					for (var i = 0; i < result.length; i+=1) {
+						if (result[i].active) {
+							window.gameplay.stopApp(result[i].id);
+						}
+					}
+				};
+	
 
 				return {
 					apps: apps,
@@ -92,6 +116,8 @@
 					suspendApp: suspendApp,
 					resumeApp: resumeApp,
 					stopApp: stopApp,
+					suspendAllApps: suspendAllApps,
+					stopAllApps: stopAllApps,
 					raiseWindow: raiseWindow,
 					status: ko.pureComputed(status),
 					statusById: status.byId

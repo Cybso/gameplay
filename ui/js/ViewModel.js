@@ -10,8 +10,9 @@
 	"use strict";
 
 	define(['knockout', 'RemoteData', 'moment', 'utils', 
-		'app/Locale', 'app/GamePlay', 'app/SelectedNode', 'app/Gamepad', 'app/Snake'],
-		function(ko, RemoteData, moment, utils, Locale, GamePlay,  SelectedNode, Gamepad, Snake) {
+		'app/Locale', 'app/GamePlay', 'app/SelectedNode', 'app/Gamepad', 'app/Snake', 'app/BackgroundGamepadListener'],
+		function(ko, RemoteData, moment, utils,
+				Locale, GamePlay,  SelectedNode, Gamepad, Snake, BackgroundGamepadListener) {
 			var exports = { };
 
 			/**
@@ -192,8 +193,10 @@
 				// X-Axes (-1..1)
 				case 'AXES_0':
 					if (state < 0) {
+						console.log('left');
 						gamepadLongpressSimulator(gamepad, exports.selectedNode.moveLeft);
 					} else if (state > 0) {
+						console.log('right');
 						gamepadLongpressSimulator(gamepad, exports.selectedNode.moveRight);
 					}
 					break;
@@ -216,27 +219,37 @@
 					}
 					break;
 
+				case 'BUTTON_1':
+					if (exports.currentApp()) {
+						exports.currentApp(undefined);
+					}
+					break;
+
 				case 'BUTTON_6': // Select on XBox360
 				case 'BUTTON_7': // Start on XBox360
 				case 'BUTTON_8': // Select
 				case 'BUTTON_9': // Start
-					// At least two of these buttons must be pressed at the same time
+					// Button0 plus at least two of these buttons must be pressed at the same time
 					if (gamepad.buttons[6] + gamepad.buttons[7] + gamepad.buttons[8] + gamepad.buttons[9] > 1) {
-						snake = new Snake();
+						if (gamepad.buttons[0] > 0) {
+							snake = new Snake();
+						}
 					}
 					break;
 				}
 			});
 
 			// Disable animations when the window doesn't have the focus
-			var body = document.getElementsByTagName('body')[0];
+			var backgroundGamepadListener = new BackgroundGamepadListener(exports);
 			var visibilityChangeListener = function() {
 				if (document.hidden) {
-					body.classList.add('window-inactive');
-					body.classList.remove('window-active');
+					document.body.classList.add('window-inactive');
+					document.body.classList.remove('window-active');
+					backgroundGamepadListener.enable();
 				} else {
-					body.classList.add('window-active');
-					body.classList.remove('window-inactive');
+					document.body.classList.add('window-active');
+					document.body.classList.remove('window-inactive');
+					backgroundGamepadListener.disable();
 				}
 			};
 			document.addEventListener('visibilitychange', visibilityChangeListener);
