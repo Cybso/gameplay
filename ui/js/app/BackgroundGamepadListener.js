@@ -9,17 +9,14 @@
 					if (gamepad.buttons[a] && gamepad.buttons[b]) {
 						triggerSuspend -= 1;
 						triggerTerminate -= 1;
-						console.log("monitor buttons " + triggerSuspend + " " + triggerTerminate);
 						if (triggerSuspend === 0) {
 							// Suspend, but wait for terminate
-							console.log("suspend");
 							viewModel.gameplay.suspendAllApps();
 							window.setTimeout(loop, interval);
 						} else if (triggerTerminate > 0) {
 							// Wait longer...
 							window.setTimeout(loop, interval);
 						} else {
-							console.log("terminate");
 							viewModel.gameplay.stopAllApps();
 							backgroundGamepadMonitor -= 1;
 						}
@@ -36,7 +33,6 @@
 			// If they are pressed more than 10 seconds they are terminated.
 			var backgroundGamepadLoop = function() {
 				var gamepads = viewModel.gamepad();
-				console.log("backgroundGamepadInterval " + gamepads.length + " " + backgroundGamepadMonitor);
 				for (var i = 0; i < gamepads.length && backgroundGamepadMonitor === 0; i+=1) {
 					var gamepad = gamepads[i];
 					if (gamepad.buttons[6] + gamepad.buttons[7] + gamepad.buttons[8] + gamepad.buttons[9] !== 2) {
@@ -64,14 +60,12 @@
 			return {
 				'enable': function() {
 					if (backgroundGamepadInterval === undefined) {
-						console.log("Starting gamepad loop");
 						backgroundGamepadInterval = window.setInterval(backgroundGamepadLoop, 1000);
 					}
 				},
 
 				'disable': function() {
 					if (backgroundGamepadInterval !== undefined) {
-						console.log("Stopping gamepad loop");
 						window.clearInterval(backgroundGamepadInterval);
 						backgroundGamepadInterval = undefined;
 					}

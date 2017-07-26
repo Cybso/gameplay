@@ -147,8 +147,6 @@
 						node.click();
 					}
 					break;
-				default:
-					console.log("unhandled keydown", evt.code || evt.keyIdentifier, evt);
 				}
 			});
 
@@ -193,10 +191,8 @@
 				// X-Axes (-1..1)
 				case 'AXES_0':
 					if (state < 0) {
-						console.log('left');
 						gamepadLongpressSimulator(gamepad, exports.selectedNode.moveLeft);
 					} else if (state > 0) {
-						console.log('right');
 						gamepadLongpressSimulator(gamepad, exports.selectedNode.moveRight);
 					}
 					break;
