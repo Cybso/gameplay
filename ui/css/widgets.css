@@ -2,6 +2,7 @@
 	position: relative;
 	z-index: 10;
 	padding: 1em;
+	padding-top: 10vh;
 }
 
 #widgets > div.no-apps-found {
@@ -23,7 +24,6 @@
 	display: flex;
 	padding: 0;
 	margin: 0;
-	margin-top: 10vh;
 	flex-wrap: wrap;
 	justify-content: space-around;
 	align-content: space-around;
@@ -69,4 +69,31 @@ body.window-active #widgets > ul > li.current-app > .icon-selected {
 	right: 0;
 }
 
+#widget-filter {
+	position: fixed;
+	z-index: 30;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	background-color: rgba(255, 255, 255, 0.6);
+	padding: 1em;
+	display: flex;
+	margin-bottom: 0;
 
+	-webkit-transform: translate(0, 0);
+	transform: translate(0, 0);
+	-webkit-transition: -webkit-transform 1s ease;
+	transition: transform 1s ease;
+}
+
+#widget-filter.hidden {
+	-webkit-transform: translate(0, 100%);
+}
+
+#widget-filter > input {
+	display: block;
+	flex-grow: 1;
+}
+
+#widget-filter > button {
+}

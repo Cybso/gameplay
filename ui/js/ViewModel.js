@@ -37,6 +37,30 @@
 			// Load initial set of apps...
 			exports.gameplay = new GamePlay(exports);
 
+			// Application filter (by name)
+			exports.filter = ko.observable();
+			exports.filteredApps = ko.pureComputed(function() {
+				var filter = (exports.filter() || '').toLowerCase().split(/\s+/);
+				var apps = exports.gameplay.apps();
+				if (filter.length === 0) {
+					return apps;
+				}
+				var result = [];
+				for (var i = 0; i < apps.length; i+=1) {
+					var match = true;
+					for (var j = 0; j < filter.length; j+=1) {
+						if (apps[i].label.toLowerCase().indexOf(filter[j]) < 0) {
+							match = false;
+							break;
+						}
+					}
+					if (match) {
+						result.push(apps[i]);
+					}
+				}
+				return result;
+			});
+
 			// Contains the node that is marked with CSS class 'selected'
 			// and provides navigation methods moveLeft, moveRight, moveTop
 			// and moveBottom
@@ -68,6 +92,19 @@
 						snake = new Snake();
 					}
 					return;
+				}
+
+				if (!exports.currentApp() && !exports.filter()) {
+					var keycode = evt.keyCode;
+					if ((keycode > 47 && keycode < 58)     || // number keys
+						(keycode > 64 && keycode < 91)     || // letter keys
+						(keycode > 95 && keycode < 112)) {    // numpad keys
+						evt.preventDefault();
+						exports.filter(String.fromCharCode(keycode));
+						window.setTimeout(function() {
+							document.querySelector('#widget-filter input').focus();
+						}, 30);
+					}
 				}
 
 				switch (evt.code || evt.keyIdentifier) {

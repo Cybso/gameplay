@@ -19,8 +19,13 @@
 			</div>
 		</header>
 
-		<div id="widgets">
-			<ul data-bind="foreach: gameplay.apps.extend({ delay: { timeout: 30, items: 25 } })">
+		<div id="widgets" style="display: none" data-bind="style: { display: undefined }">
+			<div id="widget-filter" class="hidden" data-bind="css: { 'hidden': !filter() }">
+				<input type="text" data-bind="textInput: filter">
+				<button class="selectable" data-bind="t: 'clear', click: function() { filter(''); }">Clear</button>
+			</div>
+
+			<ul data-bind="foreach: filteredApps.extend({ delay: { timeout: 30, items: 25 } })">
 				<li class="widget selectable" data-bind="
 					attr: {
 						'data-app': id
@@ -62,7 +67,7 @@
 		</div>
 
 		<!-- ko if: currentApp -->
-			<div id="current-app-dialog" class="dialog">
+			<div id="current-app-dialog" class="dialog" style="display: none" data-bind="style: { display: undefined }">
 				<!-- ko with: { app: currentApp(), status: gameplay.statusById(currentApp()) } -->
 					<div class="dialog-label" data-bind="text: app.label"></div>
 					<div class="dialog-content" data-bind="
