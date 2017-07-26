@@ -133,8 +133,10 @@
 					if (snake) {
 						snake.exit();
 						snake = undefined;
-					} else{
+					} else if (exports.currentApp()) {
 						exports.currentApp(undefined);
+					} else {
+						exports.filter('');
 					}
 					break;
 				case 'Enter':
