@@ -239,7 +239,6 @@
 			exports.currentGamepads = ko.observableArray();
 			exports.gamepad.addGamepadListener(function(gp, type) {
 				if (type === 'attached') {
-					console.log("gamepad attached");
 					exports.currentGamepads.push(gp);
 				} else if (type === 'detached') {
 					exports.currentGamepads.remove(gp);
