@@ -13,9 +13,38 @@
 					return gamepads;
 				}
 
+				var buttonListeners = [];
+				var gamepadListeners = [];
+				/**
+				 * Notifies all buttonListeners about the gamepad event
+				 **/
+				function fireGamepadButtonEvent(gp, button, state) {
+					for (var i = 0; i < buttonListeners.length; i+=1) {
+						try {
+							buttonListeners[i].call(gamepads, gp, button, state);
+						} catch (err) {
+							console.log(err);
+						}
+					}
+				}
+
+				/**
+				 * Notifies all gamepadListener about attached and detached gamepads
+				 */
+				function fireGamepadEvent(gp, type) {
+					for (var i = 0; i < gamepadListeners.length; i+=1) {
+						try {
+							gamepadListeners[i].call(gamepads, gp, type);
+						} catch (err) {
+							console.log(err);
+						}
+					}
+				}
+
 				// Gamepad interface returns an array of gamepads
+				var currentGamepads = {};
 				var gamepadAccessor = function() {
-					var rawList;
+					var rawList, i;
 					if (navigator.getGamepads) {
 						rawList = navigator.getGamepads();
 					} else if (navigator.webkitGetGamepads) {
@@ -23,15 +52,37 @@
 					} else {
 						return undefined;
 					}
+
+					for (i in currentGamepads) {
+						if (currentGamepads.hasOwnProperty(i)) {
+							currentGamepads[i].active = false;
+						}
+					}
+
 					var result = [];
-					for (var i in rawList) {
+					for (i in rawList) {
 						if (rawList.hasOwnProperty(i)) {
 							var gp = rawList[i];
 							if (gp && gp.id) {
 								result.push(gp);
+								if (currentGamepads[gp.index] === undefined) {
+									// Fire new gamepad event
+									fireGamepadEvent(gp, "attached");
+									currentGamepads[gp.index] = { active: true, gamepad: gp };
+								} else {
+									currentGamepads[gp.index].active = true;
+								}
 							}
 						}
 					}
+
+					for (i in currentGamepads) {
+						if (currentGamepads.hasOwnProperty(i) && currentGamepads[i].active === false) {
+							fireGamepadEvent(currentGamepads[i].gamepad, "detached");
+							delete currentGamepads[i];
+						}
+					}
+
 					return result;
 				};
 
@@ -42,36 +93,36 @@
 					return list === undefined ? [] : list;
 				};
 
-				// Registered event listeners
-				var listeners = [];
-				gamepads.addListener = function(callback) {
-					listeners.push(callback);
+				// Registered event buttonListeners
+				gamepads.addButtonListener = function(callback) {
+					buttonListeners.push(callback);
 				};
-				gamepads.removeListener = function(callback) {
-					var index = listeners.indexOf(callback);
+
+				gamepads.removeButtonListener = function(callback) {
+					var index = buttonListeners.indexOf(callback);
 					if (index >= 0) {
-						listeners.splice(index, 1);
+						buttonListeners.splice(index, 1);
+					}
+				};
+
+				// Registered event gamepadListeners.
+				gamepads.addGamepadListener = function(callback) {
+					gamepadListeners.push(callback);
+					for (var i = 0; i < currentGamepads.length; i+=1) {
+						callback.call(gamepads, currentGamepads[i], 'attached');
+					}
+				};
+
+				gamepads.removeGamepadListener = function(callback) {
+					var index = gamepadListeners.indexOf(callback);
+					if (index >= 0) {
+						gamepadListeners.splice(index, 1);
 					}
 				};
 
 				// Indicator wether gamepad support is available
 				gamepads.supported = function() {
-					return gamepadAccessor() !== undefined;
-				};
-
-				/**
-				 * Notifies all listeners about the gamepad event
-				 **/
-				var fireGamepadButtonEvent = function(gp, button, state) {
-					for (var i in listeners) {
-						if (listeners.hasOwnProperty(i)) {
-							try {
-								listeners[i].call(gamepads, gp, button, state);
-							} catch (err) {
-								console.log(err);
-							}
-						}
-					}
+					return navigator.getGamepads !== undefined || navigator.webkitGetGamepads !== undefined;
 				};
 
 				/**
@@ -109,6 +160,10 @@
 				// Loop that pulls the gamepad state
 				var gamepadStates = {};
 				var gamepadLoop = function() {
+					if (buttonListeners.length === 0 && gamepadListeners.length === 0) {
+						return;
+					}
+
 					// Check for gamepad state
 					var gamepadList = gamepadAccessor();
 					if (!gamepadList) {

@@ -368,11 +368,11 @@
 			};
 
 			var gamepad = new Gamepad();
-			gamepad.addListener(gamepadListener);
+			gamepad.addButtonListener(gamepadListener);
 
 			exports.exit = function() {
 				console.log("exiting");
-				gamepad.removeListener(gamepadListener);
+				gamepad.removeButtonListener(gamepadListener);
 				exports.active = false;
 				clearInterval(intervalHandle);
 			};

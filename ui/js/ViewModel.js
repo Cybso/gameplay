@@ -173,7 +173,7 @@
 			};
 
 			// https://w3c.github.io/gamepad/#remapping
-			exports.gamepad.addListener(function(gamepad, button, state) {
+			exports.gamepad.addButtonListener(function(gamepad, button, state) {
 				if (state >= -0.5 && state <= 0.5) {
 					return;
 				}
@@ -232,6 +232,17 @@
 						}
 					}
 					break;
+				}
+			});
+
+			// Add a listener to show the number of gamepads
+			exports.currentGamepads = ko.observableArray();
+			exports.gamepad.addGamepadListener(function(gp, type) {
+				if (type === 'attached') {
+					console.log("gamepad attached");
+					exports.currentGamepads.push(gp);
+				} else if (type === 'detached') {
+					exports.currentGamepads.remove(gp);
 				}
 			});
 

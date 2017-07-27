@@ -25,6 +25,22 @@ header > div.locale {
 	display: none;
 }
 
+header > div.gamepad {
+	position: relative;
+}
+
+header > div.gamepad > img {
+	height: 90%;
+}
+
+header > div.gamepad:after {
+	position: absolute;
+	right: 0.25rem;
+	bottom: 0.25rem;
+	display: blocK;
+	content: attr(data-index);
+}
+
 header > div.clock {
 	font-size: 8vh;
 }

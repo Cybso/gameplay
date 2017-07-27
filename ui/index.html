@@ -14,10 +14,18 @@
 			<div class="locale">
 				<select size="1" data-bind="value: locale, options: locale.available, optionsValue: 'id', optionsText: 'label'"></select>
 			</div>
+
+			<!-- ko foreach: currentGamepads -->
+				<div class="gamepad" data-bind="attr: { title: (index + 1) + ' ' + id, 'data-index': index + 1 }">
+					<img src="img/gamepads/Gamepad.svg">
+				</div>
+			<!-- /ko -->
+
 			<div class="clock">
 				<span data-bind="text: currentTimeStr"></span>
 			</div>
 		</header>
+
 
 		<div id="widgets" style="display: none" data-bind="style: { display: undefined }">
 			<div id="widget-filter" class="hidden" data-bind="css: { 'hidden': !filter() }">
@@ -25,7 +33,7 @@
 				<button data-bind="t: 'clear', click: function() { filter(''); }, css: { 'selectable': filter }">Clear</button>
 			</div>
 
-			<ul data-bind="foreach: filteredApps.extend({ delay: { timeout: 30, items: 25 } })">
+			<ul class="widget-app-list" data-bind="foreach: filteredApps.extend({ delay: { timeout: 30, items: 25 } })">
 				<li class="widget selectable" data-bind="
 					attr: {
 						'data-app': id

@@ -19,7 +19,7 @@
 	text-align: center;
 }
 
-#widgets > ul {
+#widgets > ul.widget-app-list {
 	list-style: none;
 	display: flex;
 	padding: 0;
@@ -30,7 +30,7 @@
 	align-items: stretch;
 }
 
-#widgets > ul > li {
+#widgets > ul.widget-app-list > li {
 	display: block;
 	margin: 1ex;
 	height: 12rem;
@@ -39,8 +39,8 @@
 	position: relative;
 }
 
-#widgets > ul > li > .icon,
-#widgets > ul > li > .icon-selected {
+#widgets > ul.widget-app-list > li > .icon,
+#widgets > ul.widget-app-list > li > .icon-selected {
 	position: absolute;
 	top: 0;
 	bottom: 0;
@@ -52,17 +52,17 @@
 	background-size: cover;
 }
 
-#widgets > ul > li > .icon-selected {
+#widgets > ul.widget-app-list > li > .icon-selected {
 	display: none;
 }
 
 /* This may be an animated icon, only should when the window is active */
-body.window-active #widgets > ul > li:hover > .icon-selected,
-body.window-active #widgets > ul > li.current-app > .icon-selected {
+body.window-active #widgets > ul.widget-app-list > li:hover > .icon-selected,
+body.window-active #widgets > ul.widget-app-list > li.current-app > .icon-selected {
 	display: block;
 }
 
-#widgets > ul > li > div.label {
+#widgets > ul.widget-app-list > li > div.label {
 	position: absolute;
 	bottom: 0;
 	left: 0;
