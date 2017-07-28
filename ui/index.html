@@ -4,11 +4,15 @@
 		<script src="js/init.js"></script>
 		<link rel="stylesheet" type="text/css" href="css/main.css">
 	</head>
-	<body data-bind="
+	<body class="loading" data-bind="
 		attr: {
 			'data-select-scope': currentApp() ? '#current-app-dialog .selectable' : undefined
+		},
+		css: {
+			'loading': false
 		}
 	">
+		<div id="loader"></div>
 		<header>
 			<div class="logo"><img src="img/GamePlay.svg" title="Game:Play Application Launcher"></div>
 			<div class="locale">

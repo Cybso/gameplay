@@ -1,0 +1,48 @@
+body.loading #loader {
+	display: flex;
+	position: fixed;
+	z-index: 1000;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(255, 255, 255, 0.8);
+
+	justify-content: center;
+	align-items: center;
+}
+
+body.loading #loader:after {
+	content: ' ';
+	display: block;
+	width: 10vw;
+	height: 10vw;
+	min-width: 100px;
+	min-height: 100px;
+
+	border: 1em solid #f3f3f3;
+	border-top: 1em solid #5C61A6;
+	border-radius: 50%;
+	-webkit-animation: spin 2s linear infinite;
+	animation: spin 2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+	0% {
+		-webkit-transform: rotate(0deg);
+	}
+	100% {
+		-webkit-transform: rotate(360deg);
+	}
+}
+
+@keyframes spin {
+	0% {
+		transform: translate(-50%, -50%) rotate(0deg);
+	}
+	100% {
+		transform: translate(-50%, -50%) rotate(360deg);
+	}
+}
+
+
