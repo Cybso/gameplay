@@ -331,38 +331,11 @@
 				}
 
 				switch (button) {
-				// X-Axes (-1..1)
-				case 'AXES_0':
-					if (state < 0) {
-						exports.setDirection(0, 'left');
-					} else if (state > 0) {
-						exports.setDirection(0, 'right');
-					}
-					break;
-
-				// Y-Axes (-1..1)
-				case 'AXES_1':
-					if (state < 0) {
-						exports.setDirection(0, 'up');
-					} else if (state > 0) {
-						exports.setDirection(0, 'down');
-					}
-					break;
-
-				case 'BUTTON_12': // Up
-					exports.setDirection(0, 'up');
-					break;
-
-				case 'BUTTON_13': // Down
-					exports.setDirection(0, 'down');
-					break;
-
-				case 'BUTTON_14': // Left
-					exports.setDirection(0, 'left');
-					break;
-
-				case 'BUTTON_15': // Right
-					exports.setDirection(0, 'right');
+				case 'UP':
+				case 'RIGHT':
+				case 'DOWN':
+				case 'LEFT':
+					exports.setDirection(0, button.toLowerCase());
 					break;
 				}
 			};

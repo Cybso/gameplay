@@ -1,11 +1,59 @@
 (function() {
 	"use strict";
 
+	// Basic mapping for W3C Standard Gamepad
+	// https://w3c.github.io/gamepad/#remapping
+	var STANDARD_MAPPING = {
+		'buttons_0': 'A',
+		'buttons_1': 'B',
+		'buttons_2': 'X',
+		'buttons_3': 'Y',
+		'buttons_8': 'SELECT',
+		'buttons_9': 'START',
+		'axes_-0' : 'LEFT',
+		'axes_+0' : 'RIGHT',
+		'axes_-1' : 'UP',
+		'axes_+1' : 'DOWN',
+		'buttons_12': 'UP',
+		'buttons_13': 'DOWN',
+		'buttons_14': 'LEFT',
+		'buttons_15': 'RIGHT'
+	};
+
+	/**
+		* Converts 'buttons_IDX' to { key: 'buttons', index: parseInt(IDX), negate: false }
+		* 'axes_+IDX' to { key: 'axes', index: parseInt(IDX), negate: false }
+		* and 'axes_-IDX' to { key: 'axes', index: parseInt(IDX), negate: true }.
+		**/
+	var fromButtonKey = function(button) {
+		if (button.substring(0, 8) === 'buttons_') {
+			return { key: 'buttons', index: parseInt(button.substring(8)), negate: false };
+		} else if (button.substring(0, 6) === 'axes_+') {
+			return { key: 'axes', index: parseInt(button.substring(6)), negate: false };
+		} else if (button.substring(0, 6) === 'axes_-') {
+			return { key: 'axes', index: parseInt(button.substring(6)), negate: true };
+		}
+		return false;
+	};
+
+	/**
+	 * Create a key value for button mappings
+	 **/
+	var toButtonKey = function(key, index, negate) {
+		if (key === 'buttons') {
+			return key + '_' + index;
+		} else if (key === 'axes') {
+			return key + '_' + (negate ? '-' : '+') + index;
+		}
+	};
+
 	/**
 	 * Returns a gamepad controller as singleton object.
+	 * Analog buttons are converted into digital. Axes
+	 * are converted into normal buttons.
 	 */
-	define([],
-		function() {
+	define(['app/GamepadInitialMappings'],
+		function(InitialMappings) {
 			var gamepads;
 			return function() {
 				if (gamepads !== undefined) {
@@ -13,17 +61,36 @@
 					return gamepads;
 				}
 
+				/**
+				 * FIXME Load this from storage
+				 **/
+				var mappings = new InitialMappings();
+
 				var buttonListeners = [];
 				var gamepadListeners = [];
+
 				/**
 				 * Notifies all buttonListeners about the gamepad event
 				 **/
-				function fireGamepadButtonEvent(gp, button, state) {
-					for (var i = 0; i < buttonListeners.length; i+=1) {
-						try {
-							buttonListeners[i].call(gamepads, gp, button, state);
-						} catch (err) {
-							console.log(err);
+				function fireGamepadButtonEvent(gp, button, state, key, index, rawValue) {
+					if (mappings[gp.id] !== undefined) {
+						button = mappings[gp.id][button];
+					} else {
+						button = STANDARD_MAPPING[button];
+					}
+
+					if (button !== undefined) {
+						var raw = {
+							key: key,
+							index: index,
+							value: rawValue
+						};
+						for (var i = 0; i < buttonListeners.length; i+=1) {
+							try {
+								buttonListeners[i].call(gamepads, gp, button, state, raw);
+							} catch (err) {
+								console.log(err);
+							}
 						}
 					}
 				}
@@ -129,29 +196,45 @@
 				 * Checks if any button state has changed and fires an event
 				 **/
 				var checkGamepadButtonState = function(gp, lastState) {
-					var i;
+					var i, old, val;
 					if (lastState.counter === 0) {
 						// Fire everything that's not zero
 						for (i = 0; i < gp.axes.length; i+=1) {
-							if (Math.round(gp.axes[i]) !== 0) {
-								fireGamepadButtonEvent(gp, 'AXES_' + i, gp.axes[i]);
+							val = Math.round(gp.axes[i]);
+							if (val !== 0) {
+								if (val < 0) {
+									fireGamepadButtonEvent(gp, 'axes_-' + i, -val, 'axes', i, gp.axes[i]);
+								} else {
+									fireGamepadButtonEvent(gp, 'axes_+' + i, val, 'axes', i, gp.axes[i]);
+								}
 							}
 						}
 						for (i = 0; i < gp.buttons.length; i+=1) {
 							if (Math.round(gp.buttons[i]) !== 0) {
-								fireGamepadButtonEvent(gp, 'BUTTON_' + i, gp.buttons[i]);
+								fireGamepadButtonEvent(gp, 'buttons_' + i, gp.buttons[i], 'buttons', i, gp.axes[i]);
 							}
 						}
 					} else {
 						// Fire everything that has changed
 						for (i = 0; i < gp.axes.length; i+=1) {
-							if (Math.round(gp.axes[i]) !== Math.round(lastState.axes[i])) {
-								fireGamepadButtonEvent(gp, 'AXES_' + i, gp.axes[i]);
+							old = Math.round(lastState.axes[i]);
+							val = Math.round(gp.axes[i]);
+							if (old !== val) {
+								if (old < 0) {
+									fireGamepadButtonEvent(gp, 'axes_-' + i, 0, 'axes', i, gp.axes[i]);
+								} else if (old > 0) {
+									fireGamepadButtonEvent(gp, 'axes_+' + i, 0, 'axes', i, gp.axes[i]);
+								}
+								if (val < 0) {
+									fireGamepadButtonEvent(gp, 'axes_-' + i, -val, 'axes', i, gp.axes[i]);
+								} else if (val > 0) {
+									fireGamepadButtonEvent(gp, 'axes_+' + i, val, 'axes', i, gp.axes[i]);
+								}
 							}
 						}
 						for (i = 0; i < gp.buttons.length; i+=1) {
 							if (Math.round(gp.buttons[i]) !== Math.round(lastState.buttons[i])) {
-								fireGamepadButtonEvent(gp, 'BUTTON_' + i, gp.buttons[i]);
+								fireGamepadButtonEvent(gp, 'buttons_' + i, gp.buttons[i], 'buttons', i, gp.axes[i]);
 							}
 						}
 					}
@@ -197,6 +280,42 @@
 							}
 						}
 					}
+				};
+
+				/**
+				 * Returns the key and index of the requested mapped button.
+				 * The result also has a function 'getValue(gamepad)' that
+				 * returns the normalized value of the identified button.
+				 **/
+				var inverseButtonCache = {};
+				gamepads.getButton = function(gp, button) {
+					var bi = inverseButtonCache[button + ':' + gp.id];
+					if (bi === undefined) {
+						// Resolve inverse mapping
+						bi = false;
+						var map = mappings[gp.id] || STANDARD_MAPPING;
+						for (var i in map) {
+							if (map.hasOwnProperty(i)) {
+								if (map[i] === button) {
+									bi = fromButtonKey(i);
+									break;
+								}
+							}
+						}
+
+						if (bi !== false) {
+							bi.getValue = function(gp) {
+								var value = gp[bi.key][bi.index];
+								if (bi.negate) {
+									value = -value;
+								}
+								return value;
+							};
+						}
+
+						inverseButtonCache[button + ':' + gp.id] = bi;
+					}
+					return bi;
 				};
 
 				if (gamepads.supported()) {

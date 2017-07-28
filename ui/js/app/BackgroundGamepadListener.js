@@ -4,9 +4,9 @@
 		return function(viewModel) {
 			var backgroundGamepadMonitor = 0;
 
-			var monitorButtonState = function(gamepad, a, b, triggerSuspend, triggerTerminate, interval) {
+			var monitorButtonState = function(gamepad, btnA, btnB, triggerSuspend, triggerTerminate, interval) {
 				var loop = function() {
-					if (gamepad.buttons[a] && gamepad.buttons[b]) {
+					if (btnA.getValue(gamepad) > 0.5 && btnB.getValue(gamepad) > 0.5) {
 						triggerSuspend -= 1;
 						triggerTerminate -= 1;
 						if (triggerSuspend === 0) {
@@ -38,24 +38,12 @@
 				var gamepads = viewModel.gamepad();
 				for (var i = 0; i < gamepads.length && backgroundGamepadMonitor === 0; i+=1) {
 					var gamepad = gamepads[i];
-					if (gamepad.buttons[6] + gamepad.buttons[7] + gamepad.buttons[8] + gamepad.buttons[9] !== 2) {
-						continue;
+					var btnA = viewModel.gamepad.getButton(gamepad, 'START');
+					var btnB = viewModel.gamepad.getButton(gamepad, 'SELECT');
+					if (btnA && btnB && btnA.getValue(gamepad) > 0.5 && btnB.getValue(gamepad) > 0.5) {
+						// Monitor these buttons for 30 / 100 intervals of 100ms
+						monitorButtonState(gamepad, btnA, btnB, 30, 100, 100);
 					}
-					// Two buttons are pressed, monitor them for 3/10 seconds.
-					// First, identify the buttons that are pressed.
-					var j, a, b;
-					for (j = 6; j <= 9; j+=1) {
-						if (gamepad.buttons[j]) {
-							if (a === undefined) {
-								a = j;
-							} else {
-								b = j;
-							}
-						}
-					}
-
-					// Monitor these buttons for 30 / 100 intervals of 100ms
-					monitorButtonState(gamepad, a, b, 30, 100, 100);
 				}
 			};
 
