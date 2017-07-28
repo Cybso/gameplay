@@ -1,6 +1,7 @@
 <html>
 	<head>
 		<title>Game:Play Application Launcher</title>
+		<meta charset="UTF-8"> 
 		<script src="js/init.js"></script>
 		<link rel="stylesheet" type="text/css" href="css/main.css">
 	</head>
@@ -104,6 +105,31 @@
 						<button class="selectable button-close" data-bind="click: function() { $root.currentApp(undefined); }">Close</button>
 					</div>
 				<!-- /ko -->
+			</div>
+		<!-- /ko -->
+
+		<!-- ko with: activeGamepadConfigurator -->
+			<div id="gamepad-configurator" class="dialog"  style="display: none" data-bind="style: { display: undefined }">
+				<div class="dialog-label" data-bind="text: gamepad().id"></div>
+				<div class="dialog-content">
+					<div>Unknown gamepad detected. Please have a few seconds to configure the primary buttons.</div>
+					<div class="gamepad-schema">
+						<div class="gamepad-button button-up" data-bind="css: { 'current-button': currentButton() == 'UP', 'ready': getButtonMap('UP') }">▲</div>
+						<div class="gamepad-button button-right" data-bind="css: { 'current-button': currentButton() == 'RIGHT', 'ready': getButtonMap('RIGHT') }">▶</div>
+						<div class="gamepad-button button-down" data-bind="css: { 'current-button': currentButton() == 'DOWN', 'ready': getButtonMap('DOWN') }">▼</div>
+						<div class="gamepad-button button-left" data-bind="css: { 'current-button': currentButton() == 'LEFT', 'ready': getButtonMap('LEFT') }">◀</div>
+						<div class="gamepad-button button-start" data-bind="css: { 'current-button': currentButton() == 'START', 'ready': getButtonMap('START') }">Start</div>
+						<div class="gamepad-button button-select" data-bind="css: { 'current-button': currentButton() == 'SELECT', 'ready': getButtonMap('SELECT') }">Select</div>
+						<div class="gamepad-button button-A" data-bind="css: { 'current-button': currentButton() == 'A', 'ready': getButtonMap('A') }">🅐</div>
+						<div class="gamepad-button button-B" data-bind="css: { 'current-button': currentButton() == 'B', 'ready': getButtonMap('B') }">🅑</div>
+						<div class="gamepad-button button-X" data-bind="css: { 'current-button': currentButton() == 'X', 'ready': getButtonMap('X') }">🅧</div>
+						<div class="gamepad-button button-Y" data-bind="css: { 'current-button': currentButton() == 'Y', 'ready': getButtonMap('Y') }">🅨</div>
+					</div>
+				</div>
+				<div class="dialog-buttons">
+					<button class="selectable button-reset" data-bind="click: function() { reset(); }">Reset</button>
+					<button class="selectable button-close" data-bind="click: function() { close(); }">Close</button>
+				</div>
 			</div>
 		<!-- /ko -->
 

@@ -84,6 +84,8 @@
 				}
 			});
 
+			exports.activeGamepadConfigurator = ko.observable();
+
 			// Bind to key event in body
 			var snake;
 			document.getElementsByTagName('body')[0].addEventListener('keydown', function(evt) {
@@ -131,7 +133,9 @@
 					break;
 				case 'Esc':
 					evt.preventDefault();
-					if (snake) {
+					if (exports.activeGamepadConfigurator()) {
+						exports.activeGamepadConfigurator().close();
+					} else if (snake) {
 						snake.exit();
 						snake = undefined;
 					} else if (exports.currentApp()) {
@@ -241,8 +245,32 @@
 			exports.gamepad.addGamepadListener(function(gp, type) {
 				if (type === 'attached') {
 					exports.currentGamepads.push(gp);
+					if (!exports.gamepad.hasMapping(gp)) {
+						// Try to load mappings from yagala storage
+						var mappingKey = 'mapping:' + gp.id;
+						var mapping = window.gameplay.getItem(mappingKey);
+						if (mapping) {
+							console.log('loading mapping', mapping);
+							mapping = JSON.parse(mapping);
+							exports.gamepad.setGamepadMapping(gp, mapping);
+						} else if (exports.activeGamepadConfigurator() === undefined) {
+							var configurator = exports.gamepad.configureMapping(gp);
+							configurator.close(function() {
+								exports.activeGamepadConfigurator(undefined);
+								if (configurator.finished()) {
+									mapping = configurator.mapping();
+									exports.gamepad.setGamepadMapping(gp, mapping);
+									window.gameplay.setItem(mappingKey, JSON.stringify(mapping));
+								}
+							});
+							exports.activeGamepadConfigurator(configurator);
+						}
+					}
 				} else if (type === 'detached') {
 					exports.currentGamepads.remove(gp);
+					if (exports.activeGamepadConfigurator() && exports.activeGamepadConfigurator().gamepad() === gp) {
+						exports.activeGamepadConfigurator().close();
+					}
 				}
 			});
 

@@ -52,8 +52,8 @@
 	 * Analog buttons are converted into digital. Axes
 	 * are converted into normal buttons.
 	 */
-	define(['app/GamepadInitialMappings'],
-		function(InitialMappings) {
+	define(['app/GamepadInitialMappings', 'app/GamepadConfigurator'],
+		function(InitialMappings, GamepadConfigurator) {
 			var gamepads;
 			return function() {
 				if (gamepads !== undefined) {
@@ -72,7 +72,7 @@
 				/**
 				 * Notifies all buttonListeners about the gamepad event
 				 **/
-				function fireGamepadButtonEvent(gp, button, state, key, index, rawValue) {
+				var fireGamepadButtonEvent = function(gp, button, state, key, index, rawValue) {
 					if (mappings[gp.id] !== undefined) {
 						button = mappings[gp.id][button];
 					} else {
@@ -93,12 +93,12 @@
 							}
 						}
 					}
-				}
+				};
 
 				/**
 				 * Notifies all gamepadListener about attached and detached gamepads
 				 */
-				function fireGamepadEvent(gp, type) {
+				var fireGamepadEvent = function(gp, type) {
 					for (var i = 0; i < gamepadListeners.length; i+=1) {
 						try {
 							gamepadListeners[i].call(gamepads, gp, type);
@@ -106,7 +106,7 @@
 							console.log(err);
 						}
 					}
-				}
+				};
 
 				// Gamepad interface returns an array of gamepads
 				var currentGamepads = {};
@@ -158,6 +158,21 @@
 				gamepads = function() {
 					var list = gamepadAccessor();
 					return list === undefined ? [] : list;
+				};
+
+				gamepads.getMappings = function() {
+					return mappings;
+				};
+
+				gamepads.setMappings = function(m) {
+					mappings = mappings;
+				};
+
+				gamepads.setGamepadMapping = function(gamepad, m) {
+					if (gamepad.id !== undefined) {
+						gamepad = gamepad.id;
+					}
+					mappings[gamepad] = m;
 				};
 
 				// Registered event buttonListeners
@@ -316,6 +331,31 @@
 						inverseButtonCache[button + ':' + gp.id] = bi;
 					}
 					return bi;
+				};
+
+				/**
+				 * Returns true of the gamepad has a mapping
+				 **/
+				gamepads.hasMapping = function(gamepad) {
+					if (gamepad.id !== undefined) {
+						gamepad = gamepad.id;
+					}
+					return mappings[gamepad] !== undefined;
+				};
+
+				/**
+				 * Opens the gamepad configurator. While the configurator
+				 * is active all button and gamepad events are suspended.
+				 **/
+				gamepads.configureMapping = function(gamepad) {
+					var originalFireGamepadButtonEvent = fireGamepadButtonEvent;
+					var configurator = new GamepadConfigurator(gamepad);
+					fireGamepadButtonEvent = configurator.fireGamepadButtonEvent;
+					configurator.close(function() {
+						fireGamepadButtonEvent = originalFireGamepadButtonEvent;
+					});
+
+					return configurator;
 				};
 
 				if (gamepads.supported()) {

@@ -75,6 +75,7 @@ header {
 	border-top: 0.25ex solid #5C61A6;
 }
 
+.button-reset,
 .button-run,
 .button-suspend,
 .button-resume,
@@ -95,17 +96,23 @@ header {
 	background-origin: content-box;
 }
 
+.button-reset.selected,
 .button-run.selected,
 .button-suspend.selected,
 .button-resume.selected,
 .button-stop.selected,
 .button-close.selected,
+.button-reset:hover,
 .button-run:hover,
 .button-suspend:hover,
 .button-resume:hover,
 .button-stop:hover,
 .button-close:hover {
 	-webkit-filter: drop-shadow(0.2rem 0.2rem 0.4rem grey);
+}
+
+.button-reset {
+	background-image: url('../img/icons/media-skip-backward.svg');
 }
 
 .button-run {

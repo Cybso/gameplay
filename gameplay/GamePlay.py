@@ -17,6 +17,7 @@ import logging
 import json
 import inspect
 import pkgutil
+from urllib.parse import quote, unquote
 
 from PyQt5.QtCore import QObject, pyqtSlot, QDir, QStandardPaths
 from PyQt5.Qt import Qt
@@ -44,6 +45,7 @@ class GamePlay(QObject):
 		self.on_top = False
 		self.settings = GamePlayConfig('gameplay.ini')
 		self.ui_settings = GamePlayConfig('ui.ini')
+
 		self.providers = [
 			SteamProvider(self.settings),
 			EmulatorProvider(self.settings),
@@ -66,7 +68,7 @@ class GamePlay(QObject):
 	###
 	@pyqtSlot(str, str)
 	def setItem(self, key, value):
-		self.ui_settings.set('ui', key, value)
+		self.ui_settings.set('ui', quote(key), value)
 		self.ui_settings.write()
 
 	###
@@ -74,7 +76,7 @@ class GamePlay(QObject):
 	###
 	@pyqtSlot(str, result=str)
 	def getItem(self, key):
-		return self.ui_settings.get('ui', key)
+		return self.ui_settings.get('ui', quote(key))
 
 	@pyqtSlot(result='QVariantList')
 	def getApps(self):

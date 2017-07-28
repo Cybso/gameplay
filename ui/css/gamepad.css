@@ -1,0 +1,135 @@
+#gamepad-configurator .dialog-content  {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+}
+
+.gamepad-schema {
+	background-image: url('../img/gamepad-schema.svg');
+	background-repeat: no-repeat;
+	background-position: 50% 50%;
+	background-size: contain;
+	width: 450px;
+	height: 200px;
+	margin: auto;
+	position: relative;
+}
+
+.gamepad-schema > .button-up,
+.gamepad-schema > .button-left,
+.gamepad-schema > .button-right,
+.gamepad-schema > .button-down {
+	position: absolute;
+	left: 18%;
+	top: 50%;
+	font-size: 2em;
+}
+
+.gamepad-schema > .button-up {
+	-webkit-transform: translate(0, -150%);
+}
+.gamepad-schema > .button-down {
+	-webkit-transform: translate(0, 50%);
+}
+.gamepad-schema > .button-left {
+	-webkit-transform: translate(-150%, -50%);
+}
+.gamepad-schema > .button-right {
+	-webkit-transform: translate(150%, -50%);
+}
+
+.gamepad-schema > .button-select {
+	position: absolute;
+	font-size: 0.8em;
+	top: 50%;
+	left: 50%;
+	-webkit-transform: translate(-100%, 0);
+}
+
+.gamepad-schema > .button-start:after,
+.gamepad-schema > .button-select:after {
+	content: '▂▂▂';
+	position: absolute;
+	top: 0;
+	left: 50%;
+	-webkit-transform: translate(-50%, -120%);
+}
+
+
+.gamepad-schema > .button-start {
+	position: absolute;
+	font-size: 0.8em;
+	top: 50%;
+	left: 50%;
+	-webkit-transform: translate(50%, 0);
+}
+
+.gamepad-schema > .button-a,
+.gamepad-schema > .button-b,
+.gamepad-schema > .button-x,
+.gamepad-schema > .button-y {
+	position: absolute;
+	left: 77%;
+	top: 50%;
+	text-align: center;
+	font-size: 2em;
+}
+
+.gamepad-schema > .button-y {
+	-webkit-transform: translate(0, -150%);
+}
+.gamepad-schema > .button-a {
+	-webkit-transform: translate(0, 50%);
+}
+.gamepad-schema > .button-x {
+	-webkit-transform: translate(-150%, -50%);
+}
+.gamepad-schema > .button-b {
+	-webkit-transform: translate(150%, -50%);
+}
+
+.gamepad-schema > .gamepad-button.current-button {
+	color: #5C61A6;
+	animation: blink-animation 1s ease-in infinite;
+	-webkit-animation: blink-animation 1s ease-in infinite;
+}
+
+.gamepad-schema > .gamepad-button.ready,
+.gamepad-schema > .gamepad-button.current-button.ready {
+	color: #5C61A6;
+	animation: none;
+	-webkit-animation: none;
+}
+
+.gamepad-schema > .gamepad-button.button-a.ready,
+.gamepad-schema > .gamepad-button.button-a.current-button {
+	color: green;
+}
+
+.gamepad-schema > .gamepad-button.button-b.ready,
+.gamepad-schema > .gamepad-button.button-b.current-button {
+	color: red;
+}
+
+.gamepad-schema > .gamepad-button.button-y.ready,
+.gamepad-schema > .gamepad-button.button-y.current-button {
+	color: #ffaa00;
+}
+
+.gamepad-schema > .gamepad-button.button-x.ready
+.gamepad-schema > .gamepad-button.button-x.current-button {
+	color: blue;
+}
+
+
+@keyframes blink-animation {
+	to {
+		opacity: 0.1;
+	}
+}
+@-webkit-keyframes blink-animation {
+	to {
+		opacity: 0.1;
+	}
+}
