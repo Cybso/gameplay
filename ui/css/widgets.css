@@ -69,6 +69,13 @@ body.window-active #widgets > ul.widget-app-list > li.current-app > .icon-select
 	right: 0;
 }
 
+#widgets > ul.widget-app-list > li > div.category {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+}
+
 #widget-filter {
 	position: fixed;
 	z-index: 30;

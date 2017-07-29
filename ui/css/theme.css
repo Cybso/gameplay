@@ -52,6 +52,12 @@ header {
 	font-size: 2em;
 }
 
+#widgets > ul > li > div.category {
+	background-color: rgba(255, 255, 255, 0.8);
+	text-align: center;
+	font-size: 0.8em;
+}
+
 #widgets > ul > li.selected > div.label {
 	background-color: rgba(92, 97, 166, 0.8);
 	color: #ffffff;

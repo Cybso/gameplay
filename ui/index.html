@@ -65,6 +65,7 @@
 						"></div>
 					<!-- /ko -->
 					<div class="label" data-bind="text: label"></div>
+					<div class="category" data-bind="text: categories[0], style: { 'background-color': 'hsla(' + stringToHue(categories[0] || '') + ', 100%, 80%, 0.8)' }"></div>
 				</li>
 			</ul>
 			<!-- ko if: gameplay.apps().length == 0 -->
