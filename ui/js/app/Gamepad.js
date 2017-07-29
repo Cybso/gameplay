@@ -69,10 +69,18 @@
 				var buttonListeners = [];
 				var gamepadListeners = [];
 
+				var activeGamepadConfigurator;
+
 				/**
 				 * Notifies all buttonListeners about the gamepad event
 				 **/
 				var fireGamepadButtonEvent = function(gp, button, state, key, index, rawValue) {
+					if (activeGamepadConfigurator !== undefined && activeGamepadConfigurator.gamepad() === gp) {
+						// Forward the event
+						activeGamepadConfigurator.fireGamepadButtonEvent.apply(activeGamepadConfigurator, arguments);
+						return;
+					}
+
 					if (mappings[gp.id] !== undefined) {
 						button = mappings[gp.id][button];
 					} else {
@@ -348,14 +356,17 @@
 				 * is active all button and gamepad events are suspended.
 				 **/
 				gamepads.configureMapping = function(gamepad) {
-					var originalFireGamepadButtonEvent = fireGamepadButtonEvent;
-					var configurator = new GamepadConfigurator(gamepad);
-					fireGamepadButtonEvent = configurator.fireGamepadButtonEvent;
-					configurator.close(function() {
-						fireGamepadButtonEvent = originalFireGamepadButtonEvent;
+					if (activeGamepadConfigurator !== undefined) {
+						if (activeGamepadConfigurator.gamepad() === gamepad) {
+							return;
+						}
+						activeGamepadConfigurator.close();
+					}
+					activeGamepadConfigurator = new GamepadConfigurator(gamepad);
+					activeGamepadConfigurator.close(function() {
+						activeGamepadConfigurator = undefined;
 					});
-
-					return configurator;
+					return activeGamepadConfigurator;
 				};
 
 				if (gamepads.supported()) {

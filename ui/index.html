@@ -21,8 +21,9 @@
 			</div>
 
 			<!-- ko foreach: currentGamepads -->
-				<div class="gamepad" data-bind="attr: { title: (index + 1) + ' ' + id, 'data-index': index + 1 }">
+				<div class="gamepad selectable" data-bind="attr: { title: (index + 1) + ' ' + id, 'data-index': index + 1 }, click: $root.reconfigureGamepad"  data-select-order="1">
 					<img src="img/gamepads/Gamepad.svg">
+					<div class="label" data-bind="text: '#' + index + ': ' + id"></div>
 				</div>
 			<!-- /ko -->
 

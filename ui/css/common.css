@@ -31,3 +31,7 @@ html, body {
 .fb-fill-all {
 	margin: auto;
 }
+
+.selectable {
+	cursor: pointer;
+}

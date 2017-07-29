@@ -240,6 +240,22 @@
 				}
 			});
 
+			exports.reconfigureGamepad = function(gp) {
+				if (!exports.activeGamepadConfigurator()) {
+					var configurator = exports.gamepad.configureMapping(gp);
+					configurator.close(function() {
+						exports.activeGamepadConfigurator(undefined);
+						if (configurator.finished()) {
+							var mapping = configurator.mapping();
+							var mappingKey = 'mapping:' + gp.id;
+							exports.gamepad.setGamepadMapping(gp, mapping);
+							window.gameplay.setItem(mappingKey, JSON.stringify(mapping));
+						}
+					});
+					exports.activeGamepadConfigurator(configurator);
+				}
+			};
+
 			// Add a listener to show the number of gamepads
 			exports.currentGamepads = ko.observableArray();
 			exports.gamepad.addGamepadListener(function(gp, type) {
@@ -253,17 +269,8 @@
 							console.log('loading mapping', mapping);
 							mapping = JSON.parse(mapping);
 							exports.gamepad.setGamepadMapping(gp, mapping);
-						} else if (exports.activeGamepadConfigurator() === undefined) {
-							var configurator = exports.gamepad.configureMapping(gp);
-							configurator.close(function() {
-								exports.activeGamepadConfigurator(undefined);
-								if (configurator.finished()) {
-									mapping = configurator.mapping();
-									exports.gamepad.setGamepadMapping(gp, mapping);
-									window.gameplay.setItem(mappingKey, JSON.stringify(mapping));
-								}
-							});
-							exports.activeGamepadConfigurator(configurator);
+						} else {
+							exports.reconfigureGamepad(gp);
 						}
 					}
 				} else if (type === 'detached') {

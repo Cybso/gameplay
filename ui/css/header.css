@@ -41,6 +41,22 @@ header > div.gamepad:after {
 	content: attr(data-index);
 }
 
+header > div.gamepad .label {
+	display: none;
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	background-color: rgba(255, 255, 255, 0.8);
+	padding: 0.5em;
+	white-space: nowrap;
+	-webkit-transform: translate(0, 100%);
+}
+
+header > div.gamepad.selected .label,
+header > div.gamepad:hover .label {
+	display: block;
+}
+
 header > div.clock {
 	font-size: 8vh;
 }

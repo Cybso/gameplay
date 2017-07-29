@@ -23,6 +23,10 @@ header {
 	color: #5C61A6;
 }
 
+.selected {
+	background-color: rgba(92, 97, 166, 0.5);
+}
+
 #widgets > ul > li {
 	border: 0.5ex solid white;
 	outline: none;
