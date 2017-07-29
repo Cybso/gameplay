@@ -59,6 +59,9 @@ class Frontend(QMainWindow):
 		# Add toolbar (after QWebView has been initialized)
 		self.create_toolbar()
 
+		# Add a flag that controls whether close() must be confirmed
+		self.confirmClose = True
+
 		# Add global shortcuts
 		QShortcut(QKeySequence("Ctrl+Q"), self.web, self.close)
 		QShortcut(QKeySequence("Alt+F4"), self.web, self.close)
@@ -168,7 +171,7 @@ class Frontend(QMainWindow):
 	# and quit the whole application on confirmation.
 	###
 	def closeEvent(self, event):
-		if QMessageBox.question(None, '', "Are you sure you want to quit?",
+		if self.confirmClose and QMessageBox.question(None, '', "Are you sure you want to quit?",
 				QMessageBox.Yes | QMessageBox.No,
 				QMessageBox.No) == QMessageBox.No:
 			event.ignore()

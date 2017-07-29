@@ -108,6 +108,13 @@
 						}
 					}
 				};
+
+				/**
+				 * Close the application
+				 **/
+				var exitSelf = function() {
+					window.gameplay.exit();
+				};
 	
 
 				return {
@@ -120,7 +127,8 @@
 					stopAllApps: stopAllApps,
 					raiseWindow: raiseWindow,
 					status: ko.pureComputed(status),
-					statusById: status.byId
+					statusById: status.byId,
+					exitSelf: exitSelf
 				};
 			};
 		}

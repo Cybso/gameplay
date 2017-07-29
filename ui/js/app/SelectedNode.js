@@ -20,6 +20,10 @@
 	 *
 	 * The initially selected element is the first one with the lowest 
 	 * 'data-select-order' value. The default value is '0'.
+	 *
+	 * 'data-select-leave-order' can restrict the directions that can be
+	 * used to leave the current order. Must be defined on the same element
+	 * as 'data-select-order'.
 	 **/
 	function leftElementComparator(current, newCandidate, oldCandidate) {
 		// Check if this is a POSSIBLE candidate which must be left and above us
@@ -28,15 +32,19 @@
 			return false;
 		}
 
-		if (newCandidate.left > current.left && newCandidate.bottom > current.top) {
-			// Right, but not above us
-			return false;
+		if (newCandidate.left > current.left) {
+			if (newCandidate.bottom > current.top || newCandidate.selectOrder !== current.selectOrder) {
+				// Right, but not below us
+				return false;
+			}
 		}
 
 		if (newCandidate.left <= current.left &&
 			newCandidate.bottom > current.bottom && newCandidate.top > current.top) {
-			// Left of us, but only partly overlaps
-			return false;
+			if (newCandidate.selectOrder >= current.selectOrder) {
+				// Left of us, but only partly overlaps
+				return false;
+			}
 		}
 
 		if (oldCandidate !== undefined) {
@@ -93,6 +101,7 @@
 			return true;
 		}
 	}
+	leftElementComparator.direction = 'left';
 
 	/**
 	 * Returns true if the new candidates rect is a better destination for
@@ -114,9 +123,11 @@
 			return false;
 		}
 
-		if (newCandidate.left <= current.left && newCandidate.top <= current.bottom) {
-			// Left, but not below us
-			return false;
+		if (newCandidate.left <= current.left) {
+			if (newCandidate.top <= current.bottom || newCandidate.selectOrder !== current.selectOrder) {
+				// Left, but not below us
+				return false;
+			}
 		}
 
 		if (newCandidate.left >= current.left &&
@@ -134,10 +145,10 @@
 					return true;
 				}
 
-				if (newCandidate.selectOrder > oldCandidate.selectOrder) {
+				if (newCandidate.selectOrder < oldCandidate.selectOrder) {
 					// Always prefer newCandidate
 					return true;
-				} else if (newCandidate.selectOrder < oldCandidate.selectOrder) {
+				} else if (newCandidate.selectOrder > oldCandidate.selectOrder) {
 					// Always prefer oldCandidate
 					return false;
 				}
@@ -179,6 +190,7 @@
 			return true;
 		}
 	}
+	rightElementComparator.direction = 'right';
 
 	/**
 	 * Checks wether the  new candidate rect is a better candidate for
@@ -222,6 +234,7 @@
 			return true;
 		}
 	}
+	topElementComparator.direction = 'up';
 
 	/**
 	 * Checks wether the new candidate rect is a better candidate for
@@ -235,10 +248,10 @@
 			return false;
 		}
 		if (oldCandidate !== undefined) {
-			if (newCandidate.selectOrder > oldCandidate.selectOrder) {
+			if (newCandidate.selectOrder < oldCandidate.selectOrder) {
 				// Always prefer newCandidate
 				return true;
-			} else if (newCandidate.selectOrder < oldCandidate.selectOrder) {
+			} else if (newCandidate.selectOrder > oldCandidate.selectOrder) {
 				// Always prefer oldCandidate
 				return false;
 			}
@@ -265,6 +278,103 @@
 			return true;
 		}
 	}
+	bottomElementComparator.direction = 'down';
+
+	/**
+	 * Returns an object with the values 'order'
+	 * and 'directions'. Order is an integer value
+	 * derived from the attribute 'data-select-order'
+	 * from the element or any of its parents.
+	 *
+	 * 'direction' is an array with the directions
+	 * allowed to leave the current order level. Must
+	 * be defined together with 'data-select-order'.
+	 */
+	function getSelectOrder(element) {
+		while (element) {
+			var value = element.getAttribute('data-select-order');
+			if (value !== undefined) {
+				var intValue = parseInt(value);
+				if (!isNaN(intValue)) {
+					var directions = (element.getAttribute('data-change-order-direction') || '')
+						.split(' ').filter(function(v) { return v; });
+
+					if (directions.length === 0) {
+						return { order: intValue, directions: ['left', 'up', 'right', 'down'] };
+					} else {
+						return { order: intValue, directions: directions };
+					}
+				}
+			}
+			element = element.parentElement;
+		}
+		return { order: 0, directions: ['left', 'up', 'right', 'down'] };
+	}
+
+	/**
+	 * Adds the class 'selected-parent' to every parent node of the
+	 * selected child (and removes it from every other element).
+	 **/
+	function updateSelectedParents(element) {
+		[].forEach.call(document.querySelectorAll('.selected-parent'), function(e) {
+			e.classList.remove('selected-parent');
+		});
+
+		while (element.parentElement) {
+			element = element.parentElement;
+			element.classList.add('selected-parent');
+		}
+	}
+
+	/**
+	 * Returns false if the element is either made invisible
+	 * using display, visibility, opacity, width or height,
+	 * or if the element is overlayed by another element
+	 * that is not one of our childs.
+	 **/
+	function isElementSelectable(element, rect) {
+		// elementFromPoint
+		var style = window.getComputedStyle(element, null);
+		if (style.getPropertyValue('display') === 'none' ||
+			style.getPropertyValue('visibility') === 'hidden' ||
+			style.getPropertyValue('opacity') === '0.0' ||
+			element.clientWidth  === 0 ||
+			element.clientHeight === 0
+		) {
+			return false;
+		}
+
+		// Check the element of every point in the corner
+		var checkPoints = [
+			[rect.left + rect.width/2, rect.top + rect.height/2],
+			[rect.left + rect.width/2, rect.top],
+			[rect.left + rect.width/2, rect.bottom],
+			[rect.left, rect.top + rect.height/2],
+			[rect.right, rect.top + rect.height/2],
+			[rect.left, rect.top],
+			[rect.left, rect.bottom],
+			[rect.right, rect.top],
+			[rect.right, rect.bottom],
+		];
+
+		// At least one corner must be visible
+		for (var i = 0; i < checkPoints.length; i+=1) {
+			var p = checkPoints[i];
+			var e = document.elementFromPoint(p[0], p[1]);
+			if (e === undefined || e === null) {
+				// Out of viewport, assume true
+				return true;
+			}
+			while (e) {
+				if (e === element) {
+					return true;
+				}
+				e = e.parentElement;
+			}
+		}
+
+		return false;
+	}
 
 	define(['knockout', 'utils', 'lib/smooth-scroll'],
 		function(ko, utils, smoothScroll) {
@@ -280,6 +390,7 @@
 
 			return function(viewModel) {
 				var realSelectedNode = ko.observable(document.getElementsByClassName('selected')[0]);
+				realSelectedNode.subscribe(updateSelectedParents);
 
 				var selectedNode = ko.computed({
 					read: realSelectedNode,
@@ -308,11 +419,27 @@
 								rect.right > windowWidth) {
 								smoothScroll.animateScroll(value);
 							}
-
 						}
+
 						realSelectedNode(value);
 					}
 				});
+
+				var findInitialNode = function(elements) {
+					// Select the first element with the lowest 'data-select-order' value
+					var currentSelectOrder = Number.POSITIVE_INFINITY;
+					var current;
+					for (var i = 0; i < elements.length; i+=1) {
+						if (elements[i] !== undefined && elements[i].getAttribute !== undefined) {
+							var order = getSelectOrder(elements[i]).order;
+							if (order < currentSelectOrder) {
+								currentSelectOrder = order;
+								current = elements[i];
+							}
+						}
+					}
+					return current;
+				};
 
 				// Common implementation of the move* functions.
 				var move = function(preferredElementComparator) {
@@ -323,41 +450,34 @@
 						return;
 					}
 
-					var i;
 					var current = selectedNode();
 					if ([].indexOf.call(elements, current) < 0) {
 						current = undefined;
 					}
 
 					if (current === undefined || current.getBoundingClientRect === undefined) {
-						// Select the first element with the lowest 'data-select-order' value
-						var currentSelectOrder = Number.POSITIVE_INFINITY;
-						for (i = 0; i < elements.length; i+=1) {
-							if (elements[i] !== undefined && elements[i].getAttribute !== undefined) {
-								var selectOrder = parseInt(elements[i].getAttribute('data-select-order'));
-								if (isNaN(selectOrder)) {
-									selectOrder = 0;
-								}
-								if (selectOrder < currentSelectOrder) {
-									currentSelectOrder = selectOrder;
-									current = elements[i];
-								}
-							}
-						}
-						selectedNode(current);
+						selectedNode(findInitialNode(elements));
 						return;
 					}
 
 					var rect = current.getBoundingClientRect();
+					var selectOrder = getSelectOrder(current);
+					rect.selectOrder = selectOrder.order;
 					var candidate, candidateRect, newCandidateRect;
-					for (i in elements) {
+					for (var i in elements) {
 						if (elements.hasOwnProperty(i) && elements[i] !== current && elements[i] !== undefined) {
 							if (elements[i].getBoundingClientRect !== undefined) {
 								newCandidateRect = elements[i].getBoundingClientRect();
-								newCandidateRect.selectOrder = parseInt(elements[i].getAttribute('data-select-order'));
-								if (isNaN(newCandidateRect.selectOrder)) {
-									newCandidateRect.selectOrder = 0;
+								if (!isElementSelectable(elements[i], newCandidateRect)) {
+									continue;
 								}
+
+								newCandidateRect.selectOrder = getSelectOrder(elements[i]).order;
+								if (newCandidateRect.selectOrder !== rect.selectOrder &&
+									selectOrder.directions.indexOf(preferredElementComparator.direction) < 0) {
+									continue;
+								}
+
 								if (preferredElementComparator(rect, newCandidateRect, candidateRect)) {
 									candidate = elements[i];
 									candidateRect = newCandidateRect;

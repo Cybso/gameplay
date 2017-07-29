@@ -184,6 +184,12 @@ class GamePlay(QObject):
 			self.window.raise_()
 			self.resumeStayOnTop()
 	
+	@pyqtSlot()
+	def exit(self):
+		if self.window:
+			self.window.confirmClose = False
+			self.window.close()
+	
 	def suspendStayOnTop(self):
 		if self.window is None:
 			return
