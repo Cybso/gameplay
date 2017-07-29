@@ -1,3 +1,16 @@
 {
-	"current_time": "Aktuelle Zeit"
+	"current_time": "Aktuelle Zeit",
+	"categories": {
+		"AudioVideo": "Multimedia",
+		"Office": "Büro",
+		"Game": "Spiele",
+		"Network": "Internet",
+		"Development": "Entwicklung",
+		"System": "Systemprogramme",
+		"Utility": "Dienstprogramme",
+		"Settings": "Konfiguration",
+		"Graphics": "Grafik",
+		"Education": "Bildung",
+		"Science": "Wissenschaft"
+	}
 }
