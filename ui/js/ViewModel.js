@@ -261,17 +261,14 @@
 			exports.gamepad.addGamepadListener(function(gp, type) {
 				if (type === 'attached') {
 					exports.currentGamepads.push(gp);
-					if (!exports.gamepad.hasMapping(gp)) {
-						// Try to load mappings from yagala storage
-						var mappingKey = 'mapping:' + gp.id;
-						var mapping = window.gameplay.getItem(mappingKey);
-						if (mapping) {
-							console.log('loading mapping', mapping);
-							mapping = JSON.parse(mapping);
-							exports.gamepad.setGamepadMapping(gp, mapping);
-						} else {
-							exports.reconfigureGamepad(gp);
-						}
+					// Check if there is a safed configuration
+					var mappingKey = 'mapping:' + gp.id;
+					var mapping = window.gameplay.getItem(mappingKey);
+					if (mapping) {
+						mapping = JSON.parse(mapping);
+						exports.gamepad.setGamepadMapping(gp, mapping);
+					} else if (!exports.gamepad.hasMapping(gp)) {
+						exports.reconfigureGamepad(gp);
 					}
 				} else if (type === 'detached') {
 					exports.currentGamepads.remove(gp);
