@@ -42,6 +42,14 @@
 					</label>
 				</li>
 			</ul>
+
+			<!-- ko if:  gameplay.hiddenApps().length -->
+				<label class="selectable">
+					<input type="checkbox" data-bind="checked: gameplay.withHidden">
+					<span data-bind="t: 'withHidden'">Show hidden applications</span> (<span data-bind="text: gameplay.hiddenApps().length"></span>)
+				</label>
+			<!-- /ko -->
+
 			<button class="selectable button-exit" data-bind="click: gameplay.exitSelf">Exit</button>
 		</div>
 
@@ -58,7 +66,8 @@
 					},
 					css: {
 						'current-app': $data == $root.currentApp(),
-						'running-app': $root.gameplay.statusById($data).active
+						'running-app': $root.gameplay.statusById($data).active,
+						'hidden': !visible()
 					},
 					click: $root.currentApp
 				">
@@ -106,6 +115,11 @@
 					">
 					</div>
 					<div class="dialog-buttons">
+						<label class="selectable button-visible" data-select-order="1" data-bind="click: function() { app.visible(!app.visible()); }">
+							<input type="checkbox" data-bind="checked: app.visible">
+							<span data-bind="t: 'visible'">Sichtbar</span>
+						</label>
+
 						<!-- ko if: status.active -->
 							<button class="selectable button-stop" data-bind="click: function() { $root.gameplay.stopApp(app); }">Stop</button>
 							<!-- ko if: status.suspended -->

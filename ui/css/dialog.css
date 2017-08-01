@@ -40,3 +40,17 @@
 	margin-left: 1em;
 	margin-right: 1em;
 }
+
+.dialog > .dialog-buttons > label {
+	display: flex;
+	align-items: center;
+}
+
+.dialog > .dialog-buttons > label > * {
+	display: block;
+}
+
+.dialog > .dialog-buttons > .button-visible {
+	margin-right: auto;
+}
+

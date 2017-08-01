@@ -39,6 +39,10 @@
 	position: relative;
 }
 
+#widgets > ul.widget-app-list > li.hidden {
+	opacity: 0.5;
+}
+
 #widgets > ul.widget-app-list > li > .icon,
 #widgets > ul.widget-app-list > li > .icon-selected {
 	position: absolute;

@@ -3,25 +3,88 @@
 
 	define(['knockout', 'ko/translate', 'RemoteData', 'ko/mapper'], 
 		function(ko, t, RemoteData, kom) {
-			return function(viewModel) {
-				var rawApps = ko.observableArray(window.gameplay.getApps());
 
-				var hiddenCategories = (function() {
-					var value = window.gameplay.getItem('hidden-categories');
-					if (value) {
-						try {
-							value = JSON.parse(value);
-						} catch (err) {
-							value = undefined;
-							console.log("Failed to parse hidden-categories: " + value);
+			function AppItem(data, hidden) {
+				return {
+					id: data.id,
+					label: data.label,
+					icon: data.icon,
+					icon_selected: data.icon_selected,
+					categories: data.categories || [],
+					visible: ko.computed({
+						read: function() {
+							return hidden().indexOf(data.id) < 0;
+						},
+						write: function(value) {
+							if (value) {
+								hidden.remove(data.id);
+							} else {
+								if (hidden().indexOf(data.id) < 0) {
+									hidden.push(data.id);
+								}
+							}
 						}
+					})
+				};
+			}
+
+			/**
+			 * Returns an object that represents a category
+			 **/
+			function Category(id, hidden) {
+				return {
+					id: id,
+					label: t('categories.' + id, id)(),
+					visible: ko.computed({
+						read: function() {
+							return hidden().indexOf(id) < 0;
+						},
+						write: function(value) {
+							if (value) {
+								hidden.remove(id);
+							} else {
+								if (hidden().indexOf(id) < 0) {
+									hidden.push(id);
+								}
+							}
+						}
+					})
+				};
+			}
+
+			/**
+			 * Represents an observable object that is stored in GamePlay's UI storage.
+			 **/
+			function PersistantObservableArray(key) {
+				var value = window.gameplay.getItem(key);
+				if (value) {
+					try {
+						value = JSON.parse(value);
+					} catch (err) {
+						value = undefined;
+						console.log("Failed to parse " + key + ": " + value);
 					}
-					var observable = ko.observableArray(value ? value : []);
-					observable.subscribe(function(value) {
-						window.gameplay.setItem('hidden-categories', JSON.stringify(value));
-					});
-					return observable;
-				})();
+				}
+				var observable = ko.observableArray(value ? value : []);
+				observable.subscribe(function(value) {
+					window.gameplay.setItem(key, JSON.stringify(value));
+				});
+				return observable;
+			}
+
+			return function(viewModel) {
+				var hiddenCategories = new PersistantObservableArray('hidden-categories');
+				var hiddenApps = new PersistantObservableArray('hidden-apps');
+				var withHidden = ko.observable(false);
+
+				var rawApps = ko.observableArray((function() {
+					var result = [];
+					var list = window.gameplay.getApps();
+					for (var i = 0; i < list.length; i+=1) {
+						result.push(new AppItem(list[i], hiddenApps));
+					}
+					return result;
+				})());
 
 				/**
 				 * List categories by id and (translated) label
@@ -43,26 +106,7 @@
 
 					// Load category translation
 					for (i=0; i < result.length; i+=1) {
-						result[i] = (function(id) {
-							return {
-								id: id,
-								label: t('categories.' + id, id)(),
-								visible: ko.computed({
-									read: function() {
-										return hiddenCategories().indexOf(id) < 0;
-									},
-									write: function(value) {
-										if (value) {
-											hiddenCategories.remove(id);
-										} else {
-											if (hiddenCategories().indexOf(id) < 0) {
-												hiddenCategories.push(id);
-											}
-										}
-									}
-								})
-							};
-						})(result[i]);
+						result[i] = new Category(result[i], hiddenCategories);
 					}
 
 					// Sort by translation
@@ -86,14 +130,16 @@
 				var apps = ko.computed(function() {
 					var hiddenCategoryList = hiddenCategories();
 					return rawApps().filter(function(app) {
-						if (app.categories !== undefined && app.categories.length > 0) {
-							for (var i = 0; i < app.categories.length; i+=1) {
-								if (hiddenCategoryList.indexOf(app.categories[i]) < 0) {
-									return true;
+						if (withHidden() || app.visible()) {
+							if (app.categories !== undefined && app.categories.length > 0) {
+								for (var i = 0; i < app.categories.length; i+=1) {
+									if (hiddenCategoryList.indexOf(app.categories[i]) < 0) {
+										return true;
+									}
 								}
+							} else {
+								return true;
 							}
-						} else {
-							return true;
 						}
 					});
 				});
@@ -229,6 +275,8 @@
 				return {
 					apps: apps,
 					categories: categories,
+					hiddenApps: ko.pureComputed(hiddenApps),
+					withHidden: withHidden,
 					runApp: runApp,
 					suspendApp: suspendApp,
 					resumeApp: resumeApp,
