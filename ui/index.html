@@ -33,7 +33,16 @@
 		</header>
 
 		<div id="sidebar" data-select-order="2" data-change-order-direction="left">
-			<button class="selectable" data-bind="click: gameplay.exitSelf">Exit</button>
+			<h2 class="selectable" data-bind="t: 'categories'">Categories</h2>
+			<ul class="select-categories" data-bind="foreach: gameplay.categories">
+				<li class="selectable" data-bind="click: function() { visible(!visible()); }">
+					<label>
+						<input type="checkbox" data-bind="checked: visible">
+						<span data-bind="text: label"></span>
+					</label>
+				</li>
+			</ul>
+			<button class="selectable button-exit" data-bind="click: gameplay.exitSelf">Exit</button>
 		</div>
 
 		<div id="widgets" style="display: none" data-bind="style: { display: undefined }">
@@ -73,7 +82,7 @@
 					<!-- /ko -->
 				</li>
 			</ul>
-			<!-- ko if: gameplay.apps().length == 0 -->
+			<!-- ko if: gameplay.apps.raw().length == 0 -->
 				<div class="no-apps-found" data-bind="t: 'no-apps-found'">
 					No applications found. See README.md to learn how to configure application providers.
 				</div>

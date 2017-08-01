@@ -1,10 +1,103 @@
 (function() {
 	"use strict";
 
-	define(['knockout', 'ko/translate', 'RemoteData', 'locales', 'ko/mapper'], 
-		function(ko, t, RemoteData, locales, kom) {
+	define(['knockout', 'ko/translate', 'RemoteData', 'ko/mapper'], 
+		function(ko, t, RemoteData, kom) {
 			return function(viewModel) {
-				var apps = ko.observableArray(window.gameplay.getApps());
+				var rawApps = ko.observableArray(window.gameplay.getApps());
+
+				var hiddenCategories = (function() {
+					var value = window.gameplay.getItem('hidden-categories');
+					if (value) {
+						try {
+							value = JSON.parse(value);
+						} catch (err) {
+							value = undefined;
+							console.log("Failed to parse hidden-categories: " + value);
+						}
+					}
+					var observable = ko.observableArray(value ? value : []);
+					observable.subscribe(function(value) {
+						window.gameplay.setItem('hidden-categories', JSON.stringify(value));
+					});
+					return observable;
+				})();
+
+				/**
+				 * List categories by id and (translated) label
+				 **/
+				var categories = ko.pureComputed(function() {
+					var i, j, result = [];
+					var list = rawApps();
+					for (i = 0; i < list.length; i+=1) {
+						var app = list[i];
+						if (app.categories) {
+							for (j = 0; j < app.categories.length; j+=1) {
+								var category = app.categories[j];
+								if (result.indexOf(category) < 0) {
+									result.push(category);
+								}
+							}
+						}
+					}
+
+					// Load category translation
+					for (i=0; i < result.length; i+=1) {
+						result[i] = (function(id) {
+							return {
+								id: id,
+								label: t('categories.' + id, id)(),
+								visible: ko.computed({
+									read: function() {
+										return hiddenCategories().indexOf(id) < 0;
+									},
+									write: function(value) {
+										if (value) {
+											hiddenCategories.remove(id);
+										} else {
+											if (hiddenCategories().indexOf(id) < 0) {
+												hiddenCategories.push(id);
+											}
+										}
+									}
+								})
+							};
+						})(result[i]);
+					}
+
+					// Sort by translation
+					result.sort(function(a, b) {
+						if (a.label.toLowerCase() < b.label.toLowerCase()) {
+							return -1;
+						} else 	if (a.label.toLowerCase() > b.label.toLowerCase()) {
+							return 1;
+						} else if (a.id < b.id) {
+							return -1;
+						} else if (a.id > b.id) {
+							return 1;
+						}
+						return 0;
+					});
+
+					return result;
+				});
+
+				// List filtered apps
+				var apps = ko.computed(function() {
+					var hiddenCategoryList = hiddenCategories();
+					return rawApps().filter(function(app) {
+						if (app.categories !== undefined && app.categories.length > 0) {
+							for (var i = 0; i < app.categories.length; i+=1) {
+								if (hiddenCategoryList.indexOf(app.categories[i]) < 0) {
+									return true;
+								}
+							}
+						} else {
+							return true;
+						}
+					});
+				});
+				apps.raw = ko.pureComputed(rawApps);
 
 				// Resolves an entry by its id
 				apps.byId = function(id) {
@@ -15,6 +108,23 @@
 						}
 					}
 					return undefined;
+				};
+
+				/**
+				 * Return all apps by category id
+				 **/
+				apps.byCategory = function(id) {
+					if (id.id !== undefined) {
+						id = id.id;
+					}
+					var result = [];
+					var list = apps();
+					for (var i = 0; i < list.length; i+=1) {
+						if (list[i].categories && list[i].categories.indexOf(id) >= 0) {
+							result.push(list[i]);
+						}
+					}
+					return result;
 				};
 
 				/**
@@ -115,10 +225,10 @@
 				var exitSelf = function() {
 					window.gameplay.exit();
 				};
-	
 
 				return {
 					apps: apps,
+					categories: categories,
 					runApp: runApp,
 					suspendApp: suspendApp,
 					resumeApp: resumeApp,

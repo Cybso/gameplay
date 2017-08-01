@@ -17,6 +17,8 @@
 	transition: -webkit-transform 0.5s ease;
 
 	padding-left: 1em;
+	padding-top: 1em;
+	padding-bottom: 1em;
 }
 
 #sidebar:hover,
@@ -27,21 +29,25 @@
 	padding-left: 0em;
 }
 
-#sidebar > button {
+#sidebar > * {
 	display: none;
 }
 
-#sidebar > button:first-child {
+#sidebar > .selectable:first-child {
 	display: block;
 	flex-grow: 1;
 }
 
-#sidebar:hover > button,
-#sidebar.selected-parent > button {
+#sidebar:hover > *,
+#sidebar.selected-parent > * {
 	display: block;
 }
 
-#sidebar:hover > button:first-child,
-#sidebar.selected-parent > button:first-child {
+#sidebar:hover > .selectable:first-child,
+#sidebar.selected-parent > .selectable:first-child {
 	flex-grow: 0;
+}
+
+#sidebar > .button-exit {
+	margin-top: auto;
 }

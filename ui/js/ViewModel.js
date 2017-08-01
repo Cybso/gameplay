@@ -62,6 +62,7 @@
 				return result;
 			});
 
+
 			// Contains the node that is marked with CSS class 'selected'
 			// and provides navigation methods moveLeft, moveRight, moveTop
 			// and moveBottom
