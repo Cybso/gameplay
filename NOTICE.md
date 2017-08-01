@@ -8,7 +8,7 @@ This programs contains code from the following third party libraries:
 * RequireJS (http://requirejs.org/, MIT license)
 * Reqwest (https://github.com/ded/reqwest, MIT license)
 * Moment.js (http://momentjs.com/, MIT license)
-* Smooth Scroll (https://cferdinandi.github.io/smooth-scroll/browsers.html, GPLv3)
+* NestedScroll (https://github.com/cybso/nestedscroll, MIT license)
 
 These liberaries are stored in 'ui/js/lib'. Required modifications are stored
 as separated patch in 'patches/ui/js/lib'.

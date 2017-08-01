@@ -376,16 +376,15 @@
 		return false;
 	}
 
-	define(['knockout', 'utils', 'lib/smooth-scroll'],
-		function(ko, utils, smoothScroll) {
+	define(['knockout', 'utils', 'lib/nestedscroll'],
+		function(ko, utils, nestedScroll) {
 
-			// Add header to Smooth Scroll library
-			smoothScroll.init({
-				selectorHeader: 'header',
-				easing: 'Linear',
-				speed: 100,
-				offset: 100,
-				block: 'auto'
+			// Add header to NestedScroll library
+			nestedScroll.config({
+				easing: 'easeOut',
+				marginTop: 100,
+				marginBottom: 10,
+				align: 'auto'
 			});
 
 			return function(viewModel) {
@@ -417,7 +416,7 @@
 								rect.bottom > windowHeight ||
 								rect.left < 0 ||
 								rect.right > windowWidth) {
-								smoothScroll.animateScroll(value);
+								nestedScroll(value);
 							}
 						}
 
