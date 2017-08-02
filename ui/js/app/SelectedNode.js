@@ -381,7 +381,7 @@
 
 			// Add header to NestedScroll library
 			nestedScroll.config({
-				easing: 'easeOut',
+				animationMethod: 'easeOut',
 				marginTop: 100,
 				marginBottom: 10,
 				align: 'auto'
