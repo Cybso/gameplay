@@ -52,16 +52,21 @@ class GamePlay(QObject):
 			DesktopEntryProvider(self.settings),
 			SystemAppProvider(self.settings)
 		]
-		self.apps = []
-		for provider in self.providers:
-			try:
-				for app in provider.get_apps():
-					self.apps.append(app)
-			except:
-				LOGGER.exception("Failed to invoke application provider %s" % provider.__class__.__name__)
 
 		# Currently active AppProcess object per appid.
 		self.running = {}
+		self.apps = None
+	
+	def _getAppItems(self):
+		if self.apps == None:
+			self.apps = []
+			for provider in self.providers:
+				try:
+					for app in provider.get_apps():
+						self.apps.append(app)
+				except:
+					LOGGER.exception("Failed to invoke application provider %s" % provider.__class__.__name__)
+		return self.apps
 
 	###
 	# Set a UI storage value (compatible to JavaScript's storage)
@@ -80,7 +85,9 @@ class GamePlay(QObject):
 
 	@pyqtSlot(result='QVariantList')
 	def getApps(self):
-		return sorted([app.__dict__ for app in self.apps], key=lambda app: app['label'].lower())
+		# Reset apps
+		self.apps = None
+		return sorted([app.__dict__ for app in self._getAppItems()], key=lambda app: app['label'].lower())
 	
 	@pyqtSlot(str, result='QVariantMap')
 	def runApp(self, appid):
@@ -91,7 +98,7 @@ class GamePlay(QObject):
 					p.resume(raiseCallback=self.lowerWindow)
 				return self.getAppStatus(appid)
 
-		for app in self.apps:
+		for app in self._getAppItems():
 			if app.id == appid:
 				try:
 					self.suspendStayOnTop()

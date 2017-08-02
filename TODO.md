@@ -16,7 +16,6 @@ GamePlay
 - Add ability to stop / interrupt / re-focus game
 - Write app status into logfile
 - Add the ability to restart the program
-- Rebuild app cache when getApps() is called
 - Add a local icon directory and a fallback directory (for UI icons)
 
 Setup
@@ -32,6 +31,5 @@ Frontend
 - Add support for favourites
 - Add support for sorting
 - Provide access to settings and configuration paths from the browser
-- Add 'Reload' button to sidebar
 - Add 'Setup' button
 - Use 'icon://' for UI icons
