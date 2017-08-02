@@ -52,7 +52,9 @@
 
 			<div class="sidebar-control-buttons">
 				<button class="selectable button-reload" data-bind="click: function() { location.reload(); }">Reload</button>
-				<button class="selectable button-exit" data-bind="click: gameplay.exitSelf">Exit</button>
+				<!-- ko ifnot: gameplay.getOption('ui', 'disable-exit').asBoolean() -->
+					<button class="selectable button-exit" data-bind="click: gameplay.exitSelf">Exit</button>
+				<!-- /ko -->
 			</div>
 		</div>
 

@@ -83,6 +83,14 @@ class GamePlay(QObject):
 	def getItem(self, key):
 		return self.ui_settings.get('ui', quote(key))
 
+	@pyqtSlot(str, str, result=str)
+	def getOption(self, section, option):
+		return self.settings.get(section, option, None)
+	
+	@pyqtSlot(result='QVariantMap')
+	def getOptions(self):
+		return self.settings.getall();
+
 	@pyqtSlot(result='QVariantList')
 	def getApps(self):
 		# Reset apps

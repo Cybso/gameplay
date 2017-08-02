@@ -173,6 +173,22 @@
 					return result;
 				};
 
+				var getOption = function(section, option) {
+					var value = window.gameplay.getOption(section, option);
+					if (value === undefined || value === null) {
+						value = '';
+					}
+					return {
+						asString: function() { return value; },
+						asBoolean: function() {
+							var value1 = value.toLowerCase();
+							return value1 === 'true' || value1 === 'on' || value1 === 'yes' || value1 === '1';
+						},
+						asInt: function() { return parseInt(value); },
+						asFloat: function() { return parseFloat(value); }
+					};
+				};
+
 				/**
 				 * Launch an application
 				 **/
@@ -286,7 +302,8 @@
 					raiseWindow: raiseWindow,
 					status: ko.pureComputed(status),
 					statusById: status.byId,
-					exitSelf: exitSelf
+					exitSelf: exitSelf,
+					getOption: getOption
 				};
 			};
 		}

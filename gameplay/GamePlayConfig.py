@@ -136,6 +136,15 @@ class GamePlayConfig:
 			return shlex.split(value)
 		return fallback
 	
+	def getall(self):
+		values = {}
+		for section in self.sections():
+			sValues = {}
+			values[section] = sValues
+			for option in self.options(section):
+				sValues[option] = self.get(section, option)
+		return values
+	
 	def set(self, section, option, value):
 		if not self.localConfig.has_section(section):
 			self.localConfig.add_section(section)
