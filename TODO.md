@@ -1,8 +1,3 @@
-Logo
-====
-
-- Update Logo to Game:Play (with Gamepad-Buttons instead of dots)
-
 Paths
 =====
 
@@ -14,26 +9,29 @@ QWebEngine
 
 - Check at runtime wether QWebView or QWebEngine exists. When both libraries are available prefer QWebView.
 
-Gamepad.js
-==========
-
-- Don't suspend button query in hidden mode but restrict it to the check
-  for some Hotkeys (e.g. START+SELECT for more than 3 seconds).
-  If found, trigger an event that interrups the current game and focuses
-  GamePlay.
-- Add a gamepad configurator for new gamepads
-- Add an icon for each recognized gamepad at the bottom right edge
 
 GamePlay
 ========
 
 - Add ability to stop / interrupt / re-focus game
+- Write app status into logfile
+- Add the ability to restart the program
+- Rebuild app cache when getApps() is called
+- Add a local icon directory and a fallback directory (for UI icons)
+
+Setup
+=====
+- Create a setup screen that appears on the first start
+- As a first implementation: show configuration paths
+  and current configuration.
 
 Frontend
 ========
 
 - Rename 'select' to 'focus'
-- Select explicity with button press
-- Don't start game directly but open a dialog on select
-- Add support for categories
-- Add support for sorting and hiding apps
+- Add support for favourites
+- Add support for sorting
+- Provide access to settings and configuration paths from the browser
+- Add 'Reload' button to sidebar
+- Add 'Setup' button
+- Use 'icon://' for UI icons
