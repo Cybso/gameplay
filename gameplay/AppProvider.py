@@ -31,10 +31,12 @@ else:
 	from .platform import linux as gameplay_sys
 
 class AppProcess:
-	def __init__(self, process):
+	def __init__(self, appid, process):
 		if process is not Process:
 			process = Process(process.pid)
+		self.appid = appid
 		self.process = process
+		self.pid = process.pid
 		self._suspended = False
 		self._window = None
 
@@ -155,7 +157,7 @@ class AppItem:
 	def execute(self):
 		if self.cmd is not None:
 			LOGGER.info('Executing command "%s"' % ' '.join(self.cmd))
-			return AppProcess(Popen(self.cmd))
+			return AppProcess(self.id, Popen(self.cmd))
 		return None
 
 class AppProvider:

@@ -87,6 +87,7 @@ def main():
 	# Start application (and ensure it can be killed with CTRL-C)
 	signal.signal(signal.SIGINT, signal.SIG_DFL)
 	app = QApplication(sys.argv)
+
 	app.setApplicationName('gameplay')
 	app.setWindowIcon(QIcon(uipath + 'img/Y.svg'))
 	gameplay = GamePlay()

@@ -84,12 +84,15 @@
 					exports.selectedNode(_currentAppNode);
 				}
 			});
-
 			exports.activeGamepadConfigurator = ko.observable();
+
+			// Prohibit idle while the mouse is moved
+			document.body.addEventListener('mousemove', exports.gameplay.triggerBusy);
 
 			// Bind to key event in body
 			var snake;
-			document.getElementsByTagName('body')[0].addEventListener('keydown', function(evt) {
+			document.body.addEventListener('keydown', function(evt) {
+				exports.gameplay.triggerBusy();
 				if (evt.keyCode === 69 && evt.ctrlKey) {
 					// CTRL+E
 					if (snake === undefined) {
@@ -180,6 +183,7 @@
 
 			// https://w3c.github.io/gamepad/#remapping
 			exports.gamepad.addButtonListener(function(gamepad, button, state, raw) {
+				exports.gameplay.triggerBusy();
 				if (snake) {
 					// Only watch for BUTTON_8 and BUTTON_1 (exit)
 					if (button === 'START' || button === 'B') {
@@ -260,6 +264,7 @@
 			// Add a listener to show the number of gamepads
 			exports.currentGamepads = ko.observableArray();
 			exports.gamepad.addGamepadListener(function(gp, type) {
+				exports.gameplay.triggerBusy();
 				if (type === 'attached') {
 					exports.currentGamepads.push(gp);
 					// Check if there is a safed configuration

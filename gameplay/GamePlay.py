@@ -18,8 +18,9 @@ import json
 import inspect
 import pkgutil
 from urllib.parse import quote, unquote
+from subprocess import Popen
 
-from PyQt5.QtCore import QObject, pyqtSlot, QDir, QStandardPaths
+from PyQt5.QtCore import QObject, pyqtSlot, QDir, QStandardPaths, QTimer
 from PyQt5.Qt import Qt
 
 ###
@@ -36,6 +37,111 @@ from .providers.SystemAppProvider import SystemAppProvider
 
 LOGGER = logging.getLogger(__name__)
 
+class EventWrapper():
+	def __init__(self, settings):
+		self.settings = settings
+		self.active_apps = []
+		self.is_idle = False
+		
+		# Start idle timer, but only if necessary.
+		self.idle_timeout = settings.getint('events', 'idle-timeout', 0) * 1000
+		if not (settings.get('events', 'idle') or settings.get('events', 'busy')):
+			self.idle_timeout = 0
+		self.timer = None
+
+	def _fire(self, name, app = None):
+		cmd = self.settings.get('events', name)
+		if cmd:
+			try:
+				env=None
+				if app is not None:
+					env = dict(os.environ)
+					env['GAMEPLAY_APP_ID'] = app.appid
+					env['GAMEPLAY_APP_PID'] = str(app.pid)
+					env['GAMEPLAY_APP_STATUS'] = app.status()
+				LOGGER.info("Firing %s event: %s" % (name, cmd))
+				Popen(cmd, env=env, shell=True)
+			except:
+				LOGGER.exception("Failed to execute command: %s" % cmd)
+
+	###
+	# Fires the configures events/app-start command when an
+	# application is started. Exported values are
+	#     GAMEPLAY_APP_ID
+	#     GAMEPLAY_APP_PID
+	###
+	def fire_app_start(self, app):
+		if app.appid not in self.active_apps:
+			self.active_apps.append(app.appid)
+			self._fire('app-start', app)
+	
+	###
+	# Fires the configures events/app-start command when an
+	# application is suspended. Exported values are
+	#     GAMEPLAY_APP_ID
+	#     GAMEPLAY_APP_PID
+	###
+	def fire_app_suspend(self, app):
+		self._fire('app-suspend', app)
+	
+	###
+	# Fires the configures events/app-start command when an
+	# application is resumed. Exported values are
+	#     GAMEPLAY_APP_ID
+	#     GAMEPLAY_APP_PID
+	###
+	def fire_app_resume(self, app):
+		self._fire('app-resume', app)
+	
+	###
+	# Fires the configures events/app-start command when an
+	# application exits. Exported values are
+	#     GAMEPLAY_APP_ID
+	#     GAMEPLAY_APP_PID
+	###
+	def fire_app_exit(self, app):
+		if app.appid in self.active_apps:
+			self.active_apps.remove(app.appid)
+			self._fire('app-exit', app)
+
+	###
+	# Fires an event when the UI is active but idling for
+	# configured 'event/idle-timout' time of seconds (meaning
+	# that no button is pressed meanwhile).
+	###
+	def fire_idle(self):
+		if not self.is_idle:
+			self.is_idle = True
+			self._fire('idle')
+
+	###
+	# Fires an event when the UI was in idle state but has been
+	# resumed (or unactivated).
+	###
+	def fire_busy(self):
+		if self.idle_timeout > 0:
+			if self.timer is None:
+				self.timer = QTimer()
+				self.timer.setSingleShot(True)
+				self.timer.timeout.connect(self.fire_idle)
+			self.timer.start(self.idle_timeout)
+			if self.is_idle:
+				self.is_idle = False
+				self._fire('busy')
+	
+	###
+	# Don't call an idle event until the next busy event is activated.
+	###
+	def suspend_idle(self):
+		if self.idle_timeout > 0 and self.is_idle:
+			self.is_idle = False
+			self._fire('busy')
+
+		if self.timer is not None:
+			self.timer.stop()
+			self.timer = None
+
+
 class GamePlay(QObject):
 
 	def __init__(self):
@@ -45,6 +151,7 @@ class GamePlay(QObject):
 		self.on_top = False
 		self.settings = GamePlayConfig('gameplay.ini')
 		self.ui_settings = GamePlayConfig('ui.ini')
+		self.events = EventWrapper(self.settings)
 
 		self.providers = [
 			SteamProvider(self.settings),
@@ -94,15 +201,18 @@ class GamePlay(QObject):
 	@pyqtSlot(result='QVariantList')
 	def getApps(self):
 		# Reset apps
+		self.events.fire_busy()
 		self.apps = None
 		return sorted([app.__dict__ for app in self._getAppItems()], key=lambda app: app['label'].lower())
 	
 	@pyqtSlot(str, result='QVariantMap')
 	def runApp(self, appid):
+		self.events.fire_busy()
 		p = self.running.get(appid)
 		if p:
 			if p.is_running():
 				if p.is_suspended():
+					self.events.fire_app_resume(p)
 					p.resume(raiseCallback=self.lowerWindow)
 				return self.getAppStatus(appid)
 
@@ -112,6 +222,7 @@ class GamePlay(QObject):
 					self.suspendStayOnTop()
 					p = app.execute()
 					if p:
+						self.events.fire_app_start(p)
 						self.running[appid] = p
 						return self.getAppStatus(appid)
 				except:
@@ -124,6 +235,8 @@ class GamePlay(QObject):
 	def getAppStatus(self, appid):
 		p = self.running.get(appid)
 		if p:
+			if not p.is_running():
+				self.events.fire_app_exit(p)
 			return {
 				'id': appid,
 				'active': p.is_running(),
@@ -155,9 +268,11 @@ class GamePlay(QObject):
 	###
 	@pyqtSlot(str, result='QVariantMap')
 	def suspendApp(self, appid):
+		self.events.fire_busy()
 		p = self.running.get(appid)
 		if p:
 			p.suspend()
+			self.events.fire_app_suspend(p)
 			self.raiseWindow()
 		return self.getAppStatus(appid)
 
@@ -166,9 +281,11 @@ class GamePlay(QObject):
 	###
 	@pyqtSlot(str, result='QVariantMap')
 	def resumeApp(self, appid):
+		self.events.fire_busy()
 		p = self.running.get(appid)
 		if p and p.is_suspended():
 			self.suspendStayOnTop()
+			self.events.fire_app_resume(p)
 			p.resume(raiseCallback=self.lowerWindow)
 		return self.getAppStatus(appid)
 
@@ -178,6 +295,7 @@ class GamePlay(QObject):
 	###
 	@pyqtSlot(str, result='QVariantMap')
 	def stopApp(self, appid):
+		self.events.fire_busy()
 		p = self.running.get(appid)
 		if p:
 			p.terminate()
@@ -186,6 +304,7 @@ class GamePlay(QObject):
 
 	@pyqtSlot()
 	def lowerWindow(self):
+		self.events.fire_busy()
 		if self.window:
 			LOGGER.info('Lowering window')
 			self.suspendStayOnTop()
@@ -193,6 +312,7 @@ class GamePlay(QObject):
 
 	@pyqtSlot()
 	def raiseWindow(self):
+		self.events.fire_busy()
 		if self.window:
 			LOGGER.info('Raising window')
 			self.window.activateWindow()
@@ -201,9 +321,18 @@ class GamePlay(QObject):
 	
 	@pyqtSlot()
 	def exit(self):
+		self.events.fire_busy()
 		if self.window:
 			self.window.confirmClose = False
 			self.window.close()
+	
+	@pyqtSlot()
+	def triggerBusy(self):
+		self.events.fire_busy()
+	
+	@pyqtSlot()
+	def suspendIdle(self):
+		self.events.suspend_idle()
 	
 	def suspendStayOnTop(self):
 		if self.window is None:

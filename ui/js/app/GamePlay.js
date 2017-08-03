@@ -288,6 +288,32 @@
 					window.gameplay.exit();
 				};
 
+				/**
+				 * Triggers a busy event, but at a maximum of once a second.
+				 **/
+				var lastTrigger = 0;
+				var triggerBusy = function() {
+					if (!document.hidden) {
+						var timestamp = window.performance &&
+								window.performance.now &&
+								window.performance.timing &&
+								window.performance.timing.navigationStart ? window.performance.now() : Date.now();
+						if (lastTrigger + 1000 < timestamp) {
+							lastTrigger = timestamp;
+							window.gameplay.triggerBusy();
+						}
+					}
+				};
+
+				// Disable idle events when the window is not active
+				document.addEventListener('visibilitychange', function() {
+					if (document.hidden) {
+						window.gameplay.suspendIdle();
+					} else {
+						window.gameplay.triggerBusy();
+					}
+				});
+
 				return {
 					apps: apps,
 					categories: categories,
@@ -303,7 +329,8 @@
 					status: ko.pureComputed(status),
 					statusById: status.byId,
 					exitSelf: exitSelf,
-					getOption: getOption
+					getOption: getOption,
+					triggerBusy: triggerBusy
 				};
 			};
 		}
