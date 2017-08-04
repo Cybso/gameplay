@@ -13,8 +13,6 @@ QWebEngine
 GamePlay
 ========
 
-- Add ability to stop / interrupt / re-focus game
-- Write app status into logfile
 - Add the ability to restart the program
 - Add a local icon directory and a fallback directory (for UI icons)
 
