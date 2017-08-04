@@ -36,17 +36,21 @@ class GamePlayConfig:
 		# FIXME Does QStandardPaths return native or unix paths?
 		self._localFile = QStandardPaths.writableLocation(QStandardPaths.AppConfigLocation) + os.sep + filename
 
+		self.search_paths = []
 		globalPaths = QStandardPaths.standardLocations(QStandardPaths.AppConfigLocation)
 		globalPaths.append(os.path.dirname(sys.argv[0]))
 		for path in globalPaths:
 			filePath = path + os.sep + filename
-			if filePath != self._localFile and os.path.exists(filePath):
-				try:
-					LOGGER.info('Reading global config from "%s"' % filePath)
-					self.globalConfig.read(open(filePath))
-				except:
-					LOGGER.exception('Failed to parse config from "%s"' % filePath)
+			if filePath != self._localFile:
+				self.search_paths.append(filePath)
+				if os.path.exists(filePath):
+					try:
+						LOGGER.info('Reading global config from "%s"' % filePath)
+						self.globalConfig.read(open(filePath))
+					except:
+						LOGGER.exception('Failed to parse config from "%s"' % filePath)
 
+		self.search_paths.append(self._localFile)
 		if os.path.exists(self._localFile):
 			try:
 				LOGGER.info('Reading local config from "%s"' % self._localFile)

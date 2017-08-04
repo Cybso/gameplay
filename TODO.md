@@ -7,6 +7,7 @@ Paths
 QWebEngine
 ==========
 
+- Under windows QWebEngine has already replaced Webkit! Provide support for both!
 - Check at runtime wether QWebView or QWebEngine exists. When both libraries are available prefer QWebView.
 
 
