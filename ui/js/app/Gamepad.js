@@ -398,11 +398,11 @@
 					// Start gamepad loop as long as the window is active (or
 					// if the visibility API is not supported).
 					var gameLoopInterval;
-					if (document.hidden === undefined || !document.hidden) {
+					if (document.hidden === undefined || !(document.hidden || document.webengineHidden)) {
 						gameLoopInterval = window.setInterval(gamepadLoop, 100);
 					}
 					document.addEventListener('visibilitychange', function() {
-						if (document.hidden) {
+						if (document.hidden || document.webengineHidden) {
 							if (gameLoopInterval !== undefined) {
 								clearInterval(gameLoopInterval);
 								gameLoopInterval = undefined;

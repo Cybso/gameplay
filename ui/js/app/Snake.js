@@ -307,7 +307,7 @@
 					if (!exports.active) {
 						clearInterval(intervalHandle);
 					}
-					if (document.hidden === undefined || !document.hidden) {
+					if (document.hidden === undefined || !(document.hidden || document.webengineHidden)) {
 						exports.nextFrame();
 					}
 				}, 100);
@@ -316,8 +316,7 @@
 
 			// Bind controls on gamepad
 			var gamepadListener = function(gamepad, button, state) {
-				console.log(arguments);
-				if ((document.hidden !== undefined && document.hidden) ||
+				if (document.hidden || document.webengineHidden ||
 					(state >= -0.5 && state <= 0.5)) {
 					return;
 				}
@@ -344,7 +343,6 @@
 			gamepad.addButtonListener(gamepadListener);
 
 			exports.exit = function() {
-				console.log("exiting");
 				gamepad.removeButtonListener(gamepadListener);
 				exports.active = false;
 				clearInterval(intervalHandle);

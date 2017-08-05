@@ -297,7 +297,7 @@
 					var pullAppStatus = function() {
 						externalRequest('getAllAppStatus').done(function(result) {
 							kom.fromJS(result, { '$key': 'id', '$merge': true }, status);
-							if (document.hidden) {
+							if (document.hidden || document.webengineHidden) {
 								window.setTimeout(pullAppStatus, 1000);
 							} else {
 								window.setTimeout(pullAppStatus, 250);
@@ -344,7 +344,7 @@
 					**/
 					var lastTrigger = 0;
 					var triggerBusy = function() {
-						if (!document.hidden) {
+						if (!(document.hidden || document.webengineHidden)) {
 							var timestamp = window.performance &&
 									window.performance.now &&
 									window.performance.timing &&
@@ -358,7 +358,7 @@
 
 					// Disable idle events when the window is not active
 					document.addEventListener('visibilitychange', function() {
-						if (document.hidden) {
+						if (document.hidden || document.webengineHidden) {
 							externalRequest('suspendIdle');
 						} else {
 							externalRequest('triggerBusy');

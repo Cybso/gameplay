@@ -214,7 +214,10 @@ class Frontend(QMainWindow):
 				state = False
 			if self._currentVisibilityState != state:
 				self._currentVisibilityState = state
-				self.web.page().view().setVisible(state)
+				self.web.page().setVisibilityState(state)
+
+
+			#	self.web.page().view().setVisible(state)
 
 	###
 	# Print an 'Are you sure' message when the user closes the window

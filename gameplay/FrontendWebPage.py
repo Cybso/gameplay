@@ -152,7 +152,19 @@ if util.find_spec("PyQt5.QtWebEngineWidgets") is not None:
 				LOGGER.error('%s line %d: %s' % (source, line, msg))
 			else:
 				LOGGER.info('%s line %d: %s' % (source, line, msg))
-	
+
+		def setVisibilityState(self, visible):
+			hidden = 'true'
+			if visible:
+				hidden = 'false'
+			self.runJavaScript('''(function(state) {
+				document.webengineHidden = state;
+				var event = document.createEvent("HTMLEvents");
+				event.initEvent("visibilitychange", true, true);
+				document.dispatchEvent(event);
+			})(%s)''' % (hidden))
+
+
 	from PyQt5.QtWebEngineCore import QWebEngineUrlSchemeHandler, QWebEngineUrlRequestJob
 	from PyQt5.QtWebEngineWidgets import QWebEngineProfile
 	class IconSchemeHandler(QWebEngineUrlSchemeHandler):

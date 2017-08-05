@@ -293,7 +293,7 @@
 			// Disable animations when the window doesn't have the focus
 			var backgroundGamepadListener = new BackgroundGamepadListener(exports);
 			var visibilityChangeListener = function() {
-				if (document.hidden) {
+				if (document.hidden || document.webengineHidden) {
 					document.body.classList.add('window-inactive');
 					document.body.classList.remove('window-active');
 					backgroundGamepadListener.enable();
