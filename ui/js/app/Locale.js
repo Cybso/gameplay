@@ -38,12 +38,12 @@
 				locale.available = available;
 
 				// Update knockout.translate when locale changes
-				new RemoteData(ko.pureComputed(function() {
-					return 'js/locale/' + locale() + '.json';
-				})).done(t.map).load();
+				//new RemoteData(ko.pureComputed(function() {
+				//	return 'js/locale/' + locale() + '.json';
+				//})).done(t.map).load();
 
 				return locale;
-			}
+			};
 		}
 	);
 })();

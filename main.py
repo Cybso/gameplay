@@ -15,6 +15,13 @@ import os
 import sys
 from importlib import util
 
+def find_preferred_engine():
+	if util.find_spec("PyQt5.QtWebKit") is not None:
+		return 'webkit'
+	elif util.find_spec("PyQt5.QtWebEngineWidgets") is not None:
+		return 'webengine'
+	return None
+
 # Requires at least Python 3.4
 if sys.version_info < (3,4):
 	sys.stderr.write("This program requires at least Python 3.4, found version %d.%d.%d%s" % (
@@ -27,8 +34,8 @@ if util.find_spec("PyQt5") is None:
 	sys.stderr.write("Module PyQt5 not found. Maybe you need to install 'python3-pyqt5'.%s" % os.linesep)
 	sys.exit(1)
 
-if util.find_spec("PyQt5.QtWebKit") is None:
-	sys.stderr.write("Module 'PyQt5.QtWebKit' not found. Maybe you need to install 'python3-pyqt5.qtwebkit'.%s" % os.linesep)
+if find_preferred_engine() is None:
+	sys.stderr.write("Neither module 'PyQt5.QtWebKit' nor 'PyQt5.QtWebEngineWidgets' found. Maybe you need to install 'python3-pyqt5.qtwebkit'.%s" % os.linesep)
 	sys.exit(1)
 
 if util.find_spec("psutil") is None:
@@ -43,7 +50,6 @@ from PyQt5.Qt import Qt
 from PyQt5.QtCore import QDir, QStandardPaths
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWebKit import QWebSettings
 
 # Automatically convert between python strings and QString
 import sip
@@ -68,6 +74,7 @@ def main():
 	parser.add_argument("-d", "--debug", help="be even verboser", action="store_true")
 	parser.add_argument("-f", "--fullscreen", help="start in fullscreen mode", action="store_true")
 	parser.add_argument("-s", "--stayontop", help="stay on top (while not running any apps)", action="store_true")
+	parser.add_argument("-e", "--engine", help="browser engine that should be used ('webkit', 'webengine')", choices=['webkit', 'webengine'], default=find_preferred_engine())
 	args = parser.parse_args()
 
 	# This must be configured before any logger is initialized
@@ -92,11 +99,15 @@ def main():
 	app.setWindowIcon(QIcon(uipath + 'img/Y.svg'))
 	gameplay = GamePlay()
 
-	# Enable developer console
-	QWebSettings.globalSettings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True)
+	# Enable developer console. For Webkit, always, otherwise only i debug mode.
+	if args.engine == 'webkit':
+		from PyQt5.QtWebKit import QWebSettings
+		QWebSettings.globalSettings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True)
+	elif args.debug:
+		os.environ['QTWEBENGINE_REMOTE_DEBUGGING'] = '9000';
 
 	# Initialize frontend
-	frontend = Frontend(uipath, gameplay)
+	frontend = Frontend(args, uipath, gameplay)
 
 	if args.stayontop:
 		LOGGER.info('Enable WindowStayOnTop')

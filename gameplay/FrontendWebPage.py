@@ -14,38 +14,65 @@
 import os
 import logging
 
-from PyQt5.QtWebKitWidgets import QWebPage
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QVariant, QTimer, QByteArray, QBuffer, QIODevice
 from PyQt5.QtNetwork import QNetworkReply, QNetworkAccessManager, QNetworkRequest
-
+from importlib import util
 
 from . import GamePlay
 
 LOGGER = logging.getLogger(__name__)
 
-###
-# Override QWebPage to redirect JavaScript console output
-# to logger (level 'info'). If the output starts with 'debug',
-# 'warn', 'error' or 'exception' the appropirate level is
-# choosen instead.
-#
-# Additionally this adds support for the 'icon://' url scheme
-###
-class FrontendWebPage(QWebPage):
-	def __init__(self, *args, **kwargs):
-		QWebPage.__init__(self, *args, **kwargs)
-		self.setNetworkAccessManager(NetworkAccessManager(self.networkAccessManager()))
+if util.find_spec("PyQt5.QtWebKit") is not None:
+	###
+	# Override QWebPage to redirect JavaScript console output
+	# to logger (level 'info'). If the output starts with 'debug',
+	# 'warn', 'error' or 'exception' the appropirate level is
+	# choosen instead.
+	#
+	# Additionally this adds support for the 'icon://' url scheme
+	###
+	from PyQt5.QtWebKitWidgets import QWebPage
+	class FrontendWebPage(QWebPage):
+		def __init__(self, *args, **kwargs):
+			QWebPage.__init__(self, *args, **kwargs)
+			self.setNetworkAccessManager(NetworkAccessManager(self.networkAccessManager()))
 
-	def javaScriptConsoleMessage(self, msg, line, source):
-		if msg.startswith('debug'):
-			LOGGER.debug('%s line %d: %s' % (source, line, msg))
-		elif msg.startswith('warn'):
-			LOGGER.warn('%s line %d: %s' % (source, line, msg))
-		elif msg.startswith('error') or msg.startswith('exception'):
-			LOGGER.error('%s line %d: %s' % (source, line, msg))
-		else:
-			LOGGER.info('%s line %d: %s' % (source, line, msg))
+		def javaScriptConsoleMessage(self, msg, line, source):
+			if msg.startswith('debug'):
+				LOGGER.debug('%s line %d: %s' % (source, line, msg))
+			elif msg.startswith('warn'):
+				LOGGER.warn('%s line %d: %s' % (source, line, msg))
+			elif msg.startswith('error') or msg.startswith('exception'):
+				LOGGER.error('%s line %d: %s' % (source, line, msg))
+			else:
+				LOGGER.info('%s line %d: %s' % (source, line, msg))
+
+if util.find_spec("PyQt5.QtWebEngineWidgets") is not None:
+	###
+	# Override QWebPage to redirect JavaScript console output
+	# to logger (level 'info'). If the output starts with 'debug',
+	# 'warn', 'error' or 'exception' the appropirate level is
+	# choosen instead.
+	#
+	# Additionally this adds support for the 'icon://' url scheme
+	###
+	from PyQt5.QtWebEngineWidgets import QWebEnginePage
+	class FrontendWebEnginePage(QWebEnginePage):
+		def __init__(self, *args, **kwargs):
+			QWebEnginePage.__init__(self, *args, **kwargs)
+			# FIXME
+			#self.setNetworkAccessManager(NetworkAccessManager(self.networkAccessManager()))
+
+		def javaScriptConsoleMessage(self, msg, line, source):
+			if msg.startswith('debug'):
+				LOGGER.debug('%s line %d: %s' % (source, line, msg))
+			elif msg.startswith('warn'):
+				LOGGER.warn('%s line %d: %s' % (source, line, msg))
+			elif msg.startswith('error') or msg.startswith('exception'):
+				LOGGER.error('%s line %d: %s' % (source, line, msg))
+			else:
+				LOGGER.info('%s line %d: %s' % (source, line, msg))
 
 ###
 # Icon Reply - responds to requests starting with icon:// and tries

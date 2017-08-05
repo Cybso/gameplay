@@ -17,9 +17,7 @@ import logging
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtCore import Qt, QEvent, QUrl
 from PyQt5.QtWidgets import QSplitter, QAction, QSizePolicy, QShortcut, QMessageBox, QApplication, QWidget, QMainWindow
-from PyQt5.QtWebKitWidgets import QWebView, QWebPage, QWebInspector
 
-from .FrontendWebPage import FrontendWebPage
 
 LOGGER = logging.getLogger(__name__)
 
@@ -27,35 +25,51 @@ LOGGER = logging.getLogger(__name__)
 # HTML5/JavaScript based application frontend
 ###
 class Frontend(QMainWindow):
-	def __init__(self, basepath, gameplay):
+	def __init__(self, args, basepath, gameplay):
 		super(Frontend, self).__init__()
 		self.basepath = basepath
 		self.gameplay = gameplay
 		self.gameplay.window = self
 		self.setWindowTitle('GamePlay')
+		self.webkit = args.engine == 'webkit'
+		if self.webkit:
+			from PyQt5.QtWebKitWidgets import QWebView, QWebPage, QWebInspector
+			from .FrontendWebPage import FrontendWebPage
+			self.web = QWebView(self)
+			self.web.setPage(FrontendWebPage())
+			self.frame = self.web.page().mainFrame()
+			self.frame.javaScriptWindowObjectCleared.connect(self.load_api)
 
-		# Add web view
-		self.web = QWebView(self)
+			# Add inspector
+			self.inspector = QWebInspector(self)
+			self.inspector.setPage(self.web.page())
+			self.inspector.setVisible(False)
+			QShortcut(QKeySequence("F12"), self.web, self.toggleWebInspector)
+
+			# And put both into a splitter
+			self.splitter = QSplitter(self)
+			self.splitter.setOrientation(Qt.Vertical)
+			self.splitter.addWidget(self.web)
+			self.splitter.addWidget(self.inspector)
+			self.setCentralWidget(self.splitter)
+		else:
+			# WebEngine does not have a WebInspector component
+			from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage
+			from PyQt5.QtWebChannel import QWebChannel
+			from .FrontendWebPage import FrontendWebEnginePage
+			self.web = QWebEngineView(self)
+			self.web.setPage(FrontendWebEnginePage())
+			channel = QWebChannel(self.web.page());
+			self.web.page().setWebChannel(channel);
+			channel.registerObject("gameplay", gameplay);
+			self.setCentralWidget(self.web)
+
 		# Intercept local protocols
-		self.web.setPage(FrontendWebPage())
 		self.web.load(QUrl.fromLocalFile(basepath + 'index.html'))
-		self.frame = self.web.page().mainFrame()
-		self.frame.javaScriptWindowObjectCleared.connect(self.load_api)
 
 		self._currentVisibilityState = None
 		self.updateVisibilityState();
 
-		# Add inspector
-		self.inspector = QWebInspector(self)
-		self.inspector.setPage(self.web.page())
-
-		# And put both into a splitter
-		self.splitter = QSplitter(self)
-		self.splitter.setOrientation(Qt.Vertical)
-		self.splitter.addWidget(self.web)
-		self.splitter.addWidget(self.inspector)
-		self.setCentralWidget(self.splitter)
-		
 		# Add toolbar (after QWebView has been initialized)
 		self.create_toolbar()
 
@@ -67,18 +81,17 @@ class Frontend(QMainWindow):
 		QShortcut(QKeySequence("Alt+F4"), self.web, self.close)
 		QShortcut(QKeySequence("Ctrl+R"), self.web, self.forceRefresh)
 		QShortcut(QKeySequence("ALT+F5"), self.web, self.forceRefresh)
-		QShortcut(QKeySequence("F12"), self.web, self.toggleWebInspector)
 		QShortcut(QKeySequence("F11"), self.web, self.toggleFullscreen)
 
-		#  Hide toolbar and web inspector per default
-		self.inspector.setVisible(False)
+		#  Hide toolbar and  per default
 		self.toolbar.setVisible(False)
 
 		# Get initial window state
 		self._lastWindowState = self.windowState()
 	
 	def forceRefresh(self):
-		self.web.page().settings().clearMemoryCaches()
+		# TODO
+		#self.web.page().settings().clearMemoryCaches()
 		self.web.reload()
 	
 	###
@@ -157,14 +170,15 @@ class Frontend(QMainWindow):
 	# the gamepadLoop.
 	###
 	def updateVisibilityState(self):
-		state = QWebPage.VisibilityStateVisible
-		if self.windowState() & Qt.WindowMinimized:
-			state = QWebPage.VisibilityStateHidden
-		if not self.isActiveWindow():
-			state = QWebPage.VisibilityStateHidden
-		if self._currentVisibilityState != state:
-			self._currentVisibilityState = state
-			self.web.page().setVisibilityState(state)
+		#state = QWebPage.VisibilityStateVisible
+		#if self.windowState() & Qt.WindowMinimized:
+		#	state = QWebPage.VisibilityStateHidden
+		#if not self.isActiveWindow():
+		#	state = QWebPage.VisibilityStateHidden
+		#if self._currentVisibilityState != state:
+		#	self._currentVisibilityState = state
+		#	self.web.page().setVisibilityState(state)
+		pass
 
 	###
 	# Print an 'Are you sure' message when the user closes the window

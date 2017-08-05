@@ -390,8 +390,11 @@
 		);
 	}
 
+	console.log(0);
 	if (window.QWebChannel !== undefined && window.qt !== undefined) {
-		return new window.QWebChannel(window.qt.webChannelTransport, function (channel) {
+		console.log(1);
+		window.QWebChannel(window.qt.webChannelTransport, function (channel) {
+			console.log(2);
 			/**
 			 * Does an asynchronous request to Gameplay backends API.
 			 * Returns a promise object with the method 'done' that
@@ -414,7 +417,7 @@
 					}
 					listeners = undefined;
 				});
-				channel[method].apply(channel, args);
+				channel.objects.gameplay[method].apply(channel.objects.gameplay, args);
 
 				return {
 					done: function(listener) {
