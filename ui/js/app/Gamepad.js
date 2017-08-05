@@ -413,6 +413,16 @@
 					});
 				}
 
+				// Remove USB vendor and product suffix to make this
+				// compatible with WebKit.
+				gamepads.getUnifiedId = function(gp) {
+					if (gp.id.match(/.+ \(Vendor: .... Product: ....\)$/)) {
+						return gp.id.substring(0, gp.id.length - 29);
+					} else {
+						return gp.id;
+					}
+				};
+
 				return gamepads;
 			};
 		}

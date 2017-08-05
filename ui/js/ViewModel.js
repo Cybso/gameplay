@@ -252,12 +252,7 @@
 						exports.activeGamepadConfigurator(undefined);
 						if (configurator.finished()) {
 							var mapping = configurator.mapping();
-							var mappingKey = 'mapping:' + gp.id;
-							if (gp.id.match(/.+ \(Vendor: .... Product: ....\)$/)) {
-								// Remove USB vendor and product suffix to make this
-								// compatible with WebKit.
-								mappingKey = mappingKey.substring(0, mappingKey.length - 29);
-							}
+							var mappingKey = 'mapping:' + exports.gamepad.getUnifiedId(gp);
 							exports.gamepad.setGamepadMapping(gp, mapping);
 							exports.gameplay.setItem(mappingKey, JSON.stringify(mapping));
 						}
@@ -273,7 +268,7 @@
 				if (type === 'attached') {
 					exports.currentGamepads.push(gp);
 					// Check if there is a safed configuration
-					var mappingKey = 'mapping:' + gp.id;
+					var mappingKey = 'mapping:' + exports.gamepad.getUnifiedId(gp);
 					exports.gameplay.getItem(mappingKey).done(function(mapping) {
 						if (mapping) {
 							mapping = JSON.parse(mapping);

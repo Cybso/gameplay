@@ -146,7 +146,7 @@
 
 		<!-- ko with: activeGamepadConfigurator -->
 			<div id="gamepad-configurator" class="dialog"  style="display: none" data-bind="style: { display: undefined }">
-				<div class="dialog-label" data-bind="text: gamepad().id"></div>
+				<div class="dialog-label" data-bind="text: $root.gamepad.getUnifiedId(gamepad())"></div>
 				<div class="dialog-content">
 					<div>Unknown gamepad detected. Please have a few seconds to configure the primary buttons.</div>
 					<div class="gamepad-schema">
