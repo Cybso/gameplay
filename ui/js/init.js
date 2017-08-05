@@ -4,13 +4,18 @@
 (function() {
 	"use strict";
 
-	var requireJsInitialized = false;
+	var initializeRequireJs_waitForDeps = 0;
 	var initializeRequireJs = function() {
 		// Executed when RequireJS is ready. Might be called twice.
-		if (requireJsInitialized) {
+		if (initializeRequireJs_waitForDeps > 0) {
 			return;
 		}
-		requireJsInitialized = true;
+		initializeRequireJs_waitForDeps += 1;
+		if (initializeRequireJs_waitForDeps < 0)  {
+			// Wait for additional dependencies
+			return;
+		}
+
 		window.requirejs.config({
 			baseUrl: 'js',
 			paths: {
@@ -32,6 +37,20 @@
 		});
 	};
 
+	// Check if we need to fetch the QWebChannel first
+	if (window.QWebChannel !== undefined && window.qt !== undefined) {
+		// Wait for QWebChannel as dependency
+		initializeRequireJs_waitForDeps -= 1;
+		window.gameplayIsAsync = true;
+		window.QWebChannel(window.qt.webChannelTransport, function (channel) {
+			window.gameplay = channel.objects.gameplay;
+			initializeRequireJs();
+		});
+	}
+	
+
+	// Wait for requirejs as dependency
+	initializeRequireJs_waitForDeps -= 1;
 	if (window.requirejs) {
 		// Already available
 		initializeRequireJs();
