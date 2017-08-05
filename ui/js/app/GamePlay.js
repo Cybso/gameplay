@@ -390,43 +390,41 @@
 		);
 	}
 
-	if (window.QWebChannel !== undefined && window.qt !== undefined) {
-		return new window.QWebChannel(window.qt.webChannelTransport, function (channel) {
-			/**
-			 * Does an asynchronous request to Gameplay backends API.
-			 * Returns a promise object with the method 'done' that
-			 * can be used to register the value listener.
-			 *
-			 * First parameter must be the method name, but you can provide
-			 * additional arguments.
-			 **/
-			factory(function externalRequest(method) {
-				var args = [];
-				for (var i = 1; i < arguments.length; i+=1) {
-					args.push(arguments[i]);
+	if (window.gameplayIsAsync === true) {
+		/**
+		 * Does an asynchronous request to Gameplay backends API.
+		 * Returns a promise object with the method 'done' that
+		 * can be used to register the value listener.
+		 *
+		 * First parameter must be the method name, but you can provide
+		 * additional arguments.
+		 **/
+		factory(function externalRequest(method) {
+			var args = [];
+			for (var i = 1; i < arguments.length; i+=1) {
+				args.push(arguments[i]);
+			}
+			var result;
+			var listeners = [];
+			args.push(function(value) {
+				result = value;
+				for (var i = 0; i < listeners.length; i+=1) {
+					listeners[i].call(listeners[i], result);
 				}
-				var result;
-				var listeners = [];
-				args.push(function(value) {
-					result = value;
-					for (var i = 0; i < listeners.length; i+=1) {
-						listeners[i].call(listeners[i], result);
-					}
-					listeners = undefined;
-				});
-				channel[method].apply(channel, args);
-
-				return {
-					done: function(listener) {
-						if (listeners === undefined) {
-							listener.call(listener, result);
-						} else {
-							listeners.push(listener);
-						}
-						return this;
-					}
-				};
+				listeners = undefined;
 			});
+			window.gameplay[method].apply(window.gameplay, args);
+
+			return {
+				done: function(listener) {
+					if (listeners === undefined) {
+						listener.call(listener, result);
+					} else {
+						listeners.push(listener);
+					}
+					return this;
+				}
+			};
 		});
 	} else {
 		/**
