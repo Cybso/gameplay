@@ -142,9 +142,6 @@ if util.find_spec("PyQt5.QtWebEngineWidgets") is not None:
 			QWebEnginePage.__init__(self, *args, **kwargs)
 			self.handler = IconSchemeHandler()
 			self.profile().installUrlSchemeHandler(b'icon', self.handler)
-			#QWebEngineProfile.defaultProfile().installUrlSchemeHandler(b'icon', self.handler)
-			# FIXME
-			#self.setNetworkAccessManager(NetworkAccessManager(self.networkAccessManager()))
 
 		def javaScriptConsoleMessage(self, level, msg, line, source):
 			if msg.startswith('debug'):

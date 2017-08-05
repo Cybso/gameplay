@@ -81,7 +81,6 @@ class Frontend(QMainWindow):
 			self.splitter.addWidget(self.web)
 			self.splitter.addWidget(self.inspector)
 			self.setCentralWidget(self.splitter)
-			#self.setCentralWidget(self.web)
 
 		# Intercept local protocols
 		self.web.load(QUrl.fromLocalFile(basepath + 'index.html'))
@@ -193,15 +192,29 @@ class Frontend(QMainWindow):
 	# the gamepadLoop.
 	###
 	def updateVisibilityState(self):
-		#state = QWebPage.VisibilityStateVisible
-		#if self.windowState() & Qt.WindowMinimized:
-		#	state = QWebPage.VisibilityStateHidden
-		#if not self.isActiveWindow():
-		#	state = QWebPage.VisibilityStateHidden
-		#if self._currentVisibilityState != state:
-		#	self._currentVisibilityState = state
-		#	self.web.page().setVisibilityState(state)
-		pass
+		if self._currentVisibilityState is None and not self.isVisible():
+			# Not ready, yet
+			return
+
+		if self.webkit:
+			from PyQt5.QtWebKitWidgets import QWebPage
+			state = QWebPage.VisibilityStateVisible
+			if self.windowState() & Qt.WindowMinimized:
+				state = QWebPage.VisibilityStateHidden
+			if not self.isActiveWindow():
+				state = QWebPage.VisibilityStateHidden
+			if self._currentVisibilityState != state:
+				self._currentVisibilityState = state
+				self.web.page().setVisibilityState(state)
+		else:
+			state = True
+			if self.windowState() & Qt.WindowMinimized:
+				state = False
+			if not self.isActiveWindow():
+				state = False
+			if self._currentVisibilityState != state:
+				self._currentVisibilityState = state
+				self.web.page().view().setVisible(state)
 
 	###
 	# Print an 'Are you sure' message when the user closes the window
