@@ -18,7 +18,7 @@ from PyQt5.QtGui import QKeySequence
 from PyQt5.QtCore import Qt, QEvent, QUrl
 from PyQt5.QtWidgets import QSplitter, QAction, QSizePolicy, QShortcut, QMessageBox, QApplication, QWidget, QMainWindow
 
-
+QTWEBENGINE_REMOTE_DEBUGGING_PORT='26512'
 LOGGER = logging.getLogger(__name__)
 
 ###
@@ -34,7 +34,9 @@ class Frontend(QMainWindow):
 		self.webkit = args.engine == 'webkit'
 		if self.webkit:
 			from PyQt5.QtWebKitWidgets import QWebView, QWebPage, QWebInspector
+			from PyQt5.QtWebKit import QWebSettings
 			from .FrontendWebPage import FrontendWebPage
+			QWebSettings.globalSettings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True)
 			self.web = QWebView(self)
 			self.web.setPage(FrontendWebPage())
 			self.frame = self.web.page().mainFrame()
@@ -53,16 +55,33 @@ class Frontend(QMainWindow):
 			self.splitter.addWidget(self.inspector)
 			self.setCentralWidget(self.splitter)
 		else:
+			if args.debug:
+				LOGGER.warn("QTWEBENGINE_REMOTE_DEBUGGING enabled on port http://localhost:%s/. This may be a security issue. Remove '-d/--debug' for production environments." % (QTWEBENGINE_REMOTE_DEBUGGING_PORT))
+				os.environ['QTWEBENGINE_REMOTE_DEBUGGING'] = QTWEBENGINE_REMOTE_DEBUGGING_PORT;
 			# WebEngine does not have a WebInspector component
 			from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage
 			from PyQt5.QtWebChannel import QWebChannel
 			from .FrontendWebPage import FrontendWebEnginePage
 			self.web = QWebEngineView(self)
-			self.web.setPage(FrontendWebEnginePage())
-			channel = QWebChannel(self.web.page());
-			self.web.page().setWebChannel(channel);
+			page = FrontendWebEnginePage(self)
+			self.web.setPage(page)
+			channel = QWebChannel(page);
+			page.setWebChannel(channel);
 			channel.registerObject("gameplay", gameplay);
-			self.setCentralWidget(self.web)
+
+			# Add inspector
+			self.inspector = QWebEngineView(self)
+			self.inspector.load(QUrl('http://localhost:' + QTWEBENGINE_REMOTE_DEBUGGING_PORT))
+			self.inspector.setVisible(False)
+			QShortcut(QKeySequence("F12"), self.web, self.toggleWebInspector)
+
+			# And put both into a splitter
+			self.splitter = QSplitter(self)
+			self.splitter.setOrientation(Qt.Vertical)
+			self.splitter.addWidget(self.web)
+			self.splitter.addWidget(self.inspector)
+			self.setCentralWidget(self.splitter)
+			#self.setCentralWidget(self.web)
 
 		# Intercept local protocols
 		self.web.load(QUrl.fromLocalFile(basepath + 'index.html'))
@@ -91,8 +110,12 @@ class Frontend(QMainWindow):
 	
 	def forceRefresh(self):
 		# TODO
-		#self.web.page().settings().clearMemoryCaches()
-		self.web.reload()
+		if hasattr(self.web, 'reloadAndBypassCache'):
+			self.web.reloadAndBypassCache()
+		else:
+			if hasattr(self.web.page().settings(), 'clearMemoryCaches'):
+				self.web.page().settings().clearMemoryCaches()
+			self.web.reload()
 	
 	###
 	# Toggles fullscreen mode (F11)

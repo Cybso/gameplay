@@ -99,13 +99,6 @@ def main():
 	app.setWindowIcon(QIcon(uipath + 'img/Y.svg'))
 	gameplay = GamePlay()
 
-	# Enable developer console. For Webkit, always, otherwise only i debug mode.
-	if args.engine == 'webkit':
-		from PyQt5.QtWebKit import QWebSettings
-		QWebSettings.globalSettings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True)
-	elif args.debug:
-		os.environ['QTWEBENGINE_REMOTE_DEBUGGING'] = '9000';
-
 	# Initialize frontend
 	frontend = Frontend(args, uipath, gameplay)
 

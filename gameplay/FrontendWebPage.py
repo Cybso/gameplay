@@ -15,7 +15,7 @@ import os
 import logging
 
 from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import QVariant, QTimer, QByteArray, QBuffer, QIODevice
+from PyQt5.QtCore import QVariant, QTimer, QByteArray, QBuffer, QIODevice, pyqtSlot
 from PyQt5.QtNetwork import QNetworkReply, QNetworkAccessManager, QNetworkRequest
 from importlib import util
 
@@ -64,7 +64,7 @@ if util.find_spec("PyQt5.QtWebEngineWidgets") is not None:
 			# FIXME
 			#self.setNetworkAccessManager(NetworkAccessManager(self.networkAccessManager()))
 
-		def javaScriptConsoleMessage(self, msg, line, source):
+		def javaScriptConsoleMessage(self, level, msg, line, source):
 			if msg.startswith('debug'):
 				LOGGER.debug('%s line %d: %s' % (source, line, msg))
 			elif msg.startswith('warn'):
