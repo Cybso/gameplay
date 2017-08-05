@@ -316,7 +316,7 @@
 
 			// Bind controls on gamepad
 			var gamepadListener = function(gamepad, button, state) {
-				console.log(gamepad, button, state);
+				console.log(arguments);
 				if ((document.hidden !== undefined && document.hidden) ||
 					(state >= -0.5 && state <= 0.5)) {
 					return;

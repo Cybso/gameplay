@@ -168,9 +168,9 @@
 				var timestamp = gamepad.timestamp;
 				var intervalTimeout = 100;
 				var waitIntervals = 7;
-				var rawValue = Math.round(raw.value);
+				var rawValue = exports.gamepad.getButtonState(raw.value);
 				var timeoutHandle = function() {
-					if (rawValue === Math.round(gamepad[raw.key][raw.index])) {
+					if (rawValue === exports.gamepad.getButtonState(gamepad[raw.key][raw.index])) {
 						if (waitIntervals === 0) {
 							action();
 						}
@@ -253,6 +253,11 @@
 						if (configurator.finished()) {
 							var mapping = configurator.mapping();
 							var mappingKey = 'mapping:' + gp.id;
+							if (gp.id.match(/.+ \(Vendor: .... Product: ....\)$/)) {
+								// Remove USB vendor and product suffix to make this
+								// compatible with WebKit.
+								mappingKey = mappingKey.substring(0, mappingKey.length - 29);
+							}
 							exports.gamepad.setGamepadMapping(gp, mapping);
 							exports.gameplay.setItem(mappingKey, JSON.stringify(mapping));
 						}

@@ -61,9 +61,6 @@
 					return gamepads;
 				}
 
-				/**
-				 * FIXME Load this from storage
-				 **/
 				var mappings = new InitialMappings();
 
 				var buttonListeners = [];
@@ -168,6 +165,32 @@
 					return list === undefined ? [] : list;
 				};
 
+				// Newer versions of chrome returns buttons as
+				// '{ pressed: BOOL, value: INT }', while older
+				// just returned the value. This wrapper returns
+				// the value for both variants.
+				var getButtonState = function(value) {
+					if (isFinite(value)) {
+						return Math.round(value);
+					} else if (value.pressed !== undefined) {
+						return value.pressed ? 1 : 0;
+					} else {
+						return value.value;
+					}
+				};
+				gamepads.getButtonState = getButtonState;
+
+				/**
+				 * Creates a new array of button states from input
+				 **/
+				var copyButtonStates = function(arr) {
+					var result = [];
+					for (var i = 0; i < arr.length; i+=1) {
+						result.push(getButtonState(arr[i]));
+					}
+					return result;
+				};
+
 				gamepads.getMappings = function() {
 					return mappings;
 				};
@@ -219,7 +242,7 @@
 				 * Checks if any button state has changed and fires an event
 				 **/
 				var checkGamepadButtonState = function(gp, lastState) {
-					var i, old, val;
+					var i, old, val, state;
 					if (lastState.counter === 0) {
 						// Fire everything that's not zero
 						for (i = 0; i < gp.axes.length; i+=1) {
@@ -233,8 +256,9 @@
 							}
 						}
 						for (i = 0; i < gp.buttons.length; i+=1) {
-							if (Math.round(gp.buttons[i]) !== 0) {
-								fireGamepadButtonEvent(gp, 'buttons_' + i, gp.buttons[i], 'buttons', i, gp.axes[i]);
+							state = getButtonState(gp.buttons[i]);
+							if (state !== 0) {
+								fireGamepadButtonEvent(gp, 'buttons_' + i, state, 'buttons', i, gp.buttons[i]);
 							}
 						}
 					} else {
@@ -256,8 +280,9 @@
 							}
 						}
 						for (i = 0; i < gp.buttons.length; i+=1) {
-							if (Math.round(gp.buttons[i]) !== Math.round(lastState.buttons[i])) {
-								fireGamepadButtonEvent(gp, 'buttons_' + i, gp.buttons[i], 'buttons', i, gp.axes[i]);
+							state = getButtonState(gp.buttons[i]);
+							if (state !== lastState.buttons[i]) {
+								fireGamepadButtonEvent(gp, 'buttons_' + i, state, 'buttons', i, gp.buttons[i]);
 							}
 						}
 					}
@@ -285,7 +310,7 @@
 								gamepadStates[gp.id] = {
 									id: gp.id,
 									timestamp: 0,
-									buttons: gp.buttons,
+									buttons: copyButtonStates(gp.buttons),
 									axes: gp.axes,
 								};
 								lastState = gamepadStates[gp.id];
@@ -297,7 +322,7 @@
 								} catch (err) {
 									console.log(err);
 								}
-								lastState.buttons = gp.buttons;
+								lastState.buttons = copyButtonStates(gp.buttons);
 								lastState.axes = gp.axes;
 								lastState.timestamp = gp.timestamp;
 							}
@@ -328,7 +353,7 @@
 
 						if (bi !== false) {
 							bi.getValue = function(gp) {
-								var value = gp[bi.key][bi.index];
+								var value = getButtonState(gp[bi.key][bi.index]);
 								if (bi.negate) {
 									value = -value;
 								}
