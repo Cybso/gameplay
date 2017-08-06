@@ -3,8 +3,28 @@
 # Returns None / None if the image has not  been found.
 ###
 
+import logging
 from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import QByteArray, QBuffer, QIODevice
+from PyQt5.QtCore import QByteArray, QBuffer, QIODevice, QStandardPaths
+
+LOGGER = logging.getLogger(__name__)
+
+# Load platform dependent utils
+import platform
+system = platform.system()
+if system == 'Linux':
+    LOGGER.info('Detected Linux system')
+    from . import linux as gameplay_sys
+elif system == 'Darwin':
+    LOGGER.info('Detected Darwin system')
+    from . import darwin as gameplay_sys
+elif system == 'Windows':
+    LOGGER.info('Detected Windows system')
+    from . import windows as gameplay_sys
+else:
+    # Try with linux as fallback...
+    LOGGER.info('Detected unknown system, using Linux API')
+    from . import linux as gameplay_sys
 
 def get_icon_data(iconName):
 	icon = QIcon.fromTheme(iconName)
@@ -17,6 +37,8 @@ def get_icon_data(iconName):
 		image.save(buf, 'PNG')
 		return (ba.data(), 'image/png')
 	else:
-		return (None, None)
-
-
+		(icon, contentType) = gameplay_sys.find_icon_by_name(iconName)
+		if icon is None:
+			LOGGER.warning("Icon not found: %s" % (iconName))
+			return (None, None)
+		return (icon, contentType)

@@ -76,6 +76,7 @@ def wit_image_info_handler(path):
 				wit_image_info_handler.executable = False
 	
 	if wit_image_info_handler.executable:
+		wit_image_info_handler.executable = QDir.toNativeSeparators(wit_image_info_handler.executable)
 		discid=None
 		cmd = [wit_image_info_handler.executable, 'list', '--sections', path]
 		try:

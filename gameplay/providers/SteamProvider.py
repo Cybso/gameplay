@@ -6,7 +6,6 @@ import platform
 import logging
 import json
 import functools
-import urllib3
 import psutil
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QIcon
@@ -86,23 +85,31 @@ class SteamPlatformLinux(SteamPlatformGeneric):
 	def find_app_icon(self, appid):
 		iconName = 'steam_icon_' + appid
 		if not QIcon.fromTheme(iconName).isNull():
-			return 'icon://' + iconName
+			return 'icon:///' + iconName
 		return None
 
 	def find_steam_exe(self):
 		return [QStandardPaths.findExecutable('steam')]
 
 class SteamPlatformWindows(SteamPlatformGeneric):
+	def __init__(self):
+		SteamPlatformGeneric.__init__(self)
+		# FIXME load these from Registry
+		self.search_paths = [
+			QDir(QDir.fromNativeSeparators("C:\\Program Files\\Steam")),
+			QDir(QDir.fromNativeSeparators("C:\\Program Files (x86)\\Steam")),
+			QDir(QDir.fromNativeSeparators("C:\\Programme\\Steam")),
+			QDir(QDir.fromNativeSeparators("C:\\Programme\\Steam (x86)"))
+		]
+		
 	###
 	# Try to locate "steamapps" folder
 	###
 	def steamapps_path(self):
-		steamPath = QDir(QDir.fromNativeSeparators("C:\\Programme\\Steam (x86)\\SteamApps"))
-		if steamPath.exists():
-			return steamPath.absolutePath()
-		steamPath = QDir(QDir.fromNativeSeparators("C:\\Program Files (x86)\\Steam\\steamapps"))
-		if steamPath.exists():
-			return steamPath.absolutePath()
+		for steamPath in self.search_paths:
+			steamPath = QDir(steamPath.absolutePath() + "/SteamApps")
+			if steamPath.exists():
+				return QDir.toNativeSeparators(steamPath.absolutePath())
 		return None
 
 	###
@@ -114,14 +121,12 @@ class SteamPlatformWindows(SteamPlatformGeneric):
 		path = QStandardPaths.findExecutable('steam.exe')
 		if path:
 			return [path]
-
-		path = "C:\\Programme\\Steam (x86)\\steam.exe"
-		if QFile(path).exists():
-			return [path]
-
-		path = "C:\\Program Files (x86)\\Steam\\steam.exe"
-		if QFile(path).exists():
-			return [path]
+			
+		for steamPath in self.search_paths:
+			steamPath = steamPath.absolutePath() + "/steam.exe"
+			path = QFile(steamPath)
+			if path.exists():
+				return [QDir.toNativeSeparators(steamPath)]
 
 		return None
 

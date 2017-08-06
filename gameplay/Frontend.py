@@ -12,6 +12,7 @@
 ###
 
 import os
+import sys
 import logging
 
 from PyQt5.QtGui import QKeySequence
@@ -172,8 +173,9 @@ class Frontend(QMainWindow):
 		if self.confirmClose and QMessageBox.question(None, '', "Are you sure you want to quit?",
 				QMessageBox.Yes | QMessageBox.No,
 				QMessageBox.No) == QMessageBox.No:
-			event.ignore()
+			event.ignore() 
 			return
-		QApplication.quit()
+		sys.exit(0)
+		#QApplication.quit()
 
 #  vim: set fenc=utf-8 ts=4 sw=4 noet :

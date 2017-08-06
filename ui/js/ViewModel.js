@@ -114,7 +114,7 @@
 					}
 				}
 
-				switch (evt.code || evt.keyIdentifier) {
+				switch (evt.code || evt.keyIdentifier || evt.key) {
 				case 'ArrowLeft':
 				case 'Left':
 					evt.preventDefault();

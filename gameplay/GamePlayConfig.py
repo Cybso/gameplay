@@ -34,13 +34,13 @@ class GamePlayConfig:
 		self.globalConfig = configparser.ConfigParser()
 		self.localConfig = configparser.ConfigParser()
 		# FIXME Does QStandardPaths return native or unix paths?
-		self._localFile = QStandardPaths.writableLocation(QStandardPaths.AppConfigLocation) + os.sep + filename
+		self._localFile = QDir.toNativeSeparators(QStandardPaths.writableLocation(QStandardPaths.AppConfigLocation) + '/' + filename)
 
 		self.search_paths = []
 		globalPaths = QStandardPaths.standardLocations(QStandardPaths.AppConfigLocation)
-		globalPaths.append(os.path.dirname(sys.argv[0]))
+		globalPaths.append(os.path.dirname(os.path.abspath(sys.argv[0])))
 		for path in globalPaths:
-			filePath = path + os.sep + filename
+			filePath = QDir.toNativeSeparators(path + '/' + filename)
 			if filePath != self._localFile:
 				self.search_paths.append(filePath)
 				if os.path.exists(filePath):

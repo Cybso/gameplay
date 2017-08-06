@@ -15,7 +15,7 @@ import logging
 
 from .utils import get_icon_data
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage
-from PyQt5.QtCore import QVariant, QTimer, QByteArray, QBuffer, QIODevice, pyqtSlot
+from PyQt5.QtCore import QUrl, QVariant, QTimer, QByteArray, QBuffer, QIODevice, pyqtSlot
 from PyQt5.QtWebChannel import QWebChannel
 
 QTWEBENGINE_REMOTE_DEBUGGING_PORT='26512'
@@ -100,7 +100,12 @@ from PyQt5.QtWebEngineWidgets import QWebEngineProfile
 class IconSchemeHandler(QWebEngineUrlSchemeHandler):
 	def requestStarted(self, job):
 		if job.requestMethod() == b'GET':
-			(icon, contentType) = get_icon_data(job.requestUrl().toString()[7:])
+			# Strip 'icon:///'
+			path = job.requestUrl().path()
+			if len(path) > 0 and path[0] == '/':
+				path = path[1:]
+			
+			(icon, contentType) = get_icon_data(path)
 			if icon is None:
 				return job.fail(QWebEngineUrlRequestJob.UrlNotFound)
 

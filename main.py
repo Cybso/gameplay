@@ -93,7 +93,7 @@ def main():
 	app = QApplication(sys.argv)
 
 	app.setApplicationName('gameplay')
-	app.setWindowIcon(QIcon(args.docroot + 'img/Y.svg'))
+	app.setWindowIcon(QIcon(args.docroot + 'img' + os.sep + 'Y.svg'))
 	gameplay = GamePlay()
 
 	# Initialize frontend

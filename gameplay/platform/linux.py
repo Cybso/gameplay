@@ -34,3 +34,10 @@ def set_foreground_window(name):
         return None
     cmd = ['xdotool', 'search', '--name', name, 'windowactivate']
     subprocess.run(cmd)
+
+###
+# Returns the content and content type of
+# an Icon by name or path.
+###
+def find_icon_by_name(iconName):
+	return (None, None)

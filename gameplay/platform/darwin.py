@@ -18,3 +18,9 @@ def get_foreground_window():
 def set_foreground_window(application):
     application.activateWithOptions_(NSApplicationActivateIgnoringOtherApps)
 
+###
+# Returns the content and content type of
+# an Icon by name or path.
+###
+def find_icon_by_name(iconName):
+	return (None, None)

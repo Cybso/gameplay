@@ -10,6 +10,7 @@ import configparser
 import shlex
 import re
 
+from urllib.parse import quote
 from gameplay.AppProvider import AppProvider, AppItem
 from PyQt5.QtCore import QDir, QStandardPaths
 
@@ -18,7 +19,7 @@ class DesktopEntryProvider(AppProvider):
 		AppProvider.__init__(self, settings)
 		if sources is None:
 			self.sources = [QDir.toNativeSeparators(x + '/applications') for x in QStandardPaths.standardLocations(QStandardPaths.AppDataLocation)]
-			self.sources.insert(0, os.path.dirname(sys.argv[0]) + os.sep + 'applications')
+			self.sources.insert(0, os.path.dirname(os.path.abspath(sys.argv[0])) + os.sep + 'applications')
 		else:
 			self.sources = sources
 	
@@ -82,7 +83,7 @@ class DesktopEntryProvider(AppProvider):
 					return None;
 
 				if icon:
-					icon = 'icon://' + icon
+					icon = 'icon:///' + quote(icon)
 
 				if self.filter_category(categories):
 					return AppItem(os.path.basename(f), name, icon=icon, cmd=cmd, categories=categories)

@@ -105,6 +105,8 @@ class IconSchemeReply(QNetworkReply):
 
 		# Strip 'icon://' from url
 		iconName = url.toString()[7:]
+		if len(iconName) > 0 and iconName[0] == '/':
+			iconName = iconName[1:]
 		(self.content, self.content_type) = get_icon_data(iconName)
 
 		# give webkit time to connect to the finished and readyRead signals

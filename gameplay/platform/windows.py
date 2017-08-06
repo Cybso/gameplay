@@ -2,7 +2,19 @@
 # Platform dependend OS calls - Windows edition
 # FIXME Not tested, yet
 ###
-from win32gui import GetForegroundWindow, SetForegroundWindow
+
+import logging
+import win32gui
+import ctypes
+
+from PyQt5.QtCore import QDir, QStandardPaths, QByteArray, QBuffer, QIODevice
+from extract_icon import ExtractIcon
+
+LOGGER = logging.getLogger(__name__)
+
+# Change windows 7 group ID
+myappid = 'net.bitarbeiter.gameplay' # arbitrary string
+ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
 ###
 # Returns the name (or pointer, or whatever is
@@ -10,11 +22,36 @@ from win32gui import GetForegroundWindow, SetForegroundWindow
 # of the currently active window
 ###
 def get_foreground_window():
-    return GetForegroundWindow()
+    return win32gui.GetForegroundWindow()
 
 ###
 # Changes the currently active window
 ###
 def set_foreground_window(handle):
-    SetForegroundWindow(handle)
+    win32gui.SetForegroundWindow(handle)
 
+###
+# Returns the content and content type of
+# an Icon by name or path.
+###
+def find_icon_by_name(iconName):
+	# Check if iconName is an executable
+	path = QStandardPaths.findExecutable(iconName)
+	if path:
+		path = QDir.toNativeSeparators(path)
+		try:
+			extractor = ExtractIcon(path)
+			groups = extractor.get_group_icons()
+			if len(groups) > 0:
+				best = extractor.best_icon(groups[0])
+				exported = extractor.export(groups[0], best)
+				ba = QByteArray()
+				buf = QBuffer(ba)
+				buf.open(QIODevice.WriteOnly)
+				exported.save(buf, "png")
+				return (ba.data(), 'image/png')			
+		except:
+			LOGGER.exception("Failed to load icon from %s" % path)
+	return (None, None)
+
+	
