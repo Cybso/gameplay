@@ -18,72 +18,37 @@ from PyQt5.QtGui import QKeySequence
 from PyQt5.QtCore import Qt, QEvent, QUrl
 from PyQt5.QtWidgets import QSplitter, QAction, QSizePolicy, QShortcut, QMessageBox, QApplication, QWidget, QMainWindow
 
-QTWEBENGINE_REMOTE_DEBUGGING_PORT='26512'
 LOGGER = logging.getLogger(__name__)
 
 ###
 # HTML5/JavaScript based application frontend
 ###
 class Frontend(QMainWindow):
-	def __init__(self, args, basepath, gameplay):
+	def __init__(self, args, gameplay):
 		super(Frontend, self).__init__()
-		self.basepath = basepath
 		self.gameplay = gameplay
 		self.gameplay.window = self
 		self.setWindowTitle('GamePlay')
 		self.webkit = args.engine == 'webkit'
 		if self.webkit:
-			from PyQt5.QtWebKitWidgets import QWebView, QWebPage, QWebInspector
-			from PyQt5.QtWebKit import QWebSettings
-			from .FrontendWebPage import FrontendWebPage
-			QWebSettings.globalSettings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True)
-			self.web = QWebView(self)
-			self.web.setPage(FrontendWebPage())
-			self.frame = self.web.page().mainFrame()
-			self.frame.javaScriptWindowObjectCleared.connect(self.load_api)
-
-			# Add inspector
-			self.inspector = QWebInspector(self)
-			self.inspector.setPage(self.web.page())
-			self.inspector.setVisible(False)
-			QShortcut(QKeySequence("F12"), self.web, self.toggleWebInspector)
-
-			# And put both into a splitter
-			self.splitter = QSplitter(self)
-			self.splitter.setOrientation(Qt.Vertical)
-			self.splitter.addWidget(self.web)
-			self.splitter.addWidget(self.inspector)
-			self.setCentralWidget(self.splitter)
+			from .platform.WebkitWebView import WebView, Inspector
 		else:
-			if args.debug:
-				LOGGER.warn("QTWEBENGINE_REMOTE_DEBUGGING enabled on port http://localhost:%s/. This may be a security issue. Remove '-d/--debug' for production environments." % (QTWEBENGINE_REMOTE_DEBUGGING_PORT))
-				os.environ['QTWEBENGINE_REMOTE_DEBUGGING'] = QTWEBENGINE_REMOTE_DEBUGGING_PORT;
-			# WebEngine does not have a WebInspector component
-			from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage
-			from PyQt5.QtWebChannel import QWebChannel
-			from .FrontendWebPage import FrontendWebEnginePage
-			self.web = QWebEngineView(self)
-			page = FrontendWebEnginePage(self)
-			self.web.setPage(page)
-			channel = QWebChannel(page);
-			page.setWebChannel(channel);
-			channel.registerObject("gameplay", gameplay);
+			from .platform.WebengineWebView import WebView, Inspector
 
-			# Add inspector
-			self.inspector = QWebEngineView(self)
-			self.inspector.load(QUrl('http://localhost:' + QTWEBENGINE_REMOTE_DEBUGGING_PORT))
-			self.inspector.setVisible(False)
-			QShortcut(QKeySequence("F12"), self.web, self.toggleWebInspector)
+		self.web = WebView(self, gameplay, args)
+		self.inspector = Inspector(self, self.web)
+		self.inspector.setVisible(False)
+		QShortcut(QKeySequence("F12"), self.web, self.toggleWebInspector)
 
-			# And put both into a splitter
-			self.splitter = QSplitter(self)
-			self.splitter.setOrientation(Qt.Vertical)
-			self.splitter.addWidget(self.web)
-			self.splitter.addWidget(self.inspector)
-			self.setCentralWidget(self.splitter)
+		# And put both into a splitter
+		self.splitter = QSplitter(self)
+		self.splitter.setOrientation(Qt.Vertical)
+		self.splitter.addWidget(self.web)
+		self.splitter.addWidget(self.inspector)
+		self.setCentralWidget(self.splitter)
 
 		# Intercept local protocols
-		self.web.load(QUrl.fromLocalFile(basepath + 'index.html'))
+		self.web.load(QUrl.fromLocalFile(args.docroot + 'index.html'))
 
 		self._currentVisibilityState = None
 		self.updateVisibilityState();
@@ -166,18 +131,7 @@ class Frontend(QMainWindow):
 		self.toolbar.addAction(action)
 
 
-	###
-	# Add 'gameplay' controller to JavaScript context when the frame is loaded.
-	# Due to security reasons ensure that the URL is local and a child of
-	# our own base path.
-	###
-	def load_api(self):
-		url = self.frame.url()
-		if url.isLocalFile():
-			if os.path.abspath(url.path()).startswith(self.basepath):
-				LOGGER.info('Adding GamePlay controller to %s' % url)
-				self.frame.addToJavaScriptWindowObject('gameplay', self.gameplay)
-	
+
 	def toggleWebInspector(self):
 		self.inspector.setVisible(not self.inspector.isVisible())
 		self.toolbar.setVisible(self.inspector.isVisible())

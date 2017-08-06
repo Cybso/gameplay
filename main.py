@@ -55,18 +55,8 @@ from PyQt5.QtGui import QIcon
 import sip
 sip.setapi('QString', 2)
 
-#APPDATA_PATHS = [QDir.toNativeSeparators(x + 'gameplay/') for x in QStandardPaths.locateAll(QStandardPaths.AppDataLocation, "", QStandardPaths.LocateDirectory)]
-#APPLICATION_PATHS = QStandardPaths.locateAll(QStandardPaths.ApplicationsLocation, "", QStandardPaths.LocateDirectory)
-
-# Force usage of IniFile since this application should be portable 
-#settings = QtCore.QSettings(CONFIG_PATH, QSettings.IniFormat)
-#print(settings.value('gameplay/foo'))
-#settings.setValue('gameplay/foo', 'bar')
-#settings.sync()
-
-
 def main():
-	uipath=QDir.fromNativeSeparators(os.path.dirname(os.path.abspath(__file__))) + '/ui/'
+	basepath=QDir.fromNativeSeparators(os.path.dirname(os.path.abspath(__file__))) + '/ui/'
 
 	# Define and parse program arguments
 	parser = argparse.ArgumentParser()
@@ -75,7 +65,14 @@ def main():
 	parser.add_argument("-f", "--fullscreen", help="start in fullscreen mode", action="store_true")
 	parser.add_argument("-s", "--stayontop", help="stay on top (while not running any apps)", action="store_true")
 	parser.add_argument("-e", "--engine", help="browser engine that should be used ('webkit', 'webengine')", choices=['webkit', 'webengine'], default=find_preferred_engine())
+	parser.add_argument("-r", "--docroot", help="Document root of UI files (default: %s)" % (basepath), default=basepath)
 	args = parser.parse_args()
+
+	# Ensure that the given document root ends with /
+	args.docroot = os.path.abspath(args.docroot) + os.sep
+	if not os.path.exists(args.docroot):
+		sys.stderr.write("Document root not found: '%s'%s" % (args.docroot, os.linesep))
+		sys.exit(1)
 
 	# This must be configured before any logger is initialized
 	if args.debug:
@@ -96,11 +93,11 @@ def main():
 	app = QApplication(sys.argv)
 
 	app.setApplicationName('gameplay')
-	app.setWindowIcon(QIcon(uipath + 'img/Y.svg'))
+	app.setWindowIcon(QIcon(args.docroot + 'img/Y.svg'))
 	gameplay = GamePlay()
 
 	# Initialize frontend
-	frontend = Frontend(args, uipath, gameplay)
+	frontend = Frontend(args, gameplay)
 
 	if args.stayontop:
 		LOGGER.info('Enable WindowStayOnTop')
