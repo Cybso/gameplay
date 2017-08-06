@@ -168,9 +168,9 @@
 				var timestamp = gamepad.timestamp;
 				var intervalTimeout = 100;
 				var waitIntervals = 7;
-				var rawValue = Math.round(raw.value);
+				var rawValue = exports.gamepad.getButtonState(raw.value);
 				var timeoutHandle = function() {
-					if (rawValue === Math.round(gamepad[raw.key][raw.index])) {
+					if (rawValue === exports.gamepad.getButtonState(gamepad[raw.key][raw.index])) {
 						if (waitIntervals === 0) {
 							action();
 						}
@@ -252,7 +252,7 @@
 						exports.activeGamepadConfigurator(undefined);
 						if (configurator.finished()) {
 							var mapping = configurator.mapping();
-							var mappingKey = 'mapping:' + gp.id;
+							var mappingKey = 'mapping:' + exports.gamepad.getUnifiedId(gp);
 							exports.gamepad.setGamepadMapping(gp, mapping);
 							exports.gameplay.setItem(mappingKey, JSON.stringify(mapping));
 						}
@@ -268,7 +268,7 @@
 				if (type === 'attached') {
 					exports.currentGamepads.push(gp);
 					// Check if there is a safed configuration
-					var mappingKey = 'mapping:' + gp.id;
+					var mappingKey = 'mapping:' + exports.gamepad.getUnifiedId(gp);
 					exports.gameplay.getItem(mappingKey).done(function(mapping) {
 						if (mapping) {
 							mapping = JSON.parse(mapping);
@@ -288,7 +288,7 @@
 			// Disable animations when the window doesn't have the focus
 			var backgroundGamepadListener = new BackgroundGamepadListener(exports);
 			var visibilityChangeListener = function() {
-				if (document.hidden) {
+				if (document.hidden || document.webengineHidden) {
 					document.body.classList.add('window-inactive');
 					document.body.classList.remove('window-active');
 					backgroundGamepadListener.enable();
