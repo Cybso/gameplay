@@ -108,7 +108,11 @@ class Frontend(QMainWindow):
 		self._lastWindowState = self.windowState()
 	
 	def forceRefresh(self):
-		# TODO
+		###
+		# reloadAndBypassCache has been implemented use that,
+		# Otherwise, try to clear the cache first (WebKit only)
+		# and just execute a normal reload.
+		###
 		if hasattr(self.web, 'reloadAndBypassCache'):
 			self.web.reloadAndBypassCache()
 		else:
@@ -196,28 +200,15 @@ class Frontend(QMainWindow):
 			# Not ready, yet
 			return
 
-		if self.webkit:
-			from PyQt5.QtWebKitWidgets import QWebPage
-			state = QWebPage.VisibilityStateVisible
-			if self.windowState() & Qt.WindowMinimized:
-				state = QWebPage.VisibilityStateHidden
-			if not self.isActiveWindow():
-				state = QWebPage.VisibilityStateHidden
-			if self._currentVisibilityState != state:
-				self._currentVisibilityState = state
-				self.web.page().setVisibilityState(state)
-		else:
-			state = True
-			if self.windowState() & Qt.WindowMinimized:
-				state = False
-			if not self.isActiveWindow():
-				state = False
-			if self._currentVisibilityState != state:
-				self._currentVisibilityState = state
-				self.web.page().setVisibilityState(state)
-
-
-			#	self.web.page().view().setVisible(state)
+		hidden = False
+		if self.windowState() & Qt.WindowMinimized:
+			hidden = True
+		if not self.isActiveWindow():
+			state = False
+			hidden = True
+		if self._currentVisibilityState != hidden:
+			self._currentVisibilityState = hidden
+			self.web.page().setHidden(hidden)
 
 	###
 	# Print an 'Are you sure' message when the user closes the window

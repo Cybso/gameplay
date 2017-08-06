@@ -62,6 +62,15 @@ if util.find_spec("PyQt5.QtWebKit") is not None:
 			else:
 				LOGGER.info('%s line %d: %s' % (source, line, msg))
 
+		###
+		# Update the page's visibility state (document.hidden).
+		###
+		def setHidden(self, hidden):
+			if hidden:
+				self.setVisibilityState(QWebPage.VisibilityStateHidden)
+			else:
+				self.setVisibilityState(QWebPage.VisibilityStateVisible)
+
 	###
 	# Icon Reply - responds to requests starting with icon:// and tries
 	# to resolve the icon using QIcon.
@@ -153,9 +162,16 @@ if util.find_spec("PyQt5.QtWebEngineWidgets") is not None:
 			else:
 				LOGGER.info('%s line %d: %s' % (source, line, msg))
 
-		def setVisibilityState(self, visible):
-			hidden = 'true'
-			if visible:
+		###
+		# Workaround for WebEngine, which doesn't provide direct access to
+		# 'document.hidden'. We workaround this by updating a custom property
+		# called 'document.webegineHidden', so in JavaScript you should
+		# check for (document.hidden || document.webengineHidden).
+		###
+		def setHidden(self, hidden):
+			if hidden:
+				hidden = 'true'
+			else:
 				hidden = 'false'
 			self.runJavaScript('''(function(state) {
 				document.webengineHidden = state;
