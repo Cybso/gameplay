@@ -1,24 +1,3 @@
-###
-# Encapsulates ConfigParser to read configs from
-# multiple sources but writes (modified) values
-# to a single destination only.
-#
-# This is intended to be used for global and local settings.
-#
-# The paths are requested from QStandardPaths.writableLocation(QStandardPaths.AppConfigLocation)
-# and QStandardPaths.standardLocations(QStandardPaths.AppConfigLocation), suffixed with
-# the given filename.
-#
-# This does not use QSettings since this interprets entries as list if a comma is
-# found within them.
-#
-# remove_section and remove_option are not supported since the global files would not
-# be writable and thus these options might still exists on the next run.
-#
-# In contrast to ConfigParser this doesn't throw an exception on get/set if a
-# section does not exists.
-###
-
 import os
 import sys
 import configparser
@@ -30,6 +9,27 @@ from PyQt5.QtCore import QStandardPaths, QDir
 LOGGER = logging.getLogger(__name__)
 
 class GamePlayConfig:
+	"""
+	Encapsulates ConfigParser to read configs from
+	multiple sources but writes (modified) values
+	to a single destination only.
+
+	This is intended to be used for global and local settings.
+
+	The paths are requested from QStandardPaths.writableLocation(QStandardPaths.AppConfigLocation)
+	and QStandardPaths.standardLocations(QStandardPaths.AppConfigLocation), suffixed with
+	the given filename.
+
+	This does not use QSettings since this interprets entries as list if a comma is
+	found within them.
+
+	remove_section and remove_option are not supported since the global files would not
+	be writable and thus these options might still exists on the next run.
+
+	In contrast to ConfigParser this doesn't throw an exception on get/set if a
+	section does not exists.
+	"""
+
 	def __init__(self, filename):
 		self.globalConfig = configparser.ConfigParser()
 		self.localConfig = configparser.ConfigParser()
@@ -131,10 +131,9 @@ class GamePlayConfig:
 			value = fallback
 		return value
 
-	###
-	# Parses a value with shlex.split()
-	###
 	def getlist(self, section, option, fallback=None):
+		""" Parses a value with shlex.split() """
+
 		value = self.get(section, option)
 		if value is not None:
 			return shlex.split(value)

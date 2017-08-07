@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-###
-# Game✜Play - Yet Another Gamepad Launcher
+"""
+Game✜Play - Yet Another Gamepad Launcher
 #
-# A Python and PyQt5 based application launcher that uses
-# HTML5's gamepad API to implement a platform independent
-# UI that can be controlled via keyboard, mouse and 
-# gamepad/joystick.
-#
-# Author: Roland Tapken <roland@bitarbeiter.net>
-# License: GPLv3
-###
+A Python and PyQt5 based application launcher that uses
+HTML5's gamepad API to implement a platform independent
+UI that can be controlled via keyboard, mouse and 
+gamepad/joystick.
+
+Author: Roland Tapken <roland@bitarbeiter.net>
+License: GPLv3
+"""
 
 import os
 import signal
@@ -23,10 +23,6 @@ from subprocess import Popen
 from PyQt5.QtCore import QObject, pyqtSlot, QDir, QStandardPaths, QTimer
 from PyQt5.Qt import Qt
 
-###
-# Import provider modules
-###
-#from .providers import common
 from .AppProvider import AppProvider, AppItem
 from .GamePlayConfig import GamePlayConfig
 
@@ -64,61 +60,56 @@ class EventWrapper():
 			except:
 				LOGGER.exception("Failed to execute command: %s" % cmd)
 
-	###
-	# Fires the configures events/app-start command when an
-	# application is started. Exported values are
-	#     GAMEPLAY_APP_ID
-	#     GAMEPLAY_APP_PID
-	###
 	def fire_app_start(self, app):
+		""" Fires the configures events/app-start command when an
+		application is started. Exported values are
+		     GAMEPLAY_APP_ID
+		     GAMEPLAY_APP_PID
+		"""
+		
 		if app.appid not in self.active_apps:
 			self.active_apps.append(app.appid)
 			self._fire('app-start', app)
-	
-	###
-	# Fires the configures events/app-start command when an
-	# application is suspended. Exported values are
-	#     GAMEPLAY_APP_ID
-	#     GAMEPLAY_APP_PID
-	###
+
 	def fire_app_suspend(self, app):
+		"""Fires the configures events/app-start command when an
+		application is suspended. Exported values are
+		    GAMEPLAY_APP_ID
+		    GAMEPLAY_APP_PID
+		"""
 		self._fire('app-suspend', app)
-	
-	###
-	# Fires the configures events/app-start command when an
-	# application is resumed. Exported values are
-	#     GAMEPLAY_APP_ID
-	#     GAMEPLAY_APP_PID
-	###
+
 	def fire_app_resume(self, app):
+		""" Fires the configures events/app-start command when an
+		application is resumed. Exported values are
+		    GAMEPLAY_APP_ID
+		    GAMEPLAY_APP_PID
+		"""
 		self._fire('app-resume', app)
 	
-	###
-	# Fires the configures events/app-start command when an
-	# application exits. Exported values are
-	#     GAMEPLAY_APP_ID
-	#     GAMEPLAY_APP_PID
-	###
 	def fire_app_exit(self, app):
+		""" Fires the configures events/app-start command when an
+		application exits. Exported values are
+		    GAMEPLAY_APP_ID
+		    GAMEPLAY_APP_PID
+		"""
 		if app.appid in self.active_apps:
 			self.active_apps.remove(app.appid)
 			self._fire('app-exit', app)
 
-	###
-	# Fires an event when the UI is active but idling for
-	# configured 'event/idle-timout' time of seconds (meaning
-	# that no button is pressed meanwhile).
-	###
 	def fire_idle(self):
+		"""Fires an event when the UI is active but idling for
+		configured 'event/idle-timout' time of seconds (meaning
+		that no button is pressed meanwhile).
+		"""
 		if not self.is_idle:
 			self.is_idle = True
 			self._fire('idle')
 
-	###
-	# Fires an event when the UI was in idle state but has been
-	# resumed (or unactivated).
-	###
 	def fire_busy(self):
+		""" Fires an event when the UI was in idle state but has been
+		resumed (or unactivated).
+		"""
 		if self.idle_timeout > 0:
 			if self.timer is None:
 				self.timer = QTimer()
@@ -129,10 +120,8 @@ class EventWrapper():
 				self.is_idle = False
 				self._fire('busy')
 	
-	###
-	# Don't call an idle event until the next busy event is activated.
-	###
 	def suspend_idle(self):
+		""" Don't call an idle event until the next busy event is activated."""
 		if self.idle_timeout > 0 and self.is_idle:
 			self.is_idle = False
 			self._fire('busy')
@@ -175,19 +164,15 @@ class GamePlay(QObject):
 					LOGGER.exception("Failed to invoke application provider %s" % provider.__class__.__name__)
 		return self.apps
 
-	###
-	# Set a UI storage value (compatible to JavaScript's storage)
-	###
 	@pyqtSlot(str, str)
 	def setItem(self, key, value):
+		""" Set a UI storage value (compatible to JavaScript's storage) """
 		self.ui_settings.set('ui', quote(key), value)
 		self.ui_settings.write()
 
-	###
-	# Retrieves a UI storage value (compatible to JavaScript's storage)
-	###
 	@pyqtSlot(str, result=str)
 	def getItem(self, key):
+		""" Retrieves a UI storage value (compatible to JavaScript's storage) """
 		return self.ui_settings.get('ui', quote(key))
 
 	@pyqtSlot(str, str, result=str)
@@ -263,11 +248,9 @@ class GamePlay(QObject):
 			})
 		return result
 
-	###
-	# Tries to suspend an app and all of its children
-	###
 	@pyqtSlot(str, result='QVariantMap')
 	def suspendApp(self, appid):
+		""" Tries to suspend an app and all of its children """
 		self.events.fire_busy()
 		p = self.running.get(appid)
 		if p:
@@ -276,11 +259,9 @@ class GamePlay(QObject):
 			self.raiseWindow()
 		return self.getAppStatus(appid)
 
-	###
-	# Tries to resume an app and all of its children
-	###
 	@pyqtSlot(str, result='QVariantMap')
 	def resumeApp(self, appid):
+		""" Tries to resume an app and all of its children """
 		self.events.fire_busy()
 		p = self.running.get(appid)
 		if p and p.is_suspended():
@@ -289,12 +270,13 @@ class GamePlay(QObject):
 			p.resume(raiseCallback=self.lowerWindow)
 		return self.getAppStatus(appid)
 
-	###
-	# Tries to stop the app. If the app doesn't terminate within 10
-	# seconds this kills the application. Returns the new status.
-	###
 	@pyqtSlot(str, result='QVariantMap')
 	def stopApp(self, appid):
+		""" Tries to stop the app.
+		
+		If the app doesn't terminate within 10
+		seconds this kills the application. Returns the new status.
+		"""
 		self.events.fire_busy()
 		p = self.running.get(appid)
 		if p:

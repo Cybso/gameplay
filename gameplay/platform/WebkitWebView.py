@@ -1,14 +1,14 @@
-###
-# Game✜Play - Yet Another Gamepad Launcher
-#
-# A Python and PyQt5 based application launcher that uses
-# HTML5's gamepad API to implement a platform independent
-# UI that can be controlled via keyboard, mouse and 
-# gamepad/joystick.
-#
-# Author: Roland Tapken <roland@bitarbeiter.net>
-# License: GPLv3
-###
+"""
+Game✜Play - Yet Another Gamepad Launcher
+
+A Python and PyQt5 based application launcher that uses
+HTML5's gamepad API to implement a platform independent
+UI that can be controlled via keyboard, mouse and 
+gamepad/joystick.
+
+Author: Roland Tapken <roland@bitarbeiter.net>
+License: GPLv3
+"""
 
 import os
 import logging
@@ -21,37 +21,31 @@ from PyQt5.QtCore import QVariant, QTimer
 
 LOGGER = logging.getLogger(__name__)
 
-###
 # Enable web inspector
-###
 QWebSettings.globalSettings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True)
 
-###
-# Returns QWebKit's QWebInspector
-###
 class Inspector(QWebInspector):
+	""" Returns QWebKit's QWebInspector """
 	def __init__(self, parent, view):
 		QWebInspector.__init__(self, parent)
 		self.setPage(view.page())
 
-###
-# Returns a QWebView and loads the FrontendWebPage
-###
 class WebView(QWebView):
+	""" Returns a QWebView and loads the FrontendWebPage """
 	def __init__(self, parent, gameplay, args):
 		QWebView.__init__(self, parent)
 		self.gameplay = gameplay
 		self.setPage(FrontendWebPage(self, gameplay, args))
 
-###
-# Override QWebPage to redirect JavaScript console output
-# to logger (level 'info'). If the output starts with 'debug',
-# 'warn', 'error' or 'exception' the appropirate level is
-# choosen instead.
-#
-# Additionally this adds support for the 'icon://' url scheme
-###
 class FrontendWebPage(QWebPage):
+	""" Override QWebPage to redirect JavaScript console output
+	to logger (level 'info'). If the output starts with 'debug',
+	'warn', 'error' or 'exception' the appropirate level is
+	choosen instead.
+	
+	Additionally this adds support for the 'icon:///' url scheme
+	"""
+
 	def __init__(self, parent, gameplay, args):
 		QWebPage.__init__(self, parent)
 		self.gameplay = gameplay
@@ -70,32 +64,28 @@ class FrontendWebPage(QWebPage):
 		else:
 			LOGGER.info('%s line %d: %s' % (source, line, msg))
 
-	###
-	# Add 'gameplay' controller to JavaScript context when the frame is loaded.
-	# Due to security reasons ensure that the URL is local and a child of
-	# our own base path.
-	###
 	def load_api(self):
+		"""Add 'gameplay' controller to JavaScript context when the frame is loaded.
+		Due to security reasons ensure that the URL is local and a child of
+		our own base path.
+		"""
 		url = self.frame.url()
 		if url.isLocalFile():
 			if os.path.abspath(url.path()).startswith(self.args.docroot):
 				LOGGER.info('Adding GamePlay controller to %s' % url)
 				self.frame.addToJavaScriptWindowObject('gameplay', self.gameplay)
 	
-	###
-	# Update the page's visibility state (document.hidden).
-	###
 	def setHidden(self, hidden):
+		""" Update the page's visibility state (document.hidden). """
 		if hidden:
 			self.setVisibilityState(QWebPage.VisibilityStateHidden)
 		else:
 			self.setVisibilityState(QWebPage.VisibilityStateVisible)
 
-###
-# Icon Reply - responds to requests starting with icon:// and tries
-# to resolve the icon using QIcon.
-###
 class IconSchemeReply(QNetworkReply):
+	""" Icon Reply - responds to requests starting with icon:/// and tries
+	to resolve the icon using QIcon.
+	"""
 
 	def __init__(self, parent, url, operation):
 		QNetworkReply.__init__(self, parent)

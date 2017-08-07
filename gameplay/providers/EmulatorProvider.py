@@ -1,8 +1,8 @@
-###
-# Reads the 'emulators.ini' from application data directory
-# searches for emulator entries.
-# FIXME Add documentation
-###
+"""
+Reads the 'emulators.ini' from application data directory
+searches for emulator entries.
+FIXME Add documentation
+"""
 
 # wit:
 #   wit list --sections -r SOURCE
@@ -27,13 +27,12 @@ LOGGER = logging.getLogger(__name__)
 CONF_EMULATOR_SECTION='providers/emulator'
 CONF_EMULATOR_ENABLED='enabled'
 
-###
-# Uses the basename (without suffix and underscores
-# replaced with spaces) for 'name'. If a .png, .jpg,
-# .jpeg or .gif file exists next to the basename this
-# is returned as icon.
-###
 def filename_image_info_handler(path):
+	""" Uses the basename (without suffix and underscores
+	replaced with spaces) for 'name'. If a .png, .jpg,
+	.jpeg or .gif file exists next to the basename this
+	is returned as icon.
+	"""
 	info = QFileInfo(path)
 	basename = info.completeBaseName()
 	abspath = info.absolutePath()
@@ -54,17 +53,16 @@ def filename_image_info_handler(path):
 	
 	return (basename.replace('_', ' '), icon)
 
-###
-# Uses the program 'wit' (http://wit.wiimm.de/) to extract
-# the disc label from the image. If there is a .png, .jpeg,
-# .jpg or .gif file next to the images basename it is
-# returned as icon. Otherwise the URL
-# http://art.gametdb.com/wii/cover/EN/{DISID}.png
-# is returned as a placeholder.
-# If 'wit' is not available or fails this falls back
-# to the filename_image_info_handler.
-###
 def wit_image_info_handler(path):
+	"""Uses the program 'wit' (http://wit.wiimm.de/) to extract
+	the disc label from the image. If there is a .png, .jpeg,
+	.jpg or .gif file next to the images basename it is
+	returned as icon. Otherwise the URL
+	http://art.gametdb.com/wii/cover/EN/{DISID}.png
+	is returned as a placeholder.
+	If 'wit' is not available or fails this falls back
+	to the filename_image_info_handler.
+	"""
 	# Fetch fallback data, first
 	(label, icon) = filename_image_info_handler(path)
 	if wit_image_info_handler.executable is None:
@@ -171,10 +169,8 @@ class EmulatorProvider(AppProvider):
 			except:
 				LOGGER.exception('Failed to load config for emulator entry "%s"' % section)
 
-	###
-	# Returns a EmulatorAppItem instance for each installed app
-	###
 	def get_apps(self):
+		""" Returns a EmulatorAppItem instance for each installed app """
 		apps = []
 		for emulator in self.emulators:
 			apps += emulator.get_apps()

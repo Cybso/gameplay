@@ -1,14 +1,14 @@
-###
-# Game✜Play - Yet Another Gamepad Launcher
-#
-# A Python and PyQt5 based application launcher that uses
-# HTML5's gamepad API to implement a platform independent
-# UI that can be controlled via keyboard, mouse and 
-# gamepad/joystick.
-#
-# Author: Roland Tapken <roland@bitarbeiter.net>
-# License: GPLv3
-###
+"""
+Game✜Play - Yet Another Gamepad Launcher
+
+A Python and PyQt5 based application launcher that uses
+HTML5's gamepad API to implement a platform independent
+UI that can be controlled via keyboard, mouse and 
+gamepad/joystick.
+
+Author: Roland Tapken <roland@bitarbeiter.net>
+License: GPLv3
+"""
 
 import os
 import logging
@@ -21,22 +21,19 @@ from PyQt5.QtWebChannel import QWebChannel
 QTWEBENGINE_REMOTE_DEBUGGING_PORT='26512'
 LOGGER = logging.getLogger(__name__)
 
-###
-# QWebEngine does not include an inspector. Instead,
-# open a second QWebEngineView that points to the remote
-# debugging view.
-###
 class Inspector(QWebEngineView):
+	""" QWebEngine does not include an inspector. Instead,
+	open a second QWebEngineView that points to the remote
+	debugging view.
+	"""
 	def __init__(self, parent, view):
 		QWebEngineView.__init__(self, parent)
 		self.setVisible(False)
 		if os.environ.get('QTWEBENGINE_REMOTE_DEBUGGING'):
 			self.load(QUrl('http://localhost:' + os.environ['QTWEBENGINE_REMOTE_DEBUGGING']))
 
-###
-# Returns a QWebEngineView and loads the FrontendWebPage
-###
 class WebView(QWebEngineView):
+	""" Returns a QWebEngineView and loads the FrontendWebPage """
 	def __init__(self, parent, gameplay, args):
 		if args.debug:
 			# Enable remote debugger / "inspector"
@@ -47,15 +44,14 @@ class WebView(QWebEngineView):
 		self.gameplay = gameplay
 		self.setPage(FrontendWebPage(self, gameplay, args))
 
-###
-# Override QWebPage to redirect JavaScript console output
-# to logger (level 'info'). If the output starts with 'debug',
-# 'warn', 'error' or 'exception' the appropirate level is
-# choosen instead.
-#
-# Additionally this adds support for the 'icon://' url scheme
-###
 class FrontendWebPage(QWebEnginePage):
+	""" Override QWebPage to redirect JavaScript console output
+	to logger (level 'info'). If the output starts with 'debug',
+	'warn', 'error' or 'exception' the appropirate level is
+	choosen instead.
+	
+	Additionally this adds support for the 'icon:///' url scheme
+	"""
 	def __init__(self, parent, gameplay, args):
 		QWebEnginePage.__init__(self, parent)
 		self.gameplay = gameplay
@@ -76,13 +72,12 @@ class FrontendWebPage(QWebEnginePage):
 		else:
 			LOGGER.info('%s line %d: %s' % (source, line, msg))
 
-	###
-	# Workaround for WebEngine, which doesn't provide direct access to
-	# 'document.hidden'. We workaround this by updating a custom property
-	# called 'document.webegineHidden', so in JavaScript you should
-	# check for (document.hidden || document.webengineHidden).
-	###
 	def setHidden(self, hidden):
+		""" Workaround for WebEngine, which doesn't provide direct access to
+		'document.hidden'. We workaround this by updating a custom property
+		called 'document.webegineHidden', so in JavaScript you should
+		check for (document.hidden || document.webengineHidden).
+		"""
 		if hidden:
 			hidden = 'true'
 		else:
@@ -118,5 +113,5 @@ class IconSchemeHandler(QWebEngineUrlSchemeHandler):
 		else:
 			job.fail(QWebEngineUrlRequestJob.UrlNotFound)
 
-#  vim: set fenc=utf-8 ts=4 sw=4 noet :#  vim: set fenc=utf-8 ts=4 sw=4 noet :
+#  vim: set fenc=utf-8 ts=4 sw=4 noet :
 

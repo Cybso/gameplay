@@ -1,7 +1,7 @@
-###
-# Platform dependend OS calls - Windows edition
-# FIXME Not tested, yet
-###
+"""
+Platform dependend OS calls - Windows edition
+FIXME Not tested, yet
+"""
 
 import logging
 import win32gui
@@ -16,25 +16,20 @@ LOGGER = logging.getLogger(__name__)
 myappid = 'net.bitarbeiter.gameplay' # arbitrary string
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
-###
-# Returns the name (or pointer, or whatever is
-# required as set_foreground_window argument)
-# of the currently active window
-###
 def get_foreground_window():
-    return win32gui.GetForegroundWindow()
+	""" Returns the name (or pointer, or whatever is
+	required as set_foreground_window argument)
+	of the currently active window
+	"""
+	return win32gui.GetForegroundWindow()
 
-###
-# Changes the currently active window
-###
 def set_foreground_window(handle):
-    win32gui.SetForegroundWindow(handle)
+	""" Changes the currently active window """
+	win32gui.SetForegroundWindow(handle)
 
-###
-# Returns the content and content type of
-# an Icon by name or path.
-###
 def find_icon_by_name(iconName):
+	""" Returns the content and content type of an Icon by name or path."""
+
 	# Check if iconName is an executable
 	path = QStandardPaths.findExecutable(iconName)
 	if path:
@@ -55,3 +50,4 @@ def find_icon_by_name(iconName):
 	return (None, None)
 
 	
+#  vim: set fenc=utf-8 ts=4 sw=4 noet :

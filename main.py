@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-###
-# Game✜Play - Yet Another Gamepad Launcher
-#
-# A Python and PyQt5 based application launcher that uses
-# HTML5's gamepad API to implement a platform independent
-# UI that can be controlled via keyboard, mouse and 
-# gamepad/joystick.
-#
-# Author: Roland Tapken <roland@bitarbeiter.net>
-# License: GPLv3
-###
+"""
+Game✜Play - Yet Another Gamepad Launcher
+
+A Python and PyQt5 based application launcher that uses
+HTML5's gamepad API to implement a platform independent
+UI that can be controlled via keyboard, mouse and 
+gamepad/joystick.
+
+Author: Roland Tapken <roland@bitarbeiter.net>
+License: GPLv3
+"""
 
 import os
 import sys

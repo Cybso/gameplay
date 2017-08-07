@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-###
-# Defines the class interfaces for implementation that fetches
-# informations about runnable apps. This could be Steam, 
-# Emulators, local .desktop entries or the application menu.
-#
-# Each implementation must implement at least AppProvider and
-# AppItem.
-###
+"""Defines base classes for application providers.
+
+Defines the class interfaces for implementation that fetches
+informations about runnable apps. This could be Steam, 
+Emulators, local .desktop entries or the application menu.
+
+Each implementation must implement at least AppProvider
+"""
 
 from subprocess import Popen
 from  psutil import Process, NoSuchProcess, STATUS_DEAD, wait_procs
@@ -55,13 +55,12 @@ class AppProcess:
 	def is_suspended(self):
 		return self._suspended and self.is_running()
 	
-	###
-	# Terminates the current process and all of the subprocesses.
-	# If termination fails this method call falls back to kill().
-	#
-	# A suspended process will be waked before termination.
-	###
 	def terminate(self):
+		"""Terminates the current process and all of the subprocesses.
+		If termination fails this method call falls back to kill().
+	
+		A suspended process will be waked before termination.
+		"""
 		try:
 			if self.is_suspended():
 				procs = self.process.children(recursive=True)
@@ -85,11 +84,10 @@ class AppProcess:
 		except:
 			LOGGER.exception('Failed to kill process %d' % self.process.pid)
 
-	###
-	# Suspends the current process and tries to retrieve
-	# the applications window name.
-	###
 	def suspend(self):
+		""" Suspends the current process and tries to retrieve
+		the applications window name.
+		"""
 		try:
 			if self.is_running():
 				if not self._suspended:
@@ -106,12 +104,10 @@ class AppProcess:
 		except:
 			LOGGER.exception('Failed to suspend process %d' % self.process.pid)
 	
-	###
-	# Resume the current process and tries to put the
-	# applications window into foreground. If the window
-	# is not available the 'raiseCallback' is executed.
-	###
 	def resume(self, raiseCallback = None):
+		""" Resume the current process and tries to put the applications window into foreground.
+		If the window is not available the 'raiseCallback' is executed.
+		"""
 		try:
 			if self.is_suspended():
 				self._suspended = False
@@ -149,12 +145,11 @@ class AppItem:
 		self.cmd = cmd
 		self.categories = categories
 
-	###
-	# Executes the application and returns a AppProcess object,
-	# False if the command fails to run and None if the
-	# AppItem is not executable.
-	###
 	def execute(self):
+		""" Executes the application and returns a AppProcess object,
+		False if the command fails to run and None if the
+		AppItem is not executable.
+		"""
 		if self.cmd is not None:
 			LOGGER.info('Executing command "%s"' % ' '.join(self.cmd))
 			return AppProcess(self.id, Popen(self.cmd))
@@ -164,10 +159,8 @@ class AppProvider:
 	def __init__(self, settings):
 		self.settings = settings
 
-	###
-	# Returns a list of AppItem objects
-	###
 	def get_apps(self):
+		""" Returns a list of AppItem objects """
 		return []
 
 #  vim: set fenc=utf-8 ts=4 sw=4 noet :

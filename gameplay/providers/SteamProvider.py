@@ -18,11 +18,10 @@ CONF_STEAM_ENABLED='enabled'
 CONF_STEAM_EXECUTABLE='executable'
 CONF_STEAM_STEAMAPPS='steamapps'
 
-###
-# Converts a string that starts with a number to positive int.
-# If the string doesn't start with a number returns -1
-###
 def _str_to_int(s):
+	""" Converts a string that starts with a number to positive int.
+	If the string doesn't start with a number returns -1
+	"""
 	length = 0
 	for c in s:
 		if c < '0' or c > '9':
@@ -33,14 +32,13 @@ def _str_to_int(s):
 	else:
 		return int(s[0:length])
 
-###
-# Tries a natural sort on everything that
-# starts with a number. If the entry doesn't
-# start with a number it is assumed to be lower
-# than every numbered value. Negative values are
-# not allowed.
-###
 def _sort_names_as_numbers(a, b):
+	"""Tries a natural sort on everything that
+	starts with a number. If the entry doesn't
+	start with a number it is assumed to be lower
+	than every numbered value. Negative values are
+	not allowed.
+	"""
 	ai = _str_to_int(a)
 	bi = _str_to_int(b)
 	if ai < bi:
@@ -54,9 +52,8 @@ def _sort_names_as_numbers(a, b):
 	return 0
 
 class SteamPlatformGeneric:
-	###
-	# Try to locate "steamapps" folder
-	###
+	""" Try to locate "steamapps" folder """
+
 	def steamapps_path(self):
 		LOGGER.warn('Method "steamapps_path" not implemented')
 		return None
@@ -70,9 +67,8 @@ class SteamPlatformGeneric:
 		return None
 
 class SteamPlatformLinux(SteamPlatformGeneric):
-	###
-	# Try to locate "steamapps" folder
-	###
+	""" Try to locate "steamapps" folder """
+
 	def steamapps_path(self):
 		steamPath = QDir(QDir.fromNativeSeparators(QDir.homePath()) + '/.steam/steam/steamapps')
 		if steamPath.exists():
@@ -102,22 +98,19 @@ class SteamPlatformWindows(SteamPlatformGeneric):
 			QDir(QDir.fromNativeSeparators("C:\\Programme\\Steam (x86)"))
 		]
 		
-	###
-	# Try to locate "steamapps" folder
-	###
 	def steamapps_path(self):
+		""" Try to locate "steamapps" folder """
 		for steamPath in self.search_paths:
 			steamPath = QDir(steamPath.absolutePath() + "/SteamApps")
 			if steamPath.exists():
 				return QDir.toNativeSeparators(steamPath.absolutePath())
 		return None
 
-	###
-	# Looks for steam in %PATH% and in C:\\Programme\\Steam (x86)\\steam.exe
-	# and inC:\\Program Files (x86)\\Steam\\steam.exe.
-	# FIXME Use registry to look up real installation path.
-	###
 	def find_steam_exe(self):
+		""" Looks for steam in %PATH% and in C:\\Programme\\Steam (x86)\\steam.exe
+		and inC:\\Program Files (x86)\\Steam\\steam.exe.
+		FIXME Use registry to look up real installation path.
+		"""
 		path = QStandardPaths.findExecutable('steam.exe')
 		if path:
 			return [path]
@@ -132,24 +125,21 @@ class SteamPlatformWindows(SteamPlatformGeneric):
 
 
 class SteamPlatformOSX(SteamPlatformGeneric):
-	###
-	# Try to locate "steamapps" folder
-	###
 	def steamapps_path(self):
+		""" Try to locate "steamapps" folder """
 		steamPath = QDir(QDir.fromNativeSeparators(QDir.homePath()) + '/Library/Application Support/Steam/SteamApps')
 		if steamPath.exists():
 			return steamPath.absolutePath()
 		return None
 	
-	###
-	# Don't know where a typical installation path lays...
-	# What should work is 'open -a Steam', but that's not
-	# a single command and is don't know how to check
-	# if this WOULD work.
-	#
-	# The result should be a list object
-	###
 	def find_steam_exe(self):
+		""" Don't know where a typical installation path lays...
+		What should work is 'open -a Steam', but that's not
+		a single command and is don't know how to check
+		if this WOULD work.
+		
+		The result should be a list object
+		"""
 		path = QStandardPaths.findExecutable('Steam')
 		if path:
 			return [path]
@@ -173,11 +163,10 @@ class SteamAppItem(AppItem):
 			cmd.append('steam://rungameid/%s' % (self._appid))
 			self.cmd = cmd
 
-	###
-	# Kills any existing steam instance. Otherwise we would not be
-	# able to do process control on the current application.
-	###
 	def execute(self):
+		""" Kills any existing steam instance. Otherwise we would not be
+		able to do process control on the current application.
+		"""
 		procs = []
 		for proc in psutil.process_iter():
 			if proc.name().lower().find('steam') == 0:
@@ -210,21 +199,18 @@ class SteamProvider(AppProvider):
 		if not self.path:
 			self.path = self.platform.steamapps_path()
 
-	###
-	# Returns a SteamAppItem instance for each installed app
-	###
 	def get_apps(self):
+		""" Returns a SteamAppItem instance for each installed app """
 		apps = []
 		if self.settings.getboolean(CONF_STEAM_SECTION, CONF_STEAM_ENABLED, True):
 			for manifest in self.list_installed_app_manifests():
 				apps.append(SteamAppItem(self, manifest))
 		return apps
 
-	###
-	# Tries to locate the application icon (in maximal resolution)
-	# for a given app id. This is platform dependent.
-	###
 	def find_icon(self, appid):
+		""" Tries to locate the application icon (in maximal resolution)
+		for a given app id. This is platform dependent.
+		"""
 		if isinstance(appid, dict):
 			appid = appid.get('appid')
 		if appid:
@@ -238,53 +224,46 @@ class SteamProvider(AppProvider):
 
 		return None
 
-	###
-	# Tries to locate the steam executable.
-	# This depends on the platform.
-	###
 	def find_steam_exe(self):
+		""" Tries to locate the steam executable. This depends on the platform. """
 		path = self.settings.getlist(CONF_STEAM_SECTION, CONF_STEAM_EXECUTABLE)
 		if path is None:
 			path = self.platform.find_steam_exe()
 		return path
 
-	###
-	# Retuns a URL where an icon may be available at
-	###
 	def find_icon_url(self, appid):
+		""" Retuns a URL where an icon may be available at """
 		if isinstance(appid, dict):
 			appid = appid.get('appid')
 		# From https://steamdb.info/app/APPID/info/
 		appid = str(int(appid))
 		return 'https://steamdb.info/static/camo/apps/' + appid + '/header.jpg'
 
-	###
-	# Parses all .acf-Files in steamapps directory. ACF files
-	# are similar to JSON files, to I'm just change the syntax
-	# and use python's json_decode for parsing.
-	#
-	# Example:
-	#	"AppState"
-	#	{
-	#		"appid"		"1234"
-	#		"section"
-	#		{
-	#			"key1"		"value1"
-	#			"key2"		"value2"
-	#		}
-	#	}
-	#
-	# Will be transformed to:
-	#	{
-	#		"appid": "1234",
-	#		"section": {
-	#			"key1": "value1",
-	#			"key2": "value2"
-	#		}
-	#	}
-	#
-	###
 	def list_all_app_manifests(self):
+		"""Parses all .acf-Files in steamapps directory. ACF files
+		are similar to JSON files, to I'm just change the syntax
+		and use python's json_decode for parsing.
+		
+		Example:
+			"AppState"
+			{
+				"appid"		"1234"
+				"section"
+				{
+					"key1"		"value1"
+					"key2"		"value2"
+				}
+			}
+		
+		Will be transformed to:
+			{
+				"appid": "1234",
+				"section": {
+					"key1": "value1",
+					"key2": "value2"
+				}
+			}
+		"""
 		path = QDir(self.path)
 		if path is None:
 			LOGGER.warn('No "steamapps" directory configured')
@@ -328,10 +307,8 @@ class SteamProvider(AppProvider):
 					LOGGER.warn("Failed to parse app manifest at " + fname + ": " + str(e))
 		return manifests
 	
-	###
-	# List all manifests from apps that seem to be installed.
-	###
 	def list_installed_app_manifests(self):
+		""" List all manifests from apps that seem to be installed. """
 		manifests = self.list_all_app_manifests()
 		installed = []
 		for app in manifests:

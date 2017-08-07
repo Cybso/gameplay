@@ -1,8 +1,8 @@
-###
-# Parse .desktop entries from the following locations:
-#   - Program directory
-#   - AppData directory
-###
+"""
+Parse .desktop entries from the following locations:
+  - Program directory
+  - AppData directory
+"""
 
 import os
 import sys
@@ -23,18 +23,15 @@ class DesktopEntryProvider(AppProvider):
 		else:
 			self.sources = sources
 	
-	###
-	# This can be overwritten to filter apps
-	# by their categories.
-	###
 	def filter_category(self, categories):
+		""" This can be overwritten to filter apps by their categories. """
 		return True
 	
-	###
-	# Returns a list of all identified .desktop files.
-	# The name of earch file must be unique.
-	###
 	def find_desktop_files(self):
+		""" Returns a list of all identified .desktop files.
+		 The name of earch file must be unique.
+		"""
+		
 		filesByName = {}
 		for source in self.sources:
 			for root, dirnames, filenames in os.walk(source):
@@ -43,10 +40,8 @@ class DesktopEntryProvider(AppProvider):
 						filesByName[filename] = root + os.sep + filename
 		return list(filesByName.values())
 	
-	###
-	# Parses a .desktop file using configparser
-	###
 	def parse_file(self, f):
+		""" Parses a .desktop file using configparser """
 		cfg = configparser.ConfigParser()
 		cfg.read_file(open(f))
 		if cfg.has_section('Desktop Entry'):

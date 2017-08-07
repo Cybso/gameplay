@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
-###
-# Game✜Play - Yet Another Gamepad Launcher
-#
-# A Python and PyQt5 based application launcher that uses
-# HTML5's gamepad API to implement a platform independent
-# UI that can be controlled via keyboard, mouse and 
-# gamepad/joystick.
-#
-# Author: Roland Tapken <roland@bitarbeiter.net>
-# License: GPLv3
-###
+"""Game✜Play - Yet Another Gamepad Launcher
+
+A Python and PyQt5 based application launcher that uses
+HTML5's gamepad API to implement a platform independent
+UI that can be controlled via keyboard, mouse and 
+gamepad/joystick.
+
+Author: Roland Tapken <roland@bitarbeiter.net>
+License: GPLv3
+"""
 
 import os
 import sys
@@ -21,10 +20,9 @@ from PyQt5.QtWidgets import QSplitter, QAction, QSizePolicy, QShortcut, QMessage
 
 LOGGER = logging.getLogger(__name__)
 
-###
-# HTML5/JavaScript based application frontend
-###
 class Frontend(QMainWindow):
+	""" HTML5/JavaScript based application frontend """
+
 	def __init__(self, args, gameplay):
 		super(Frontend, self).__init__()
 		self.gameplay = gameplay
@@ -74,22 +72,20 @@ class Frontend(QMainWindow):
 		self._lastWindowState = self.windowState()
 	
 	def forceRefresh(self):
-		###
-		# reloadAndBypassCache has been implemented use that,
-		# Otherwise, try to clear the cache first (WebKit only)
-		# and just execute a normal reload.
-		###
+		""" reloadAndBypassCache has been implemented use that,
+		Otherwise, try to clear the cache first (WebKit only)
+		and just execute a normal reload.
+		"""
 		if hasattr(self.web, 'reloadAndBypassCache'):
 			self.web.reloadAndBypassCache()
 		else:
 			if hasattr(self.web.page().settings(), 'clearMemoryCaches'):
 				self.web.page().settings().clearMemoryCaches()
 			self.web.reload()
-	
-	###
-	# Toggles fullscreen mode (F11)
-	###
+
 	def toggleFullscreen(self):
+		""" Toggles fullscreen mode (F11)"""
+
 		if self.windowState() == Qt.WindowFullScreen:
 			if self._lastWindowState:
 				self.setWindowState(self._lastWindowState)
@@ -99,10 +95,9 @@ class Frontend(QMainWindow):
 			self._lastWindowState = self.windowState()
 			self.setWindowState(Qt.WindowFullScreen)
 
-	###
-	# Creates a toolbar that is visible in developer mode (F12)
-	###
 	def create_toolbar(self):
+		""" Creates a toolbar that is visible in developer mode (F12) """
+
 		self.toolbar = self.addToolBar('Toolbar')
 
 		# Add back handler
@@ -145,12 +140,11 @@ class Frontend(QMainWindow):
 		if eventType == QEvent.ActivationChange:
 			self.updateVisibilityState()
 	
-	###
-	# Updates webkit visibility state when the window is either
-	# minimized or not the active window. This temporary disables
-	# the gamepadLoop.
-	###
 	def updateVisibilityState(self):
+		""" Updates webkit visibility state when the window is either
+		minimized or not the active window. This temporary disables
+		the gamepadLoop.
+		"""
 		if self._currentVisibilityState is None and not self.isVisible():
 			# Not ready, yet
 			return
@@ -165,11 +159,10 @@ class Frontend(QMainWindow):
 			self._currentVisibilityState = hidden
 			self.web.page().setHidden(hidden)
 
-	###
-	# Print an 'Are you sure' message when the user closes the window
-	# and quit the whole application on confirmation.
-	###
 	def closeEvent(self, event):
+		"""Print an 'Are you sure' message when the user closes the window
+		and quit the whole application on confirmation.
+		"""
 		if self.confirmClose and QMessageBox.question(None, '', "Are you sure you want to quit?",
 				QMessageBox.Yes | QMessageBox.No,
 				QMessageBox.No) == QMessageBox.No:
