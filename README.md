@@ -1,4 +1,4 @@
-# Game:Play Application Launcher
+# Game✜Play Application Launcher
 
 Gamepad controllable application launcher
 

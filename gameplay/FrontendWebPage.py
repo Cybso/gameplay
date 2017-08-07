@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 ###
-# Game:Play - Yet Another Gamepad Launcher
+# Game✜Play - Yet Another Gamepad Launcher
 #
 # A Python and PyQt5 based application launcher that uses
 # HTML5's gamepad API to implement a platform independent
