@@ -1,0 +1,7 @@
+*.bak
+*.orig
+*.rej
+core
+.hg/
+ui/test/
+__pycache__

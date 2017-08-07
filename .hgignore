@@ -2,5 +2,6 @@
 \.orig$
 \.rej$
 core$
+^.git/
 ^ui/test/
 /__pycache__/
