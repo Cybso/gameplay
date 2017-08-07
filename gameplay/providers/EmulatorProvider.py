@@ -124,10 +124,13 @@ class Emulator:
 		files=[]
 		for path in  self.image_path:
 			path=os.path.expanduser(path)
+			LOGGER.info("Emulator/%s: Looking for images in '%s'" % (self.label, path))
 			for root, dirnames, filenames in os.walk(path):
 				for pattern in self.image_pattern:
 					for filename in fnmatch.filter(filenames, pattern):
-						files.append(os.path.join(root, filename))
+						fullpath = os.path.join(root, filename)
+						LOGGER.info("Emulator/%s: Found '%s'" % (self.label, fullpath))
+						files.append(os.path.join(fullpath))
 
 		apps = []
 		for f in files:

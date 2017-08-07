@@ -46,7 +46,7 @@ class GamePlayConfig:
 				if os.path.exists(filePath):
 					try:
 						LOGGER.info('Reading global config from "%s"' % filePath)
-						self.globalConfig.read(open(filePath))
+						self.globalConfig.read_file(open(filePath))
 					except:
 						LOGGER.exception('Failed to parse config from "%s"' % filePath)
 
