@@ -1,6 +1,7 @@
 \.bak$
 \.orig$
 \.rej$
+^dependencies.txt$
 core$
 ^.git/
 ^ui/test/

@@ -1,6 +1,7 @@
 *.bak
 *.orig
 *.rej
+dependencies.txt
 core
 .hg/
 ui/test/
