@@ -127,6 +127,10 @@
 						}
 						evt.preventDefault();
 						return true;
+					} else if (snake !== undefined) {
+						// Delegate this to snake
+						snake.handleKeyEvent(evt);
+						return true;
 					}
 				},
 
@@ -155,6 +159,7 @@
 
 				// Handle navigation
 				function(evt, code) {
+					console.log(evt);
 					switch (code) {
 					case 'ArrowLeft':
 					case 'Left':
@@ -196,17 +201,19 @@
 
 			document.body.addEventListener('keydown', function(evt) {
 				exports.gameplay.triggerBusy();
-				var code = evt.code || evt.keyIdentifier || evt.key;
-				if (code.substring(0, 2) === 'U+') {
-					//  Convert to character
-					var chr = parseInt(code.substring(2), 16);
-					if (!isNaN(chr)) {
-						code = String.fromCharCode(chr);
+				if (!evt.defaultPrevented) {
+					var code = evt.code || evt.keyIdentifier || evt.key;
+					if (code.substring(0, 2) === 'U+') {
+						//  Convert to character
+						var chr = parseInt(code.substring(2), 16);
+						if (!isNaN(chr)) {
+							code = String.fromCharCode(chr);
+						}
 					}
-				}
-				for (var i = 0; i < keyDownHandlers.length; i+=1) {
-					if (keyDownHandlers[i].call(keyDownHandlers, evt, code)) {
-						return;
+					for (var i = 0; i < keyDownHandlers.length; i+=1) {
+						if (keyDownHandlers[i].call(keyDownHandlers, evt, code)) {
+							return;
+						}
 					}
 				}
 			});

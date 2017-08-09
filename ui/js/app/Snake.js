@@ -342,6 +342,34 @@
 			var gamepad = new Gamepad();
 			gamepad.addButtonListener(gamepadListener);
 
+			exports.handleKeyEvent = function(evt) {
+				var code = evt.code || evt.keyIdentifier || evt.key;
+				if (!exports.active) {
+					if (code === 'U+0041') {
+						restartGame();
+						evt.preventDefault();
+					}
+					return;
+				}
+
+				switch (code) {
+				case 'Up':
+				case 'Right':
+				case 'Down':
+				case 'Left':
+					exports.setDirection(0, code.toLowerCase());
+					evt.preventDefault();
+					break;
+				case 'ArrowUp':
+				case 'ArrowRight':
+				case 'ArrowDown':
+				case 'ArrowLeft':
+					exports.setDirection(0, code.substring(5).toLowerCase());
+					evt.preventDefault();
+					break;
+				}
+			};
+
 			exports.exit = function() {
 				gamepad.removeButtonListener(gamepadListener);
 				exports.active = false;
