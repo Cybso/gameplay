@@ -159,7 +159,6 @@
 
 				// Handle navigation
 				function(evt, code) {
-					console.log(evt);
 					switch (code) {
 					case 'ArrowLeft':
 					case 'Left':
