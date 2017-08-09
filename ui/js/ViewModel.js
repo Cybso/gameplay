@@ -91,70 +91,123 @@
 
 			// Bind to key event in body
 			var snake;
+
+			/**
+			 * All available keydown handlers. Must return TRUE if they
+			 * have handled the event. The parameter 'code' is the 
+			 * event's code/keyIdentifier/key, where Unicode-Identifiers
+			 * are transformed into their string representation
+			 * (e.G. U+0020 becomes ' ').
+			 **/
+			var keyDownHandlers = [
+				// Handle ESC key to close easter egg, filter or selected app (in this order)
+				function(evt, code) {
+					if (code === 'Esc') {
+						if (exports.activeGamepadConfigurator()) {
+							exports.activeGamepadConfigurator().close();
+						} else if (snake) {
+							snake.exit();
+							snake = undefined;
+						} else if (exports.currentApp()) {
+							exports.currentApp(undefined);
+						} else {
+							exports.filter('');
+						}
+						evt.preventDefault();
+						return true;
+					}
+				},
+
+				// Start easter egg on ctrl e
+				function(evt, code) {
+					if (code === 'E' && evt.ctrlKey) {
+						// CTRL+E
+						if (snake === undefined) {
+							snake = new Snake();
+						}
+						evt.preventDefault();
+						return true;
+					}
+				},
+
+				// If 'filter' is enabled and neither CTRL nor ALT
+				// nor META are pressed ignore any keydown event. If the
+				// filter is not active, than any pressed key should focus it.
+				function(evt, code) {
+					if (!(evt.ctrlKey || evt.altKey || evt.metaKey)) {
+						if (exports.filter()) {
+							return true;
+						} else {
+							var keycode = evt.keyCode;
+							if ((keycode > 47 && keycode < 58)     || // number keys
+								(keycode > 64 && keycode < 91)     || // letter keys
+								(keycode > 95 && keycode < 112)) {    // numpad keys
+								evt.preventDefault();
+								exports.filter(String.fromCharCode(keycode));
+								window.setTimeout(function() {
+									document.querySelector('#widget-filter input').focus();
+								}, 30);
+								return true;
+							}
+						}
+					}
+				},
+
+				// Handle navigation
+				function(evt, code) {
+					switch (code) {
+					case 'ArrowLeft':
+					case 'Left':
+						evt.preventDefault();
+						exports.selectedNode.moveLeft();
+						return true;
+					case 'ArrowRight':
+					case 'Right':
+						evt.preventDefault();
+						exports.selectedNode.moveRight();
+						return true;
+					case 'ArrowUp':
+					case 'Up':
+						evt.preventDefault();
+						exports.selectedNode.moveUp();
+						return true;
+					case 'ArrowDown':
+					case 'Down':
+						evt.preventDefault();
+						exports.selectedNode.moveDown();
+						return true;
+					case 'Enter':
+					case 'Space':
+					case ' ':
+						var node = exports.selectedNode();
+						if (node && node.click !== undefined) {
+							evt.preventDefault();
+							node.click();
+						}
+						return true;
+					}
+				},
+
+				// Print to debugger
+				function(evt, code) {
+					//console.log('DEBUG: Unhandled key event: ' + code, evt);
+				}
+			];
+
 			document.body.addEventListener('keydown', function(evt) {
 				exports.gameplay.triggerBusy();
-				if (evt.keyCode === 69 && evt.ctrlKey) {
-					// CTRL+E
-					if (snake === undefined) {
-						snake = new Snake();
-					}
-					return;
-				}
-
-				if (!exports.currentApp() && !exports.filter()) {
-					var keycode = evt.keyCode;
-					if ((keycode > 47 && keycode < 58)     || // number keys
-						(keycode > 64 && keycode < 91)     || // letter keys
-						(keycode > 95 && keycode < 112)) {    // numpad keys
-						evt.preventDefault();
-						exports.filter(String.fromCharCode(keycode));
-						window.setTimeout(function() {
-							document.querySelector('#widget-filter input').focus();
-						}, 30);
+				var code = evt.code || evt.keyIdentifier || evt.key;
+				if (code.substring(0, 2) === 'U+') {
+					//  Convert to character
+					var chr = parseInt(code.substring(2), 16);
+					if (!isNaN(chr)) {
+						code = String.fromCharCode(chr);
 					}
 				}
-
-				switch (evt.code || evt.keyIdentifier || evt.key) {
-				case 'ArrowLeft':
-				case 'Left':
-					evt.preventDefault();
-					exports.selectedNode.moveLeft();
-					break;
-				case 'ArrowRight':
-				case 'Right':
-					evt.preventDefault();
-					exports.selectedNode.moveRight();
-					break;
-				case 'ArrowUp':
-				case 'Up':
-					evt.preventDefault();
-					exports.selectedNode.moveUp();
-					break;
-				case 'ArrowDown':
-				case 'Down':
-					evt.preventDefault();
-					exports.selectedNode.moveDown();
-					break;
-				case 'Esc':
-					evt.preventDefault();
-					if (exports.activeGamepadConfigurator()) {
-						exports.activeGamepadConfigurator().close();
-					} else if (snake) {
-						snake.exit();
-						snake = undefined;
-					} else if (exports.currentApp()) {
-						exports.currentApp(undefined);
-					} else {
-						exports.filter('');
+				for (var i = 0; i < keyDownHandlers.length; i+=1) {
+					if (keyDownHandlers[i].call(keyDownHandlers, evt, code)) {
+						return;
 					}
-					break;
-				case 'Enter':
-					var node = exports.selectedNode();
-					if (node && node.click !== undefined) {
-						evt.preventDefault();
-						node.click();
-					}
-					break;
 				}
 			});
 
