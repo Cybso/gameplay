@@ -164,16 +164,16 @@ class GamePlay(QObject):
 					LOGGER.exception("Failed to invoke application provider %s" % provider.__class__.__name__)
 		return self.apps
 
-	@pyqtSlot(str, str)
-	def setItem(self, key, value):
-		""" Set a UI storage value (compatible to JavaScript's storage) """
-		self.ui_settings.set('ui', quote(key), value)
+	@pyqtSlot(str, str, str)
+	def setItem(self, section, key, value):
+		""" Set a UI storage value """
+		self.ui_settings.set(section, quote(key), value)
 		self.ui_settings.write()
 
-	@pyqtSlot(str, result=str)
-	def getItem(self, key):
-		""" Retrieves a UI storage value (compatible to JavaScript's storage) """
-		return self.ui_settings.get('ui', quote(key))
+	@pyqtSlot(str, str, result=str)
+	def getItem(self, section, key):
+		""" Retrieves a UI storage value """
+		return self.ui_settings.get(section, quote(key))
 
 	@pyqtSlot(str, str, result=str)
 	def getOption(self, section, option):

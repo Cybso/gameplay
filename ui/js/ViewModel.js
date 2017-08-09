@@ -252,9 +252,9 @@
 						exports.activeGamepadConfigurator(undefined);
 						if (configurator.finished()) {
 							var mapping = configurator.mapping();
-							var mappingKey = 'mapping:' + exports.gamepad.getUnifiedId(gp);
+							var mappingKey = exports.gamepad.getUnifiedId(gp);
 							exports.gamepad.setGamepadMapping(gp, mapping);
-							exports.gameplay.setItem(mappingKey, JSON.stringify(mapping));
+							exports.gameplay.setItem('gamepads', mappingKey, JSON.stringify(mapping));
 						}
 					});
 					exports.activeGamepadConfigurator(configurator);
@@ -268,8 +268,8 @@
 				if (type === 'attached') {
 					exports.currentGamepads.push(gp);
 					// Check if there is a safed configuration
-					var mappingKey = 'mapping:' + exports.gamepad.getUnifiedId(gp);
-					exports.gameplay.getItem(mappingKey).done(function(mapping) {
+					var mappingKey = exports.gamepad.getUnifiedId(gp);
+					exports.gameplay.getItem('gamepads', mappingKey).done(function(mapping) {
 						if (mapping) {
 							mapping = JSON.parse(mapping);
 							exports.gamepad.setGamepadMapping(gp, mapping);

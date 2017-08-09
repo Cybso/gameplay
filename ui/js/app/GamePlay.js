@@ -56,19 +56,19 @@
 				/**
 				* Represents an observable object that is stored in GamePlay's UI storage.
 				**/
-				function PersistantObservableArray(key) {
+				function PersistantObservableArray(section, key) {
 					var ignoreSubscribe = false;
 					var observable = ko.observableArray([]);
 					var ready = ko.observable(false);
 					observable.ready = ko.pureComputed(ready);
 					observable.subscribe(function(value) {
 						if (!ignoreSubscribe) {
-							externalRequest('setItem', key, JSON.stringify(value));
+							externalRequest('setItem', section, key, JSON.stringify(value));
 						}
 					});
 
 					// Load data (prepared for async)
-					externalRequest('getItem', key).done(function(value) {
+					externalRequest('getItem', section, key).done(function(value) {
 						if (value) {
 							ignoreSubscribe = true;
 							try {
@@ -86,8 +86,8 @@
 				}
 
 				return function(viewModel) {
-					var hiddenCategories = new PersistantObservableArray('hidden-categories');
-					var hiddenApps = new PersistantObservableArray('hidden-apps');
+					var hiddenCategories = new PersistantObservableArray('apps', 'hidden-categories');
+					var hiddenApps = new PersistantObservableArray('apps', 'hidden-apps');
 					var withHidden = ko.observable(false);
 
 					var rawApps = ko.observableArray();
@@ -264,12 +264,12 @@
 						return externalRequest('raiseWindow');
 					};
 
-					var setItem = function(key, value) {
-						return externalRequest('setItem', key, value);
+					var setItem = function(section, key, value) {
+						return externalRequest('setItem', section, key, value);
 					};
 
-					var getItem = function(key) {
-						return externalRequest('getItem', key);
+					var getItem = function(section, key) {
+						return externalRequest('getItem', section, key);
 					};
 
 					/**
