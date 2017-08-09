@@ -9,6 +9,16 @@
 (function() {
 	"use strict";
 
+	// Map key code characters that differ between engines
+	var KEYCODE_MAPPING = {
+		'U+001B': 'Esc',
+		'U+0020': 'Space',
+		'ArrowLeft': 'Left',
+		'ArrowRight': 'Right',
+		'ArrowDown': 'Down',
+		'ArrowTop': 'Top'
+	};
+
 	define(['knockout', 'RemoteData', 'moment', 'utils', 
 		'app/Locale', 'app/GamePlay', 'app/SelectedNode', 'app/Gamepad', 'app/Snake', 'app/BackgroundGamepadListener'],
 		function(ko, RemoteData, moment, utils,
@@ -97,7 +107,7 @@
 			 * have handled the event. The parameter 'code' is the 
 			 * event's code/keyIdentifier/key, where Unicode-Identifiers
 			 * are transformed into their string representation
-			 * (e.G. U+0020 becomes ' ').
+			 * (e.G. U+0041 becomes 'E').
 			 **/
 			var keyDownHandlers = [
 				// Handle ESC key to close easter egg, filter or selected app (in this order)
@@ -160,29 +170,24 @@
 				// Handle navigation
 				function(evt, code) {
 					switch (code) {
-					case 'ArrowLeft':
 					case 'Left':
 						evt.preventDefault();
 						exports.selectedNode.moveLeft();
 						return true;
-					case 'ArrowRight':
 					case 'Right':
 						evt.preventDefault();
 						exports.selectedNode.moveRight();
 						return true;
-					case 'ArrowUp':
 					case 'Up':
 						evt.preventDefault();
 						exports.selectedNode.moveUp();
 						return true;
-					case 'ArrowDown':
 					case 'Down':
 						evt.preventDefault();
 						exports.selectedNode.moveDown();
 						return true;
 					case 'Enter':
 					case 'Space':
-					case ' ':
 						var node = exports.selectedNode();
 						if (node && node.click !== undefined) {
 							evt.preventDefault();
@@ -202,6 +207,11 @@
 				exports.gameplay.triggerBusy();
 				if (!evt.defaultPrevented) {
 					var code = evt.code || evt.keyIdentifier || evt.key;
+					// Check for predefined mappings
+					if (KEYCODE_MAPPING[code] !== undefined) {
+						code = KEYCODE_MAPPING[code];
+					}
+					// Map unicode characters into string
 					if (code.substring(0, 2) === 'U+') {
 						//  Convert to character
 						var chr = parseInt(code.substring(2), 16);
@@ -209,6 +219,7 @@
 							code = String.fromCharCode(chr);
 						}
 					}
+					// Find a handler that handles this event (returns true)
 					for (var i = 0; i < keyDownHandlers.length; i+=1) {
 						if (keyDownHandlers[i].call(keyDownHandlers, evt, code)) {
 							return;
