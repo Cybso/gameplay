@@ -54,7 +54,7 @@ if system == 'Linux':
 			can be used to remove all Non-Standard-Categories
 			from the list.
 			"""
-			keep_categories = self.settings.getlist('SystemAppProvider', 'categories', fallback=MAIN_CATEGORIES)
+			keep_categories = self.settings.getlist('providers/system', 'categories', fallback=MAIN_CATEGORIES)
 			# Work on a copy, because we are going to modify
 			# the list while iterating it.
 			for c in  categories[:]:

@@ -31,6 +31,8 @@ class Inspector(QWebEngineView):
 		self.setVisible(False)
 		if os.environ.get('QTWEBENGINE_REMOTE_DEBUGGING'):
 			self.load(QUrl('http://localhost:' + os.environ['QTWEBENGINE_REMOTE_DEBUGGING']))
+		else:
+			self.setHtml('Web Inspector not available. Please start the application with debugging enabled (-d/--debug).')
 
 class WebView(QWebEngineView):
 	""" Returns a QWebEngineView and loads the FrontendWebPage """
