@@ -54,7 +54,7 @@ _Can somebody complete this section for me?_
 
 ### Steam
 
-If you have [http://store.steampowered.com/](Steam) installed and the launcher
+If you have [Steam](http://store.steampowered.com/) installed and the launcher
 fails to detect your installed applications ensure that you have configured
 the correct paths in the  'providers/steam' section of your 'gameplay.ini'.
 
@@ -62,13 +62,13 @@ the correct paths in the  'providers/steam' section of your 'gameplay.ini'.
 
 The Game✜Play launcher should support all kinds of emulators that are able
 to directly launch game images with a single command; I have successfully
-tested this with [https://dolphin-emu.org/](Dolphin) and [http://www.zsnes.com/](ZSNES).
+tested this with [Dolphin](https://dolphin-emu.org/) and [ZSNES](http://www.zsnes.com/).
 
 See 'examples/emulators.ini' for some examples of how to configure them.
 
 #### Dolphin
 
-If you plan to run emulated GameCube or Wii images with [https://dolphin-emu.org/](Dolphin)
-you should also install 'wit' from [https://wit.wiimm.de/](WimmsTools) and
+If you plan to run emulated GameCube or Wii images with [Dolphin](https://dolphin-emu.org/)
+you should also install 'wit' from [WimmsTools](https://wit.wiimm.de/) and
 ensure that it is available in the search path. This command allows
 the launcher to extract the real game's title from the image file.
