@@ -9,17 +9,17 @@ import platform
 system = platform.system()
 if system == 'Linux':
 	LOGGER.info('Detected Linux system')
-	from . import linux as gameplay_sys
+	from .platform import linux as gameplay_sys
 elif system == 'Darwin':
 	LOGGER.info('Detected Darwin system')
-	from . import darwin as gameplay_sys
+	from .platform import darwin as gameplay_sys
 elif system == 'Windows':
 	LOGGER.info('Detected Windows system')
-	from . import windows as gameplay_sys
+	from .platform import windows as gameplay_sys
 else:
 	# Try with linux as fallback...
 	LOGGER.info('Detected unknown system, using Linux API')
-	from . import linux as gameplay_sys
+	from .platform import linux as gameplay_sys
 
 def get_icon_data(iconName):
 	""" Resolves an icon name and returns its data and filetype.

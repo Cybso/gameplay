@@ -13,7 +13,7 @@ License: GPLv3
 import os
 import logging
 
-from .utils import get_icon_data
+from ..utils import get_icon_data
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage
 from PyQt5.QtCore import QUrl, QVariant, QTimer, QByteArray, QBuffer, QIODevice, pyqtSlot
 from PyQt5.QtWebChannel import QWebChannel
