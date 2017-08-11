@@ -157,6 +157,10 @@ class GamePlay(QObject):
 		if self.apps == None:
 			self.apps = []
 			for key, provider in self.providers.items():
+				if not self.settings.getboolean('providers/' + key, 'enabled', True):
+					LOGGER.info("Provider '%s' disabled in config file, skipping." % key)
+					continue
+
 				try:
 					for app in provider.get_apps():
 						self.apps.append(app)

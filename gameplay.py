@@ -70,6 +70,14 @@ def do_list_config(name, config):
 			print("\t%s = %s" % (c, config.get(s, c)))
 		print()
 
+def do_list_apps(name, provider):
+	print("Apps found by provider '%s':" % name)
+	for app in provider.get_apps():
+		print("\t[%s]" % app.id)
+		for k, v in app.__dict__.items():
+			print("\t%s = %s" % (k, v))
+		print()
+
 def main():
 	basepath=QDir.fromNativeSeparators(os.path.dirname(os.path.abspath(__file__))) + '/ui/'
 
@@ -115,6 +123,11 @@ def main():
 	if args.list_config:
 		do_list_config('gameplay.ini', gameplay.settings)
 		do_list_config('emulators.ini', gameplay.providers['emulators'].emulatorIni)
+		return
+	
+	if args.list_apps:
+		for key, provider in gameplay.providers.items():
+			do_list_apps(key, provider)
 		return
 
 	# Initialize frontend
