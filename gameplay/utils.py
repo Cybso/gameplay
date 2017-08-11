@@ -1,4 +1,7 @@
+import os
+import sys
 import logging
+import mimetypes
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QByteArray, QBuffer, QIODevice, QStandardPaths
 
@@ -25,6 +28,11 @@ def get_icon_data(iconName):
 	""" Resolves an icon name and returns its data and filetype.
 	Returns None / None if the image has not  been found.
 	"""
+	if os.path.exists(iconName):
+		(mimeType, encoding) = mimetypes.guess_type(iconName)
+		buf = open(iconName, 'rb').read()
+		return (buf, mimeType)
+
 	icon = QIcon.fromTheme(iconName)
 	sizes = sorted(icon.availableSizes(), key=lambda s : s.width() * s.height(), reverse=True)
 	if len(sizes) > 0:
@@ -71,7 +79,7 @@ def find_output(filename):
 	will be saved, stdout restored and - if possible - the generated
 	file opened in an editor.
 	"""
-	import platform, subprocess, shlex, os, sys
+	import platform, subprocess, shlex
 	class OutputDescriptor:
 		def __init__(self, destfile, fp, orig_stdout):
 			self.destfile = destfile
