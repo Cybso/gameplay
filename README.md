@@ -64,7 +64,7 @@ The Game✜Play launcher should support all kinds of emulators that are able
 to directly launch game images with a single command; I have successfully
 tested this with [Dolphin](https://dolphin-emu.org/) and [ZSNES](http://www.zsnes.com/).
 
-See 'examples/emulators.ini' for some examples of how to configure them.
+See '[examples/emulators.ini](examples/emulators.ini)' for some examples of how to configure them.
 
 #### Dolphin
 
@@ -72,3 +72,42 @@ If you plan to run emulated GameCube or Wii images with [Dolphin](https://dolphi
 you should also install 'wit' from [WimmsTools](https://wit.wiimm.de/) and
 ensure that it is available in the search path. This command allows
 the launcher to extract the real game's title from the image file.
+
+## Configuration
+
+See [examples/gameplay.ini](examples/gameplay.ini) for an example configuration file.
+This file is searched in the launcher's application directory
+and in some system dependent locations.
+
+Calling gameplay.py with '--list-config' will show you all
+paths that are search for configuration files as well as
+the current active configuation directives.
+
+## Command line arguments
+
+  usage: gameplay.py [-h] [-v] [-d] [-f] [-s] [-e {webkit,webengine}]
+                     [-r DOCROOT] [--list-config] [--list-apps]
+  
+  optional arguments:
+    -h, --help            show this help message and exit
+    -v, --verbose         be verbose
+    -d, --debug           be even verboser
+    -f, --fullscreen      start in fullscreen mode
+    -s, --stayontop       stay on top (while not running any apps)
+    -e {webkit,webengine}, --engine {webkit,webengine}
+                          browser engine that should be used ('webkit',
+                          'webengine')
+    -r DOCROOT, --docroot DOCROOT
+                          Document root of UI files (default:
+                          /home/roland/development/privat/gameplay/ui/)
+    --list-config         Show what configuration files are loaded on startup
+    --list-apps           Show what apps where found by each application
+                          provider
+
+
+## License
+
+_Game✜Play_ can be freely distributed under the terms of the
+[GNU General Public License Version 3](LICENSE.txt). Some parts
+of this software have different licenses, see [NOTICE.md](NOTICE.md)
+for details.
