@@ -3,7 +3,7 @@ import sys
 import logging
 import mimetypes
 from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import QByteArray, QBuffer, QIODevice, QStandardPaths
+from PyQt5.QtCore import QByteArray, QBuffer, QIODevice, QDir, QStandardPaths
 
 LOGGER = logging.getLogger(__name__)
 
@@ -24,14 +24,39 @@ else:
 	LOGGER.info('Detected unknown system, using Linux API')
 	from .platform import linux as gameplay_sys
 
+ICON_OVERRIDE_PATHS = None
 def get_icon_data(iconName):
 	""" Resolves an icon name and returns its data and filetype.
 	Returns None / None if the image has not  been found.
+
+	Icons are first search in the 'icons/' subdirectories
+	of the applications configuration paths, and afterwards
+	tries to resolve as absolute paths, and if that fails GamePlay
+	will try to resolve them using QIcon.
+
+	If anything fails this call will be redirected to a platform
+	dependent implementation. On windows, this will try to extract
+	the first icon from an .exe file.
 	"""
+	global ICON_OVERRIDE_PATHS
+	if ICON_OVERRIDE_PATHS is None:
+		# Load local icon override paths
+		ICON_OVERRIDE_PATHS = [QDir.toNativeSeparators(x + '/icons') for x in QStandardPaths.standardLocations(QStandardPaths.AppConfigLocation)]
+		ICON_OVERRIDE_PATHS.append(os.path.dirname(os.path.abspath(sys.argv[0]) + os.sep + 'icons'))
+
+	for override in ICON_OVERRIDE_PATHS:
+		override += os.sep + iconName
+		if os.path.exists(override):
+			(mimeType, encoding) = mimetypes.guess_type(iconName)
+			if mimeType.startswith('image/'):
+				buf = open(iconName, 'rb').read()
+				return (buf, mimeType)
+
 	if os.path.exists(iconName):
 		(mimeType, encoding) = mimetypes.guess_type(iconName)
-		buf = open(iconName, 'rb').read()
-		return (buf, mimeType)
+		if mimeType.startswith('image/'):
+			buf = open(iconName, 'rb').read()
+			return (buf, mimeType)
 
 	icon = QIcon.fromTheme(iconName)
 	sizes = sorted(icon.availableSizes(), key=lambda s : s.width() * s.height(), reverse=True)
