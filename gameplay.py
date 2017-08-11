@@ -55,6 +55,21 @@ from PyQt5.QtGui import QIcon
 import sip
 sip.setapi('QString', 2)
 
+def do_list_config(name, config):
+	print('Search paths for %s' % name)
+	for path in config.search_paths:
+		if os.path.exists(path):
+			print("\t# %s" % path)
+		else:
+			print("\t# %s (missing)" % path)
+	print("\t#")
+	print("\t# Cumulated configuration:")
+	for s in config.sections():
+		print("\t[%s]" % s)
+		for c in config.options(s):
+			print("\t%s = %s" % (c, config.get(s, c)))
+		print()
+
 def main():
 	basepath=QDir.fromNativeSeparators(os.path.dirname(os.path.abspath(__file__))) + '/ui/'
 
@@ -66,6 +81,8 @@ def main():
 	parser.add_argument("-s", "--stayontop", help="stay on top (while not running any apps)", action="store_true")
 	parser.add_argument("-e", "--engine", help="browser engine that should be used ('webkit', 'webengine')", choices=['webkit', 'webengine'], default=find_preferred_engine())
 	parser.add_argument("-r", "--docroot", help="Document root of UI files (default: %s)" % (basepath), default=basepath)
+	parser.add_argument("--list-config", help="Show what configuration files are loaded on startup", action="store_true")
+	parser.add_argument("--list-apps", help="Show what apps where found by each application provider", action="store_true")
 	args = parser.parse_args()
 
 	# Ensure that the given document root ends with /
@@ -91,10 +108,14 @@ def main():
 	# Start application (and ensure it can be killed with CTRL-C)
 	signal.signal(signal.SIGINT, signal.SIG_DFL)
 	app = QApplication(sys.argv)
-
 	app.setApplicationName('gameplay')
 	app.setWindowIcon(QIcon(args.docroot + 'img' + os.sep + 'Y.svg'))
 	gameplay = GamePlay()
+
+	if args.list_config:
+		do_list_config('gameplay.ini', gameplay.settings)
+		do_list_config('emulators.ini', gameplay.providers['emulators'].emulatorIni)
+		return
 
 	# Initialize frontend
 	frontend = Frontend(args, gameplay)

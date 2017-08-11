@@ -142,12 +142,12 @@ class GamePlay(QObject):
 		self.ui_settings = GamePlayConfig('ui.ini')
 		self.events = EventWrapper(self.settings)
 
-		self.providers = [
-			SteamProvider(self.settings),
-			EmulatorProvider(self.settings),
-			DesktopEntryProvider(self.settings),
-			SystemAppProvider(self.settings)
-		]
+		self.providers = {
+			'steam': SteamProvider(self.settings),
+			'emulators': EmulatorProvider(self.settings),
+			'desktop': DesktopEntryProvider(self.settings),
+			'system': SystemAppProvider(self.settings)
+		}
 
 		# Currently active AppProcess object per appid.
 		self.running = {}
@@ -156,7 +156,7 @@ class GamePlay(QObject):
 	def _getAppItems(self):
 		if self.apps == None:
 			self.apps = []
-			for provider in self.providers:
+			for key, provider in self.providers.items():
 				try:
 					for app in provider.get_apps():
 						self.apps.append(app)

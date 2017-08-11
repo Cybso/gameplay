@@ -161,11 +161,11 @@ class EmulatorProvider(AppProvider):
 
 		# Load 'emulators.ini'
 		self.emulators = []
-		emulatorIni = GamePlayConfig('emulators.ini')
-		for section in emulatorIni.sections():
+		self.emulatorIni = GamePlayConfig('emulators.ini')
+		for section in self.emulatorIni.sections():
 			try:
 				LOGGER.info('Loading emulator configuration for "%s"' % section)
-				self.emulators.append(Emulator(emulatorIni, section))
+				self.emulators.append(Emulator(self.emulatorIni, section))
 			except:
 				LOGGER.exception('Failed to load config for emulator entry "%s"' % section)
 

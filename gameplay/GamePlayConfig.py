@@ -73,7 +73,7 @@ class GamePlayConfig:
 	def options(self, section):
 		first_list = self.globalConfig.options(section)
 		second_list = self.localConfig.options(section)
-		return list(set(second_list) - set(first_list))
+		return first_list + list(set(second_list) - set(first_list))
 
 	def has_option(self, section, option):
 		return self.localConfig.has_option(section, option) or self.globalConfig.has_option(section, option)
