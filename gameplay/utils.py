@@ -41,4 +41,62 @@ def get_icon_data(iconName):
 			return (None, None)
 		return (icon, contentType)
 
+def find_getch():
+	""" Returns a getch (get character) implementation """
+	try:
+		import termios
+	except ImportError:
+		# Non-POSIX. Return msvcrt's (Windows') getch.
+		import msvcrt
+		return msvcrt.getch
+
+	# POSIX system. Create and return a getch that manipulates the tty.
+	import sys, tty
+	def _getch():
+		fd = sys.stdin.fileno()
+		old_settings = termios.tcgetattr(fd)
+		try:
+			tty.setraw(fd)
+			ch = sys.stdin.read(1)
+		finally:
+			termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+		return ch
+
+	return _getch
+
+def find_output(filename):
+	""" When this is not an interactive terminal this function will
+	change sys.stdout to the given filename and return a control
+	object. When 'closed' is called on this control object the outfile
+	will be saved, stdout restored and - if possible - the generated
+	file opened in an editor.
+	"""
+	import platform, subprocess, shlex, os, sys
+	class OutputDescriptor:
+		def __init__(self, destfile, fp, orig_stdout):
+			self.destfile = destfile
+			self.fp = fp
+			self.orig_stdout = orig_stdout
+
+		def close(self):
+			self.fp.close()
+			sys.stdout = self.orig_stdout
+
+			#  Try to open the file...
+			system = platform.system()
+			if system == 'Linux':
+				subprocess.run(['xdg-open', self.destfile])
+			elif system == 'Windows':
+				subprocess.run('start ' + shlex.quote(self.destfile), shell=True)
+			elif system == 'Darwin':
+				subprocess.run('open ' + shlex.quote(self.destfile), shell=True)
+
+	if os.isatty(sys.stdout.fileno()):
+		return None
+
+	fp = open(filename, 'w')
+	result = OutputDescriptor(filename, fp, sys.stdout)
+	sys.stdout = fp
+	return result
+
 #  vim: set fenc=utf-8 ts=4 sw=4 noet :

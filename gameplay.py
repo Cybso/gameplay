@@ -75,7 +75,8 @@ def do_list_apps(name, provider):
 	for app in provider.get_apps():
 		print("\t[%s]" % app.id)
 		for k, v in app.__dict__.items():
-			print("\t%s = %s" % (k, v))
+			if not k.startswith('_'):
+				print("\t%s = %s" % (k, v))
 		print()
 
 def main():
@@ -120,14 +121,14 @@ def main():
 	app.setWindowIcon(QIcon(args.docroot + 'img' + os.sep + 'Y.svg'))
 	gameplay = GamePlay()
 
-	if args.list_config:
-		do_list_config('gameplay.ini', gameplay.settings)
-		do_list_config('emulators.ini', gameplay.providers['emulators'].emulatorIni)
-		return
-	
-	if args.list_apps:
-		for key, provider in gameplay.providers.items():
-			do_list_apps(key, provider)
+	if args.list_config or args.list_apps:
+		if args.list_config:
+			do_list_config('gameplay.ini', gameplay.settings)
+			do_list_config('emulators.ini', gameplay.providers['emulators'].emulatorIni)
+		
+		if args.list_apps:
+			for key, provider in gameplay.providers.items():
+				do_list_apps(key, provider)
 		return
 
 	# Initialize frontend

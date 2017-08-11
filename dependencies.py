@@ -40,7 +40,7 @@ import os
 import sys
 import platform
 import subprocess
-import shlex
+from gameplay import utils as gameplay_utils
 from importlib import util
 
 def check_dependency(dep):
@@ -56,37 +56,6 @@ def check_dependency(dep):
 	return False
 
 
-def _find_getch():
-	try:
-		import termios
-	except ImportError:
-		# Non-POSIX. Return msvcrt's (Windows') getch.
-		import msvcrt
-		return msvcrt.getch
-
-	# POSIX system. Create and return a getch that manipulates the tty.
-	import sys, tty
-	def _getch():
-		fd = sys.stdin.fileno()
-		old_settings = termios.tcgetattr(fd)
-		try:
-			tty.setraw(fd)
-			ch = sys.stdin.read(1)
-		finally:
-			termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-		return ch
-
-	return _getch
-
-
-class _GetchWindows:
-	def __init__(self):
-		import msvcrt
-
-	def __call__(self):
-		import msvcrt
-		return msvcrt.getch()
-
 
 if __name__ == "__main__":
 	system = platform.system()
@@ -97,13 +66,7 @@ if __name__ == "__main__":
 				missing.append(dep)
 
 	# If this is not started on a terminal, write the output into a file 'dependencies.txt'
-	destfile=None
-	orig_stdout=sys.stdout
-	if not os.isatty(sys.stdout.fileno()):
-		destfile='dependencies.txt'
-		f = open(destfile, 'w')
-		sys.stdout = f
-
+	output = gameplay_utils.find_output('dependencies.txt')
 	if missing:
 		pip_pkgs=[]
 		apt_pkgs=[]
@@ -133,19 +96,10 @@ if __name__ == "__main__":
 	else:
 		print('All dependencies fullfilled.')
 	
-	if destfile is not None:
-		sys.stdout.close()
-		sys.stdout = orig_stdout
-
-		#  Try to open the file...
-		if system == 'Linux':
-			subprocess.run(['xdg-open', destfile])
-		elif system == 'Windows':
-			subprocess.run('start ' + shlex.quote(destfile), shell=True)
-		elif system == 'Darwin':
-			subprocess.run('open ' + shlex.quote(destfile), shell=True)
+	if output is not None:
+		output.close()
 	else:
-		getch = _find_getch()
+		getch = gameplay_utils.find_getch()
 		if getch is not None:
 			print('Press any key to continue')
 			getch()
