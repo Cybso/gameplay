@@ -2,6 +2,8 @@
 \.orig$
 \.rej$
 ^dependencies.txt$
+^gameplay.ini$
+^emulators.ini$
 core$
 ^.git/
 ^ui/test/
