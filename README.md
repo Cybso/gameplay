@@ -85,6 +85,7 @@ the current active configuation directives.
 
 ## Command line arguments
 
+```
   usage: gameplay.py [-h] [-v] [-d] [-f] [-s] [-e {webkit,webengine}]
                      [-r DOCROOT] [--list-config] [--list-apps]
   
@@ -103,7 +104,7 @@ the current active configuation directives.
     --list-config         Show what configuration files are loaded on startup
     --list-apps           Show what apps where found by each application
                           provider
-
+```
 
 ## License
 
