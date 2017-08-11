@@ -1,6 +1,6 @@
 # Game✜Play Application Launcher
 
-![Game✜Play](https://raw.githubusercontent.com/Cybso/gameplay/master/ui/img/GamePlay.svg "Game✜Play")
+![Game✜Play](https://raw.githubusercontent.com/Cybso/gameplay/master/ui/img/GamePlay.300px.png "Game✜Play")
 
 _Game✜Play_ is a platform independent application launcher.
 Unlike others it can completely be controlled with a gamepad
