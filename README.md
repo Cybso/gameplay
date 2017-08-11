@@ -99,8 +99,7 @@ the current active configuation directives.
                           browser engine that should be used ('webkit',
                           'webengine')
     -r DOCROOT, --docroot DOCROOT
-                          Document root of UI files (default:
-                          /home/roland/development/privat/gameplay/ui/)
+                          Document root of UI files (default: ./ui/)
     --list-config         Show what configuration files are loaded on startup
     --list-apps           Show what apps where found by each application
                           provider
