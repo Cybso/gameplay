@@ -122,52 +122,52 @@ header {
 }
 
 .button-reset {
-	background-image: url('../img/icons/media-skip-backward.svg');
+	background-image: url('icon:///media-skip-backward.svg');
 }
 
 .button-run {
-	background-image: url('../img/icons/media-playback-start.svg');
+	background-image: url('icon:///media-playback-start.svg');
 }
 
 .button-run.selected,
 .button-run:hover {
-	background-image: url('../img/icons/media-playback-start_selected.svg');
+	background-image: url('icon:///media-playback-start_selected.svg');
 }
 
 .button-suspend {
-	background-image: url('../img/icons/media-playback-pause.svg');
+	background-image: url('icon:///media-playback-pause.svg');
 }
 
 .button-suspend.selected,
 .button-suspend:hover {
-	background-image: url('../img/icons/media-playback-pause_selected.svg');
+	background-image: url('icon:///media-playback-pause_selected.svg');
 }
 
 .button-resume {
-	background-image: url('../img/icons/media-playback-pause.svg');
+	background-image: url('icon:///media-playback-pause.svg');
 }
 
 .button-resume.selected,
 .button-resume:hover {
-	background-image: url('../img/icons/media-playback-start_selected.svg');
+	background-image: url('icon:///media-playback-start_selected.svg');
 }
 
 .button-stop {
-	background-image: url('../img/icons/media-playback-stop.svg');
+	background-image: url('icon:///media-playback-stop.svg');
 }
 
 .button-stop.selected,
 .button-stop:hover {
-	background-image: url('../img/icons/media-playback-stop_selected.svg');
+	background-image: url('icon:///media-playback-stop_selected.svg');
 }
 
 .button-close {
-	background-image: url('../img/icons/media-eject.svg');
+	background-image: url('icon:///media-eject.svg');
 }
 
 .button-close.selected,
 .button-close:hover {
-	background-image: url('../img/icons/media-eject_selected.svg');
+	background-image: url('icon:///media-eject_selected.svg');
 }
 
 

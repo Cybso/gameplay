@@ -41,20 +41,20 @@ def get_icon_data(iconName):
 	global ICON_OVERRIDE_PATHS
 	if ICON_OVERRIDE_PATHS is None:
 		# Load local icon override paths
-		ICON_OVERRIDE_PATHS = [QDir.toNativeSeparators(x + '/icons') for x in QStandardPaths.standardLocations(QStandardPaths.AppConfigLocation)]
-		ICON_OVERRIDE_PATHS.append(os.path.dirname(os.path.abspath(sys.argv[0]) + os.sep + 'icons'))
+		ICON_OVERRIDE_PATHS = [os.path.dirname(os.path.abspath(sys.argv[0])) + os.sep + 'icons']
+		ICON_OVERRIDE_PATHS += [QDir.toNativeSeparators(x + '/icons') for x in QStandardPaths.standardLocations(QStandardPaths.AppConfigLocation)]
 
 	for override in ICON_OVERRIDE_PATHS:
 		override += os.sep + iconName
 		if os.path.exists(override):
-			(mimeType, encoding) = mimetypes.guess_type(iconName)
-			if mimeType.startswith('image/'):
-				buf = open(iconName, 'rb').read()
+			(mimeType, encoding) = mimetypes.guess_type(override)
+			if mimeType is not None and mimeType.startswith('image/'):
+				buf = open(override, 'rb').read()
 				return (buf, mimeType)
 
 	if os.path.exists(iconName):
 		(mimeType, encoding) = mimetypes.guess_type(iconName)
-		if mimeType.startswith('image/'):
+		if mimeType is not None and mimeType.startswith('image/'):
 			buf = open(iconName, 'rb').read()
 			return (buf, mimeType)
 
