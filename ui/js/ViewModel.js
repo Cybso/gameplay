@@ -69,6 +69,18 @@
 						result.push(apps[i]);
 					}
 				}
+
+				// Sort by favourite and name
+				result.sort(function(a, b) {
+					if (a.favourite() && !b.favourite()) return -1;
+					if (b.favourite() && !a.favourite()) return 1;
+					if (a.label.toLowerCase() < b.label.toLowerCase()) return -1;
+					if (a.label.toLowerCase() > b.label.toLowerCase()) return 1;
+					if (a.id.toLowerCase() < b.id.toLowerCase()) return -1;
+					if (a.id.toLowerCase() > b.id.toLowerCase()) return 1;
+					return 0;
+				});
+
 				return result;
 			});
 

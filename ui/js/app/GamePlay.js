@@ -5,13 +5,27 @@
 		define(['knockout', 'ko/translate', 'RemoteData', 'ko/mapper'], 
 			function(ko, t, RemoteData, kom) {
 
-				function AppItem(data, hidden) {
+				function AppItem(data, hidden, favourites) {
 					return {
 						id: data.id,
 						label: data.label,
 						icon: data.icon,
 						icon_selected: data.icon_selected,
 						categories: data.categories || [],
+						favourite: ko.computed({
+							read: function() {
+								return favourites.ready() ? favourites().indexOf(data.id) >= 0 : false;
+							},
+							write: function(value) {
+								if (value) {
+									if (favourites().indexOf(data.id) < 0) {
+										favourites.push(data.id);
+									}
+								} else {
+									favourites.remove(data.id);
+								}
+							}
+						}),
 						visible: ko.computed({
 							read: function() {
 								return hidden.ready() ? hidden().indexOf(data.id) < 0 : false;
@@ -88,6 +102,7 @@
 				return function(viewModel) {
 					var hiddenCategories = new PersistantObservableArray('apps', 'hidden-categories');
 					var hiddenApps = new PersistantObservableArray('apps', 'hidden-apps');
+					var favouriteApps = new PersistantObservableArray('apps', 'favourites');
 					var withHidden = ko.observable(false);
 
 					var rawApps = ko.observableArray();
@@ -95,7 +110,7 @@
 					externalRequest('getApps').done(function(list) {
 						var result = [];
 						for (var i = 0; i < list.length; i+=1) {
-							result.push(new AppItem(list[i], hiddenApps));
+							result.push(new AppItem(list[i], hiddenApps, favouriteApps));
 						}
 						rawApps(result);
 						rawApps.ready(true);
@@ -369,6 +384,7 @@
 						apps: apps,
 						categories: categories,
 						hiddenApps: ko.pureComputed(hiddenApps),
+						favouriteApps: ko.pureComputed(favouriteApps),
 						withHidden: withHidden,
 						runApp: runApp,
 						suspendApp: suspendApp,

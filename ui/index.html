@@ -79,7 +79,8 @@
 					css: {
 						'current-app': $data == $root.currentApp(),
 						'running-app': $root.gameplay.statusById($data).active,
-						'hidden': !visible()
+						'hidden': !visible(),
+						'favourite': favourite
 					},
 					click: $root.currentApp
 				">
@@ -131,6 +132,11 @@
 							<input type="checkbox" data-bind="checked: app.visible">
 							<!-- ko if: app.visible --><span data-bind="t: 'visible'">Visible</span><!-- /ko -->
 							<!-- ko ifnot: app.visible --><span data-bind="t: 'hidden'">Hidden</span><!-- /ko -->
+						</label>
+
+						<label class="selectable button-favourite" data-select-order="1" data-bind="click: function() { app.favourite(!app.favourite()); }, css: { 'button-enabled': app.favourite }">
+							<input type="checkbox" data-bind="checked: app.favourite">
+							<span data-bind="t: 'favourite'">Favourite</span>
 						</label>
 
 						<!-- ko if: status.active -->
