@@ -184,12 +184,12 @@
 					/**
 					* Return all apps by category id
 					**/
-					apps.byCategory = function(id) {
+					apps.byCategory = function(id, withHidden) {
 						if (id.id !== undefined) {
 							id = id.id;
 						}
 						var result = [];
-						var list = apps();
+						var list = withHidden ? rawApps() : apps();
 						for (var i = 0; i < list.length; i+=1) {
 							if (list[i].categories && list[i].categories.indexOf(id) >= 0) {
 								result.push(list[i]);

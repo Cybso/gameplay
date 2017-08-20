@@ -83,8 +83,13 @@ header {
 
 .dialog > .dialog-buttons {
 	border-top: 0.25ex solid #5C61A6;
+	padding-left: 0.25em;
+	padding-right: 0.25em;
 }
 
+.button-exit,
+.button-reload,
+.button-visible,
 .button-reset,
 .button-run,
 .button-suspend,
@@ -170,4 +175,109 @@ header {
 	background-image: url('icon:///media-eject_selected.svg');
 }
 
+#sidebar {
+	background-color: #5C61A6;
+	color: #ffffff;
+	max-width: 25rem;
+	border-radius: 50% 0 0 50%;
+	box-shadow: -0.25em 0em 1em #5C61A6;
+}
 
+#sidebar h2 {
+	background-color: #5C61A6;
+	color: #5C61A6;
+	margin: 0;
+	padding: 1em;
+	font-size: 0;
+}
+
+#sidebar:hover,
+#sidebar.selected-parent {
+	border-radius: 0;
+}
+
+#sidebar:hover h2,
+#sidebar.selected-parent h2 {
+	background-color: #B7BAE0;
+	color: #5C61A6;
+	font-size: 1.2em;
+}
+
+#sidebar ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+#sidebar ul > li {
+	margin: 0;
+	padding: 0.5em;
+	margin-top: 1px;
+}
+
+#sidebar .selected {
+	background-color: #B7BAE0;
+	color: #34375e;
+}
+
+.sidebar-control-buttons button {
+	border: 0;
+	background-color: transparent;
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: 50% 50%;
+	font-size: 0;
+	width: 3rem;
+	height: 3rem;
+	padding: 0.25rem;
+	margin: 0.5rem;
+	background-origin: content-box;
+}
+
+.sidebar-control-buttons button.button-exit {
+	background-image: url('icon:///system-shutdown.svg');
+	background-color: rgba(92, 97, 166, 0.5);
+}
+
+.sidebar-control-buttons button.button-reload {
+	background-image: url('icon:///system-reboot.svg');
+}
+
+label.button-visible {
+	position: relative;
+	background-image: url('icon:///layer-visible-off.svg');
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: 50% 50%;
+}
+
+label.button-visible.button-enabled {
+	background-image: url('icon:///layer-visible-on.svg');
+}
+
+label.button-visible > input[type="checkbox"] {
+	visibility: hidden;
+}
+
+label.button-visible > span {
+	position: absolute;
+	display: none !important;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	font-size: 0.9rem;
+	text-align: center;
+	background-color: rgba(255, 255, 255, 0.5);
+	font-weight: bold;
+	padding: 0.25rem;
+}
+
+label.button-visible:hover,
+label.button-visible.selected {
+	background-color: rgba(92, 97, 166, 0.5);
+}
+
+label.button-visible:hover > span,
+label.button-visible.selected > span {
+	display: block !important;
+}

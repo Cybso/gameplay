@@ -14,7 +14,7 @@
 			'loading': false
 		}
 	">
-		<div id="loaderX"></div>
+		<div id="loader"></div>
 		<header>
 			<div class="logo"><img src="img/GamePlay.svg" title="Game✜Play Application Launcher"></div>
 			<div class="locale">
@@ -33,29 +33,35 @@
 			</div>
 		</header>
 
-		<div id="sidebar" data-select-order="2" data-change-order-direction="left">
-			<h2 class="selectable" data-bind="t: 'categories'">Categories</h2>
-			<ul class="select-categories" data-bind="foreach: gameplay.categories">
-				<li class="selectable" data-bind="click: function() { visible(!visible()); }">
-					<label>
-						<input type="checkbox" data-bind="checked: visible">
-						<span data-bind="text: label"></span>
-					</label>
-				</li>
-			</ul>
+		<div id="sidebar" class="selected-parent" data-select-order="2" data-change-order-direction="left">
+			<div id="sidebar-inner" class="selected-parent">
+				<h2 class="selectable" data-bind="t: 'categories'">Categories</h2>
+				<ul class="select-categories">
+					<!-- ko foreach: gameplay.categories -->
+					<li class="selectable" data-bind="click: function() { visible(!visible()); }">
+						<label>
+							<input type="checkbox" data-bind="checked: visible">
+							<span data-bind="text: label"></span>
+							(<span data-bind="text: $root.gameplay.apps.byCategory(id, true).length"></span>)
+						</label>
+					</li>
+					<!-- /ko -->
+					<!-- ko if:  gameplay.hiddenApps().length -->
+						<li class="selectable">
+							<label>
+								<input type="checkbox" data-bind="checked: gameplay.withHidden">
+								<span data-bind="t: 'withHidden'">Show hidden applications</span> (<span data-bind="text: gameplay.hiddenApps().length"></span>)
+							</label>
+						</li>
+					<!-- /ko -->
+				</ul>
 
-			<!-- ko if:  gameplay.hiddenApps().length -->
-				<label class="selectable">
-					<input type="checkbox" data-bind="checked: gameplay.withHidden">
-					<span data-bind="t: 'withHidden'">Show hidden applications</span> (<span data-bind="text: gameplay.hiddenApps().length"></span>)
-				</label>
-			<!-- /ko -->
-
-			<div class="sidebar-control-buttons">
-				<button class="selectable button-reload" data-bind="click: function() { location.reload(); }">Reload</button>
-				<!-- ko ifnot: gameplay.getOption('frontend', 'disable-exit').asBoolean -->
-					<button class="selectable button-exit" data-bind="click: gameplay.exitSelf">Exit</button>
-				<!-- /ko -->
+				<div class="sidebar-control-buttons">
+					<button class="selectable button-reload" data-bind="click: function() { location.reload(); }">Reload</button>
+					<!-- ko ifnot: gameplay.getOption('frontend', 'disable-exit').asBoolean -->
+						<button class="selectable button-exit" data-bind="click: gameplay.exitSelf">Exit</button>
+					<!-- /ko -->
+				</div>
 			</div>
 		</div>
 
@@ -121,9 +127,10 @@
 					">
 					</div>
 					<div class="dialog-buttons">
-						<label class="selectable button-visible" data-select-order="1" data-bind="click: function() { app.visible(!app.visible()); }">
+						<label class="selectable button-visible" data-select-order="1" data-bind="click: function() { app.visible(!app.visible()); }, css: { 'button-enabled': app.visible }">
 							<input type="checkbox" data-bind="checked: app.visible">
-							<span data-bind="t: 'visible'">Sichtbar</span>
+							<!-- ko if: app.visible --><span data-bind="t: 'visible'">Visible</span><!-- /ko -->
+							<!-- ko ifnot: app.visible --><span data-bind="t: 'hidden'">Hidden</span><!-- /ko -->
 						</label>
 
 						<!-- ko if: status.active -->
