@@ -32,7 +32,7 @@
 		});
 
 		// Load application and initialize application
-		require(['knockout', 'ViewModel', 'ko/delay'], function(ko, model) {
+		require(['knockout', 'ViewModel', 'ko/delay', 'ko/eval'], function(ko, model) {
 			ko.applyBindings(model);
 		});
 	};

@@ -88,10 +88,10 @@
 						// Find app widget
 						_currentAppNode = document.querySelector('[data-app="' + app.id + '"]');
 					}
-					_currentApp(app);
 					// Return to the selected node, especially when this is called
 					// with argument 'undefined' to close the dialog.
 					exports.selectedNode(_currentAppNode);
+					_currentApp(app);
 				}
 			});
 			exports.activeGamepadConfigurator = ko.observable();

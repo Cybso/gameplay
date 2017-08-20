@@ -33,8 +33,8 @@
 			</div>
 		</header>
 
-		<div id="sidebar" class="selected-parent" data-select-order="2" data-change-order-direction="left">
-			<div id="sidebar-inner" class="selected-parent">
+		<div id="sidebar" data-select-order="2" data-change-order-direction="left">
+			<div id="sidebar-inner">
 				<h2 class="selectable" data-bind="t: 'categories'">Categories</h2>
 				<ul class="select-categories">
 					<!-- ko foreach: gameplay.categories -->
@@ -143,7 +143,7 @@
 							<!-- /ko -->
 						<!-- /ko -->
 						<!-- ko ifnot: status.active -->
-							<button class="selectable button-run" data-bind="click: function() { $root.gameplay.runApp(app); }">Run</button>
+							<button class="selectable button-run" data-bind="click: function() { $root.gameplay.runApp(app); }, eval: function() { $root.selectedNode(this); }">Run</button>
 						<!-- /ko -->
 						<button class="selectable button-close" data-bind="click: function() { $root.currentApp(undefined); }">Close</button>
 					</div>
