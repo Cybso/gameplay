@@ -136,7 +136,7 @@
 						<!-- ko if: status.active -->
 							<button class="selectable button-stop" data-bind="click: function() { $root.gameplay.stopApp(app); }">Stop</button>
 							<!-- ko if: status.suspended -->
-								<button class="selectable button-resume" data-bind="click: function() { $root.gameplay.resumeApp(app); }">Resume</button>
+								<button class="selectable button-resume" data-bind="click: function() { $root.gameplay.resumeApp(app); }, eval: function() { $root.selectedNode(this); }">Resume</button>
 							<!-- /ko -->
 							<!-- ko ifnot: status.suspended -->
 								<button class="selectable button-suspend" data-bind="click: function() { $root.gameplay.suspendApp(app); }">Suspend</button>
