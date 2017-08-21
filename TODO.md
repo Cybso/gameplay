@@ -1,21 +1,7 @@
-Paths
-=====
-
-- Validate paths on windows
-- Prefer QFile and QDir over os.path where possible
-
-QWebEngine
-==========
-
-- Under windows QWebEngine has already replaced Webkit! Provide support for both!
-- Check at runtime wether QWebView or QWebEngine exists. When both libraries are available prefer QWebView.
-
-
 GamePlay
 ========
 
-- Add the ability to restart the program
-- Add a local icon directory and a fallback directory (for UI icons)
+- Cache Wii/Steam images (implement icon://steam/... to get Icon from AppProvider)
 
 Setup
 =====
@@ -27,8 +13,6 @@ Frontend
 ========
 
 - Rename 'select' to 'focus'
-- Add support for favourites
 - Add support for sorting
 - Provide access to settings and configuration paths from the browser
 - Add 'Setup' button
-- Use 'icon://' for UI icons
