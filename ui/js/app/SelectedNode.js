@@ -277,7 +277,10 @@
 
 			if (oldCandidate.bottom < newCandidate.bottom) {
 				return true;
+			} else if (oldCandidate.bottom > newCandidate.bottom) {
+				return false;
 			}
+
 			var oldDistance = Math.min(
 				Math.abs(oldCandidate.left - current.left),
 				Math.abs(oldCandidate.right - current.right),
@@ -331,7 +334,10 @@
 
 			if (oldCandidate.top > newCandidate.top) {
 				return true;
+			} else if (oldCandidate.top < newCandidate.top) {
+				return false;
 			}
+
 			var oldDistance = Math.min(
 				Math.abs(oldCandidate.left - current.left),
 				Math.abs(oldCandidate.right - current.right),
