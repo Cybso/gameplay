@@ -2,6 +2,37 @@
 	"use strict";
 
 	/**
+	 * Returns the number of common ancestors of
+	 * boths elements, counted from the body element.
+	 */
+	function countCommonAncestors(us, other) {
+		var root = document.body;
+		var ourParents = [];
+		var otherParents = [];
+		var p;
+
+		p = us;
+		while (p && p !== root) {
+			ourParents.push(p);
+			p = p.parentNode;
+		}
+		p = other;
+		while (p && p !== root) {
+			otherParents.push(p);
+			p = p.parentNode;
+		}
+		ourParents.reverse();
+		otherParents.reverse();
+		for (var i = 0; i < ourParents.length && i < otherParents.length; i+=1) {
+			if (ourParents[i] !== otherParents[i]) {
+				break;
+			}
+		}
+
+		return i;
+	}
+
+	/**
 	 * Returns true if the new candidates rect is a better destination for
 	 * a MOVE LEFT operation than the old one.
 	 *
@@ -73,7 +104,18 @@
 					return true;
 				}
 			} else if (oldCandidate.bottom <= current.top) {
-				// Both candidates are below of us
+				// Both candidates are above of us
+
+				// Check if the new candidate is better than the old one. First,
+				// elements that resides below us are preferred. Second, the element
+				// having the next ancestor is preferred (basically, this is the same
+				// when iterating the current element).
+				if (oldCandidate.commonAncestors > newCandidate.commonAncestors) {
+					return false;
+				} else if (oldCandidate.commonAncestors < newCandidate.commonAncestors) {
+					return true;
+				}
+
 				if (newCandidate.selectOrder < oldCandidate.selectOrder) {
 					// Always prefer newCandidate
 					return true;
@@ -163,6 +205,17 @@
 				}
 			} else if (oldCandidate.top >= current.bottom) {
 				// Both candidates are below of us
+
+				// Check if the new candidate is better than the old one. First,
+				// elements that resides below us are preferred. Second, the element
+				// having the next ancestor is preferred (basically, this is the same
+				// when iterating the current element).
+				if (oldCandidate.commonAncestors > newCandidate.commonAncestors) {
+					return false;
+				} else if (oldCandidate.commonAncestors < newCandidate.commonAncestors) {
+					return true;
+				}
+
 				if (newCandidate.selectOrder > oldCandidate.selectOrder) {
 					// Always prefer newCandidate
 					return true;
@@ -204,6 +257,16 @@
 			return false;
 		}
 		if (oldCandidate !== undefined) {
+			// Check if the new candidate is better than the old one. First,
+			// elements that resides below us are preferred. Second, the element
+			// having the next ancestor is preferred (basically, this is the same
+			// when iterating the current element).
+			if (oldCandidate.commonAncestors > newCandidate.commonAncestors) {
+				return false;
+			} else if (oldCandidate.commonAncestors < newCandidate.commonAncestors) {
+				return true;
+			}
+
 			if (newCandidate.selectOrder < oldCandidate.selectOrder) {
 				// Always prefer newCandidate
 				return true;
@@ -248,6 +311,16 @@
 			return false;
 		}
 		if (oldCandidate !== undefined) {
+			// Check if the new candidate is better than the old one. First,
+			// elements that resides below us are preferred. Second, the element
+			// having the next ancestor is preferred (basically, this is the same
+			// when iterating the current element).
+			if (oldCandidate.commonAncestors > newCandidate.commonAncestors) {
+				return false;
+			} else if (oldCandidate.commonAncestors < newCandidate.commonAncestors) {
+				return true;
+			}
+
 			if (newCandidate.selectOrder < oldCandidate.selectOrder) {
 				// Always prefer newCandidate
 				return true;
@@ -460,6 +533,7 @@
 					}
 
 					var rect = current.getBoundingClientRect();
+					rect.element = current;
 					var selectOrder = getSelectOrder(current);
 					rect.selectOrder = selectOrder.order;
 					var candidate, candidateRect, newCandidateRect;
@@ -467,6 +541,7 @@
 						if (elements.hasOwnProperty(i) && elements[i] !== current && elements[i] !== undefined) {
 							if (elements[i].getBoundingClientRect !== undefined) {
 								newCandidateRect = elements[i].getBoundingClientRect();
+								newCandidateRect.element = elements[i];
 								if (!isElementSelectable(elements[i], newCandidateRect)) {
 									continue;
 								}
@@ -477,6 +552,7 @@
 									continue;
 								}
 
+								newCandidateRect.commonAncestors = countCommonAncestors(current, elements[i]);
 								if (preferredElementComparator(rect, newCandidateRect, candidateRect)) {
 									candidate = elements[i];
 									candidateRect = newCandidateRect;

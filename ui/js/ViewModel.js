@@ -16,7 +16,7 @@
 		'ArrowLeft': 'Left',
 		'ArrowRight': 'Right',
 		'ArrowDown': 'Down',
-		'ArrowTop': 'Top'
+		'ArrowUp': 'Up'
 	};
 
 	define(['knockout', 'RemoteData', 'moment', 'utils', 
