@@ -30,6 +30,7 @@ from .providers.SteamProvider import SteamProvider
 from .providers.EmulatorProvider import EmulatorProvider
 from .providers.DesktopEntryProvider import DesktopEntryProvider
 from .providers.SystemAppProvider import SystemAppProvider
+from .providers.ScummvmProvider import ScummvmProvider
 
 LOGGER = logging.getLogger(__name__)
 
@@ -146,7 +147,8 @@ class GamePlay(QObject):
 			'steam': SteamProvider(self.settings),
 			'emulators': EmulatorProvider(self.settings),
 			'desktop': DesktopEntryProvider(self.settings),
-			'system': SystemAppProvider(self.settings)
+			'system': SystemAppProvider(self.settings),
+			'scummvm': ScummvmProvider(self.settings)
 		}
 
 		# Currently active AppProcess object per appid.
