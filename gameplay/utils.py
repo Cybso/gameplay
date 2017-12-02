@@ -46,6 +46,7 @@ def get_icon_data(iconName):
 
 	for override in ICON_OVERRIDE_PATHS:
 		override += os.sep + iconName
+		print(override)
 		if os.path.exists(override):
 			(mimeType, encoding) = mimetypes.guess_type(override)
 			if mimeType is not None and mimeType.startswith('image/'):

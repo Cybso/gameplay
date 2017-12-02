@@ -74,9 +74,9 @@ class ScummvmPlatformOSX(ScummvmPlatformGeneric):
 		return None
 
 class ScummvmAppItem(AppItem):
-	def __init__(self, provider, appid, label, icon = None, icon_selected = None, suspended = False):
-		AppItem.__init__(self, 'scummvm_' + appid, label, icon, icon_selected, suspended)
-		self._appid = appid
+	def __init__(self, provider, gameid, label, icon = None, icon_selected = None, suspended = False):
+		AppItem.__init__(self, 'scummvm_' + gameid, label, icon, icon_selected, suspended)
+		self._gameid = gameid
 		self._provider = provider
 		self.categories = ['ScummVM']
 
@@ -84,7 +84,7 @@ class ScummvmAppItem(AppItem):
 		if cmd:
 			cmd.append('-f')
 			cmd.append('--joystick=0')
-			cmd.append(self._appid)
+			cmd.append(self._gameid)
 			self.cmd = cmd
 
 	def execute(self):
@@ -118,14 +118,19 @@ class ScummvmProvider(AppProvider):
 						line = line.decode('UTF-8')
 						m = self.target_pattern.match(line)
 						if m:
-							apps.append(ScummvmAppItem(self, m.group(1), m.group(2)))
+							gameid = m.group(1)
+							label = m.group(2)
+							apps.append(ScummvmAppItem(self, gameid, label, self.find_icon(gameid)))
 				except:
 					LOGGER.exception('Failed to execute: %s' % (' '.join(cmd)))
 		return apps
 
-	def find_icon(self, appid):
-		""" Currently I do not have an idea how to find an image for the game. """
-		return None
+	def find_icon(self, gameid):
+		""" Currently I do not have an idea how to find an image for the game.
+		In the meantime, define a Gameplay icon:// path that can be used by
+		placing an icon in one of the icon search paths called scummvm/GAMEID.png
+		"""
+		return 'icon://scummvm/' + gameid + '.png'
 
 	def find_scummvm_exe(self):
 		""" Tries to locate the scummvm executable. This depends on the platform. """
