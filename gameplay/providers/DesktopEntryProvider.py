@@ -43,7 +43,10 @@ class DesktopEntryProvider(AppProvider):
 	def parse_file(self, f):
 		""" Parses a .desktop file using configparser """
 		cfg = configparser.ConfigParser()
-		cfg.read_file(open(f))
+		try:
+			cfg.read_file(open(f))
+		except:
+			pass
 		if cfg.has_section('Desktop Entry'):
 			apptype = cfg.get('Desktop Entry', 'Type', fallback=None, raw=True)
 			if apptype is None or apptype == 'Application':
