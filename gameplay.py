@@ -114,6 +114,12 @@ def main():
 	from gameplay import GamePlay
 	from gameplay import Frontend
 
+	# Import Engine package before QCore is instanceated
+	if args.engine == 'webkit':
+		from gameplay.platform.WebkitWebView import WebView, Inspector
+	else:
+		from gameplay.platform.WebengineWebView import WebView, Inspector
+
 	# Start application (and ensure it can be killed with CTRL-C)
 	signal.signal(signal.SIGINT, signal.SIG_DFL)
 	app = QApplication(sys.argv)

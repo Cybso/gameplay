@@ -29,10 +29,10 @@ class Frontend(QMainWindow):
 		self.gameplay.window = self
 		self.setWindowTitle('GamePlay')
 		self.webkit = args.engine == 'webkit'
-		if self.webkit:
-			from .platform.WebkitWebView import WebView, Inspector
+		if args.engine == 'webkit':
+			from gameplay.platform.WebkitWebView import WebView, Inspector
 		else:
-			from .platform.WebengineWebView import WebView, Inspector
+			from gameplay.platform.WebengineWebView import WebView, Inspector
 
 		self.web = WebView(self, gameplay, args)
 		self.inspector = Inspector(self, self.web)
