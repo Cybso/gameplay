@@ -237,7 +237,7 @@ class SteamProvider(AppProvider):
 			appid = appid.get('appid')
 		# From https://steamdb.info/app/APPID/info/
 		appid = str(int(appid))
-		return 'https://steamdb.info/static/camo/apps/' + appid + '/header.jpg'
+		return 'https://steamcdn-a.akamaihd.net/steam/apps/' + appid + '/header.jpg'
 
 	def list_all_app_manifests(self):
 		"""Parses all .acf-Files in steamapps directory. ACF files
